@@ -1,0 +1,122 @@
+# La Lliga del Sobresalt
+
+MVP Django para una web satírica tipo liga/ranking basada solo en noticias publicadas por medios de prensa whitelisted. No usa fuentes oficiales como fuente primaria y no mide criminalidad real.
+
+## Stack
+
+- Python 3.12+ (este repo se verificó con `py -3.14`)
+- Django 5.2 LTS
+- PostgreSQL vía `DATABASE_URL`
+- Redis + Celery + Celery Beat
+- Ollama local compatible con OpenAI API en `http://localhost:11434/v1`
+
+## Instalación local
+
+```powershell
+py -3.14 -m venv .venv
+.venv\Scripts\python -m pip install --upgrade pip
+.venv\Scripts\pip install -r requirements.txt
+Copy-Item .env.example .env
+```
+
+Edita `.env`:
+
+```env
+SECRET_KEY=pon-una-clave-local
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+DATABASE_URL=postgres://usuario:password@localhost:5432/lliga_sobresalt
+REDIS_URL=redis://localhost:6379/0
+OLLAMA_BASE_URL=http://localhost:11434/v1
+OLLAMA_MODEL=qwen3:4b
+```
+
+Si no defines `DATABASE_URL`, Django cae a SQLite para desarrollo rápido y tests.
+
+## Base de datos
+
+Con PostgreSQL local:
+
+```sql
+CREATE DATABASE lliga_sobresalt;
+```
+
+Después:
+
+```powershell
+.venv\Scripts\python manage.py migrate
+.venv\Scripts\python manage.py createsuperuser
+.venv\Scripts\python manage.py runserver
+```
+
+## Ollama
+
+```powershell
+ollama pull qwen3:4b
+ollama serve
+```
+
+La app llama a:
+
+```text
+http://localhost:11434/v1/chat/completions
+```
+
+No se usa OpenAI API, OpenRouter ni servicios de pago.
+
+## Flujo MVP
+
+1. Crea `Outlet` en admin con `rss_url` o `section_url`.
+2. Crea `LeagueSeason` y `LeagueRound` abierta.
+3. Ejecuta:
+
+```powershell
+.venv\Scripts\python manage.py scrape_press
+.venv\Scripts\python manage.py process_articles
+.venv\Scripts\python manage.py recalculate_rankings
+```
+
+4. Revisa `Incident` y `SatiricalHeadline` en admin.
+5. Aprueba incidentes y titulares.
+6. Visita `/`, `/ranking/`, `/ciutats/<slug>/`.
+
+## Celery
+
+```powershell
+celery -A config worker -l info
+celery -A config beat -l info
+```
+
+Tareas disponibles:
+
+- `scrape_press_task`
+- `process_articles_task`
+- `recalculate_rankings_task`
+
+La cadencia sugerida está comentada en `config/settings.py`: scrape cada hora, process cada hora, ranking cada 6 horas.
+
+## Docker Compose
+
+```powershell
+Copy-Item .env.example .env
+docker compose up
+```
+
+El `docker-compose.yml` levanta `web`, `db`, `redis`, `celery_worker` y `celery_beat`.
+
+## Tests y checks
+
+```powershell
+.venv\Scripts\python manage.py check
+.venv\Scripts\python manage.py makemigrations --check
+.venv\Scripts\python manage.py test
+```
+
+## Límites editoriales
+
+- El ranking es satírico y se basa únicamente en prensa publicada.
+- No es estadística oficial ni mide criminalidad real.
+- No se publican artículos completos ni `raw_text` en el frontend.
+- No se intenta saltar paywalls.
+- El modelo extrae datos y propone titulares; la puntuación final la calcula el código.
+

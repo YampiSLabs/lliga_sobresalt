@@ -1,0 +1,65 @@
+services:
+  web:
+    image: python:3.14-slim
+    working_dir: /app
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    command: >
+      sh -c "pip install -r requirements.txt &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: lliga_sobresalt
+      POSTGRES_USER: usuario
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  celery_worker:
+    image: python:3.14-slim
+    working_dir: /app
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    command: >
+      sh -c "pip install -r requirements.txt &&
+             celery -A config worker -l info"
+
+  celery_beat:
+    image: python:3.14-slim
+    working_dir: /app
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    command: >
+      sh -c "pip install -r requirements.txt &&
+             celery -A config beat -l info"
+
+volumes:
+  postgres_data:
+
