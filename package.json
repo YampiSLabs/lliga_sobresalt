@@ -1,15 +1,18 @@
 {
   "name": "lliga-sobresalt",
   "private": true,
+  "packageManager": "pnpm@10.30.3",
   "scripts": {
-    "build:css": "tailwindcss -i ./assets/css/input.css -o ./static/css/app.css --minify",
-    "watch:css": "tailwindcss -i ./assets/css/input.css -o ./static/css/app.css --watch",
+    "dev": "pnpm --filter @lliga/web dev",
+    "build": "pnpm --filter @lliga/web build",
+    "preview": "pnpm --filter @lliga/web preview",
+    "backend:check": "cd apps/backend && ..\\..\\.venv\\Scripts\\python manage.py check",
+    "backend:test": "cd apps/backend && ..\\..\\.venv\\Scripts\\python manage.py test",
     "codegraph:init": "codegraph init -i",
     "codegraph:sync": "codegraph sync",
     "codegraph:status": "codegraph status"
   },
   "devDependencies": {
-    "@colbymchenry/codegraph": "^0.7.9",
-    "tailwindcss": "3.4.17"
+    "@colbymchenry/codegraph": "^0.7.9"
   }
 }

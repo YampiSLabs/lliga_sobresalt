@@ -1,0 +1,67 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getIncidents, getRanking } from "../lib/api";
+
+const [ranking, incidents] = await Promise.all([getRanking(), getIncidents()]);
+---
+
+<BaseLayout>
+  <section class="mb-10">
+    <p class="text-sm font-bold uppercase text-amber-300">Jornada de titulars</p>
+    <h1 class="mt-2 text-4xl font-black">La Lliga del Sobresalt</h1>
+    <p class="mt-3 max-w-2xl text-slate-300">Classificació satírica de successos publicats en premsa catalana.</p>
+  </section>
+
+  <section class="mb-10">
+    <div class="mb-3 flex items-end justify-between">
+      <h2 class="text-2xl font-bold">Ranking semanal</h2>
+      <a class="text-sm text-amber-300" href="./ranking/">Ver ranking completo</a>
+    </div>
+    <div class="overflow-hidden rounded border border-slate-800">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-slate-900 text-slate-300">
+          <tr>
+            <th class="px-4 py-3">#</th>
+            <th class="px-4 py-3">Ciudad</th>
+            <th class="px-4 py-3">Puntos</th>
+            <th class="px-4 py-3">Incidentes</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800">
+          {ranking.length ? (
+            ranking.slice(0, 20).map((row) => (
+              <tr class="bg-slate-950">
+                <td class="px-4 py-3">{row.position}</td>
+                <td class="px-4 py-3 font-semibold text-amber-300">{row.city.name}</td>
+                <td class="px-4 py-3 font-bold">{row.points}</td>
+                <td class="px-4 py-3">{row.incidents_count}</td>
+              </tr>
+            ))
+          ) : (
+            <tr><td colspan="4" class="px-4 py-6 text-slate-400">Sin ranking publicado todavía.</td></tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="mb-3 text-2xl font-bold">Últimos incidentes aprobados</h2>
+    <div class="space-y-3">
+      {incidents.length ? incidents.slice(0, 10).map((incident) => (
+        <article class="rounded border border-slate-800 bg-slate-900 p-4">
+          <div class="flex flex-wrap items-center gap-2 text-xs uppercase text-slate-400">
+            <span>{incident.city?.name || "Sin ciudad clara"}</span>
+            <span>·</span>
+            <span>{incident.category}</span>
+            <span>·</span>
+            <span>{incident.points} pts</span>
+          </div>
+          <p class="mt-2 font-bold">{incident.canonical_title}</p>
+          {incident.short_neutral_summary && <p class="mt-2 text-sm text-slate-300">{incident.short_neutral_summary}</p>}
+        </article>
+      )) : <p class="text-slate-400">Todavía no hay incidentes aprobados.</p>}
+    </div>
+  </section>
+</BaseLayout>
+

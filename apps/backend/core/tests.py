@@ -17,3 +17,11 @@ class SecurityHeaderTests(TestCase):
         self.assertEqual(response.headers["X-Content-Type-Options"], "nosniff")
         self.assertEqual(response.headers["Referrer-Policy"], "same-origin")
         self.assertIn("geolocation=()", response.headers["Permissions-Policy"])
+
+
+class PublicApiTests(TestCase):
+    def test_public_api_does_not_expose_raw_text(self):
+        response = self.client.get(reverse("core:api_incidents"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "raw_text")

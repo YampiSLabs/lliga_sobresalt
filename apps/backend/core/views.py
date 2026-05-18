@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django.db.models import Prefetch
+from django.http import JsonResponse
 
 from core.choices import IncidentStatus
 from league.models import City, CityScore
@@ -81,3 +82,43 @@ def public_incidents():
         .order_by("-created_at")
     )
 
+
+def api_ranking(request):
+    active_round = get_active_round()
+    if not active_round:
+        return JsonResponse([], safe=False)
+    rows = CityScore.objects.filter(round=active_round).select_related("city")
+    return JsonResponse(
+        [
+            {
+                "position": row.position,
+                "city": {"name": row.city.name, "slug": row.city.slug},
+                "points": row.points,
+                "incidents_count": row.incidents_count,
+            }
+            for row in rows
+        ],
+        safe=False,
+    )
+
+
+def api_incidents(request):
+    incidents = public_incidents()[:50]
+    return JsonResponse(
+        [
+            {
+                "id": incident.pk,
+                "canonical_title": incident.canonical_title,
+                "city": (
+                    {"name": incident.city.name, "slug": incident.city.slug}
+                    if incident.city
+                    else None
+                ),
+                "category": incident.category,
+                "points": incident.points,
+                "short_neutral_summary": incident.short_neutral_summary,
+            }
+            for incident in incidents
+        ],
+        safe=False,
+    )

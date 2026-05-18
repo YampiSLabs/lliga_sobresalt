@@ -1,0 +1,34 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getRanking } from "../../lib/api";
+
+const ranking = await getRanking();
+---
+
+<BaseLayout title="Ranking semanal">
+  <h1 class="mb-6 text-3xl font-black">Ranking semanal</h1>
+  <div class="overflow-hidden rounded border border-slate-800">
+    <table class="w-full text-left text-sm">
+      <thead class="bg-slate-900 text-slate-300">
+        <tr>
+          <th class="px-4 py-3">#</th>
+          <th class="px-4 py-3">Ciudad</th>
+          <th class="px-4 py-3">Puntos</th>
+          <th class="px-4 py-3">Incidentes</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-800">
+        {ranking.length ? ranking.map((row) => (
+          <tr class="bg-slate-950">
+            <td class="px-4 py-3">{row.position}</td>
+            <td class="px-4 py-3 font-semibold text-amber-300">{row.city.name}</td>
+            <td class="px-4 py-3 font-bold">{row.points}</td>
+            <td class="px-4 py-3">{row.incidents_count}</td>
+          </tr>
+        )) : (
+          <tr><td colspan="4" class="px-4 py-6 text-slate-400">Sin ranking calculado todavía.</td></tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+</BaseLayout>

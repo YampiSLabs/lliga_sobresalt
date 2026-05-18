@@ -11,4 +11,4 @@ feedparser>=6.0
 trafilatura>=1.9
 pydantic>=2.7
 django-import-export>=4.0
-
+django-cors-headers>=4.4
