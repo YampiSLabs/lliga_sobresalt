@@ -1,10 +1,11 @@
 <!doctype html>
+{% load static %}
 <html lang="ca">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}La Lliga del Sobresalt{% endblock %}</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
 </head>
 <body class="bg-slate-950 text-slate-100">
   <header class="border-b border-slate-800 bg-slate-900">
@@ -21,4 +22,3 @@
   </main>
 </body>
 </html>
-

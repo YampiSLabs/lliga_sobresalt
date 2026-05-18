@@ -1,6 +1,6 @@
 services:
   web:
-    image: python:3.14-slim
+    build: .
     working_dir: /app
     volumes:
       - .:/app
@@ -12,8 +12,7 @@ services:
       - db
       - redis
     command: >
-      sh -c "pip install -r requirements.txt &&
-             python manage.py migrate &&
+      sh -c "python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
 
   db:
@@ -33,7 +32,7 @@ services:
       - "6379:6379"
 
   celery_worker:
-    image: python:3.14-slim
+    build: .
     working_dir: /app
     volumes:
       - .:/app
@@ -42,12 +41,10 @@ services:
     depends_on:
       - db
       - redis
-    command: >
-      sh -c "pip install -r requirements.txt &&
-             celery -A config worker -l info"
+    command: celery -A config worker -l info
 
   celery_beat:
-    image: python:3.14-slim
+    build: .
     working_dir: /app
     volumes:
       - .:/app
@@ -56,10 +53,7 @@ services:
     depends_on:
       - db
       - redis
-    command: >
-      sh -c "pip install -r requirements.txt &&
-             celery -A config beat -l info"
+    command: celery -A config beat -l info
 
 volumes:
   postgres_data:
-

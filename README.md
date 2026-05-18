@@ -16,6 +16,8 @@ MVP Django para una web satírica tipo liga/ranking basada solo en noticias publ
 py -3.14 -m venv .venv
 .venv\Scripts\python -m pip install --upgrade pip
 .venv\Scripts\pip install -r requirements.txt
+pnpm install
+pnpm build:css
 Copy-Item .env.example .env
 ```
 
@@ -29,6 +31,11 @@ DATABASE_URL=postgres://usuario:password@localhost:5432/lliga_sobresalt
 REDIS_URL=redis://localhost:6379/0
 OLLAMA_BASE_URL=http://localhost:11434/v1
 OLLAMA_MODEL=qwen3:4b
+CSRF_TRUSTED_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
+SECURE_SSL_REDIRECT=False
+CSRF_COOKIE_SECURE=False
+SESSION_COOKIE_SECURE=False
+SECURE_HSTS_SECONDS=0
 ```
 
 Si no defines `DATABASE_URL`, Django cae a SQLite para desarrollo rápido y tests.
@@ -107,10 +114,34 @@ El `docker-compose.yml` levanta `web`, `db`, `redis`, `celery_worker` y `celery_
 ## Tests y checks
 
 ```powershell
+pnpm build:css
 .venv\Scripts\python manage.py check
 .venv\Scripts\python manage.py makemigrations --check
 .venv\Scripts\python manage.py test
 ```
+
+## Frontend con pnpm
+
+El CSS público se compila localmente con Tailwind y pnpm. No se usa Tailwind CDN.
+
+```powershell
+pnpm install
+pnpm build:css
+pnpm watch:css
+```
+
+Entrada: `assets/css/input.css`.
+Salida versionable para el MVP: `static/css/app.css`.
+
+## Seguridad
+
+- `DEBUG=False` exige `SECRET_KEY` real.
+- Cookies de sesión y CSRF son `HttpOnly`; en producción deben ir con `Secure=True`.
+- Headers activos: `X-Content-Type-Options: nosniff`, `Referrer-Policy: same-origin`, `Permissions-Policy`.
+- `X_FRAME_OPTIONS=DENY`.
+- HSTS se activa por defecto cuando `DEBUG=False`, salvo override por entorno.
+- `.env`, `.venv` y `node_modules` quedan fuera de git y del contexto Docker.
+- Docker usa imagen propia con dependencias instaladas y usuario no-root.
 
 ## Límites editoriales
 
@@ -119,4 +150,3 @@ El `docker-compose.yml` levanta `web`, `db`, `redis`, `celery_worker` y `celery_
 - No se publican artículos completos ni `raw_text` en el frontend.
 - No se intenta saltar paywalls.
 - El modelo extrae datos y propone titulares; la puntuación final la calcula el código.
-
