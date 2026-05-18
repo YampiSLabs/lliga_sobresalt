@@ -3,10 +3,13 @@
   "private": true,
   "scripts": {
     "build:css": "tailwindcss -i ./assets/css/input.css -o ./static/css/app.css --minify",
-    "watch:css": "tailwindcss -i ./assets/css/input.css -o ./static/css/app.css --watch"
+    "watch:css": "tailwindcss -i ./assets/css/input.css -o ./static/css/app.css --watch",
+    "codegraph:init": "codegraph init -i",
+    "codegraph:sync": "codegraph sync",
+    "codegraph:status": "codegraph status"
   },
   "devDependencies": {
+    "@colbymchenry/codegraph": "^0.7.9",
     "tailwindcss": "3.4.17"
   }
 }
-

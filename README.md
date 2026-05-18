@@ -166,6 +166,27 @@ pnpm watch:css
 Entrada: `assets/css/input.css`.
 Salida versionable para el MVP: `static/css/app.css`.
 
+## CodeGraph
+
+CodeGraph está instalado como devDependency y este proyecto ya tiene índice local en `.codegraph/`.
+
+```powershell
+pnpm codegraph:status
+pnpm codegraph:sync
+pnpm exec codegraph query Incident --limit 5
+```
+
+También quedó configurado para Codex global en `C:\Users\elyam\.codex\config.toml`. Reinicia Codex para que aparezcan las herramientas MCP `codegraph_*`.
+
+Para usarlo en otro proyecto:
+
+```powershell
+cd ruta\otro-proyecto
+codegraph init -i
+```
+
+Nota: en esta máquina CodeGraph funciona con backend WASM porque `better-sqlite3` nativo no cargó con la versión actual de Node. Es correcto, solo más lento.
+
 ## Seguridad
 
 - `DEBUG=False` exige `SECRET_KEY` real.
