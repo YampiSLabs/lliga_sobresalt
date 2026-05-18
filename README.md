@@ -10,7 +10,40 @@ MVP Django para una web satírica tipo liga/ranking basada solo en noticias publ
 - Redis + Celery + Celery Beat
 - Ollama local compatible con OpenAI API en `http://localhost:11434/v1`
 
-## Instalación local
+## Desarrollo local con Docker
+
+La ruta recomendada para desarrollo local es Docker Compose. Todos los servicios backend comparten una red bridge explícita llamada `lliga_backend_bridge`.
+
+```powershell
+Copy-Item .env.docker.example .env
+docker compose up --build
+```
+
+Servicios:
+
+- `web`: Django en `http://localhost:8000`
+- `db`: PostgreSQL 17
+- `redis`: broker/cache local
+- `celery_worker`: tareas en segundo plano
+- `celery_beat`: scheduler
+
+Comandos dentro del backend:
+
+```powershell
+docker compose exec web python manage.py createsuperuser
+docker compose exec web python manage.py scrape_press
+docker compose exec web python manage.py process_articles
+docker compose exec web python manage.py recalculate_rankings
+docker compose exec web python manage.py test
+```
+
+Ollama corre fuera de Docker en Windows. Por eso `.env.docker.example` usa:
+
+```env
+OLLAMA_BASE_URL=http://host.docker.internal:11434/v1
+```
+
+## Instalación local sin Docker
 
 ```powershell
 py -3.14 -m venv .venv

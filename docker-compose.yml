@@ -1,22 +1,34 @@
 services:
   web:
     build: .
+    container_name: lliga_web
     working_dir: /app
     volumes:
       - .:/app
     env_file:
-      - .env
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgres://usuario:password@db:5432/lliga_sobresalt}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,web}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-http://localhost:8000,http://127.0.0.1:8000}
     ports:
       - "8000:8000"
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend_bridge
     command: >
       sh -c "python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
 
   db:
     image: postgres:17
+    container_name: lliga_db
     environment:
       POSTGRES_DB: lliga_sobresalt
       POSTGRES_USER: usuario
@@ -25,35 +37,73 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U usuario -d lliga_sobresalt"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - backend_bridge
 
   redis:
     image: redis:7
+    container_name: lliga_redis
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - backend_bridge
 
   celery_worker:
     build: .
+    container_name: lliga_celery_worker
     working_dir: /app
     volumes:
       - .:/app
     env_file:
-      - .env
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgres://usuario:password@db:5432/lliga_sobresalt}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend_bridge
     command: celery -A config worker -l info
 
   celery_beat:
     build: .
+    container_name: lliga_celery_beat
     working_dir: /app
     volumes:
       - .:/app
     env_file:
-      - .env
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgres://usuario:password@db:5432/lliga_sobresalt}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend_bridge
     command: celery -A config beat -l info
 
 volumes:
   postgres_data:
+
+networks:
+  backend_bridge:
+    name: lliga_backend_bridge
+    driver: bridge
