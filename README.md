@@ -77,6 +77,23 @@ Endpoints públicos para Astro:
 
 No exponen `raw_text`.
 
+## VPS Environment
+
+Las credenciales reales del Postgres compartido del VPS se guardan localmente en `.env.vps`.
+Ese archivo no se versiona. Para Dokploy/VPS, copia sus variables al entorno de la app backend.
+
+La base de datos creada para este proyecto usa:
+
+```env
+DB_NAME=lliga_sobresalt_db
+DB_USER=lliga_sobresalt_user
+DB_HOST=app-postgres
+DB_PORT=5432
+REDIS_URL=redis://app-redis:6379/0
+```
+
+`DATABASE_URL` y `DB_PASSWORD` están en `.env.vps`.
+
 ## Flujo MVP
 
 1. Crea `Outlet` en admin con `rss_url` o `section_url`.
