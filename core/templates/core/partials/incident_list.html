@@ -1,0 +1,17 @@
+<div class="space-y-3">
+  {% for incident in incidents %}
+    <a href="{% url 'core:incident_detail' incident.pk %}" class="block rounded border border-slate-800 bg-slate-900 p-4 hover:border-amber-300">
+      <div class="flex flex-wrap items-center gap-2 text-xs uppercase text-slate-400">
+        <span>{{ incident.city.name|default:"Sin ciudad clara" }}</span>
+        <span>·</span>
+        <span>{{ incident.get_category_display }}</span>
+        <span>·</span>
+        <span>{{ incident.points }} pts</span>
+      </div>
+      <p class="mt-2 font-bold">{{ incident.canonical_title }}</p>
+    </a>
+  {% empty %}
+    <p class="text-slate-400">Todavía no hay incidentes aprobados.</p>
+  {% endfor %}
+</div>
+

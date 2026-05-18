@@ -1,0 +1,27 @@
+<div class="overflow-hidden rounded border border-slate-800">
+  <table class="w-full text-left text-sm">
+    <thead class="bg-slate-900 text-slate-300">
+      <tr>
+        <th class="px-4 py-3">#</th>
+        <th class="px-4 py-3">Ciudad</th>
+        <th class="px-4 py-3">Puntos</th>
+        <th class="px-4 py-3">Incidentes</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-800">
+      {% for row in ranking %}
+        <tr class="bg-slate-950">
+          <td class="px-4 py-3">{{ row.position }}</td>
+          <td class="px-4 py-3">
+            <a class="font-semibold text-amber-300" href="{% url 'core:city_detail' row.city.slug %}">{{ row.city.name }}</a>
+          </td>
+          <td class="px-4 py-3 font-bold">{{ row.points }}</td>
+          <td class="px-4 py-3">{{ row.incidents_count }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4" class="px-4 py-6 text-slate-400">Sin ranking calculado todavía.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+

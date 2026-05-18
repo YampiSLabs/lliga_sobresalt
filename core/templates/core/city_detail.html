@@ -1,0 +1,31 @@
+{% extends "core/base.html" %}
+{% block title %}{{ city.name }}{% endblock %}
+{% block content %}
+<h1 class="text-3xl font-black">{{ city.name }}</h1>
+<p class="mt-2 text-slate-300">{{ city.province|default:"" }}</p>
+<div class="my-6 grid gap-4 sm:grid-cols-2">
+  <div class="rounded border border-slate-800 bg-slate-900 p-4">
+    <p class="text-sm text-slate-400">Puntos ronda actual</p>
+    <p class="text-3xl font-black text-amber-300">{{ score.points|default:"0" }}</p>
+  </div>
+  <div class="rounded border border-slate-800 bg-slate-900 p-4">
+    <p class="text-sm text-slate-400">Incidentes</p>
+    <p class="text-3xl font-black">{{ score.incidents_count|default:"0" }}</p>
+  </div>
+</div>
+
+<h2 class="mb-3 text-2xl font-bold">Incidentes recientes</h2>
+{% include "core/partials/incident_list.html" with incidents=incidents %}
+
+<h2 class="mb-3 mt-8 text-2xl font-bold">Titulares satíricos aprobados</h2>
+<div class="space-y-3">
+  {% for headline in headlines %}
+    <a href="{% url 'core:incident_detail' headline.incident_id %}" class="block rounded border border-slate-800 bg-slate-900 p-4 hover:border-amber-300">
+      {{ headline.text }}
+    </a>
+  {% empty %}
+    <p class="text-slate-400">Todavía no hay titulares aprobados.</p>
+  {% endfor %}
+</div>
+{% endblock %}
+

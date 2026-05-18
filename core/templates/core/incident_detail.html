@@ -1,0 +1,36 @@
+{% extends "core/base.html" %}
+{% block title %}{{ incident.canonical_title }}{% endblock %}
+{% block content %}
+<article class="space-y-5">
+  {% if headline %}
+    <p class="text-sm font-bold uppercase text-amber-300">Titular satírico</p>
+    <h1 class="text-4xl font-black">{{ headline.text }}</h1>
+  {% else %}
+    <h1 class="text-3xl font-black">{{ incident.canonical_title }}</h1>
+  {% endif %}
+  <p class="text-slate-300">{{ incident.short_neutral_summary }}</p>
+  <dl class="grid gap-4 sm:grid-cols-3">
+    <div class="rounded border border-slate-800 bg-slate-900 p-4">
+      <dt class="text-sm text-slate-400">Ciudad</dt>
+      <dd class="font-bold">{{ incident.city.name|default:"Sin ciudad clara" }}</dd>
+    </div>
+    <div class="rounded border border-slate-800 bg-slate-900 p-4">
+      <dt class="text-sm text-slate-400">Categoría</dt>
+      <dd class="font-bold">{{ incident.get_category_display }}</dd>
+    </div>
+    <div class="rounded border border-slate-800 bg-slate-900 p-4">
+      <dt class="text-sm text-slate-400">Puntos</dt>
+      <dd class="font-bold text-amber-300">{{ incident.points }}</dd>
+    </div>
+  </dl>
+  {% if primary_source %}
+    <p class="text-sm text-slate-300">
+      Fuente:
+      <a class="text-amber-300 underline" href="{{ primary_source.article.url }}" rel="nofollow noopener" target="_blank">
+        {{ primary_source.article.outlet.name }}
+      </a>
+    </p>
+  {% endif %}
+</article>
+{% endblock %}
+

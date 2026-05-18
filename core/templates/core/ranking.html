@@ -1,0 +1,10 @@
+{% extends "core/base.html" %}
+{% block title %}Ranking semanal{% endblock %}
+{% block content %}
+<h1 class="mb-2 text-3xl font-black">Ranking semanal</h1>
+{% if active_round %}
+  <p class="mb-6 text-slate-300">{{ active_round.name }}</p>
+{% endif %}
+{% include "core/partials/ranking_table.html" with ranking=ranking %}
+{% endblock %}
+
