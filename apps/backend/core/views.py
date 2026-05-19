@@ -103,7 +103,7 @@ def api_ranking(request):
 
 
 def api_incidents(request):
-    incidents = public_incidents()[:50]
+    incidents = public_incidents().prefetch_related("sources__article__outlet")[:50]
     return JsonResponse(
         [
             {
@@ -117,8 +117,22 @@ def api_incidents(request):
                 "category": incident.category,
                 "points": incident.points,
                 "short_neutral_summary": incident.short_neutral_summary,
+                "satirical_headline": (
+                    incident.satirical_headlines.first().text
+                    if incident.satirical_headlines.exists()
+                    else None
+                ),
+                "happened_at": incident.happened_at,
+                "sources": [
+                    {
+                        "outlet_name": src.article.outlet.name,
+                        "url": src.article.url,
+                    }
+                    for src in incident.sources.all()
+                ],
             }
             for incident in incidents
         ],
         safe=False,
     )
+

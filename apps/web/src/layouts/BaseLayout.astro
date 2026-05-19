@@ -1,32 +1,139 @@
 ---
 import "../styles/global.css";
 
-const { title = "La Lliga del Sobresalt" } = Astro.props;
+const { title = "La Lliga del Sobresalt", activeTab = "RANKING" } = Astro.props;
 const disclaimer =
-  "Ranking satírico basado únicamente en noticias publicadas por medios de prensa. No es estadística oficial ni mide criminalidad real.";
+  "La Lliga del Sobresalt és un projecte satíric basat únicament en notícies publicades per mitjans de premsa. No és estadística oficial ni mesura la criminalitat real.";
 ---
 
 <!doctype html>
-<html lang="ca">
+<html lang="ca" class="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={disclaimer} />
+    
+    <!-- Meta tags for premium SEO -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#030712" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={disclaimer} />
+    <meta property="og:type" content="website" />
+    
     <title>{title}</title>
   </head>
-  <body class="bg-slate-950 text-slate-100">
-    <header class="border-b border-slate-800 bg-slate-900">
-      <nav class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-        <a href="./" class="text-xl font-black tracking-wide">La Lliga del Sobresalt</a>
-        <a href="./ranking/" class="text-sm font-semibold text-amber-300">Classificació</a>
+  <body class="bg-[#030712] text-slate-100 antialiased selection:bg-red-500/30 selection:text-red-200 min-h-screen flex flex-col justify-between overflow-x-hidden">
+    <!-- Header: Sticky Premium Sports HUD Navbar -->
+    <header class="sticky top-0 z-40 w-full border-b border-slate-900 bg-slate-950/80 backdrop-blur-md">
+      <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:py-3 select-none">
+        
+        {/* LOGO & SLOGAN */}
+        <a href="./" class="flex items-center gap-3.5 group shrink-0">
+          <div class="relative flex h-14 w-14 items-center justify-center rounded-xl overflow-hidden bg-slate-950 border border-red-500/30 group-hover:scale-105 transition-all duration-300 shadow-[0_0_15px_rgba(239,68,68,0.25)]">
+            <img src="/images/logo_emblem.png" alt="Logo" class="h-full w-full object-cover scale-110" />
+            <span class="absolute inset-0 rounded-xl border border-red-500/40 animate-ping opacity-40" style="animation-duration: 2.5s;"></span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-base font-black uppercase tracking-wider font-display bg-gradient-to-r from-red-500 via-amber-400 to-red-500 bg-[size:200%_auto] bg-clip-text text-transparent group-hover:animate-text-gradient">
+              La Lliga
+            </span>
+            <span class="text-xs font-black uppercase tracking-widest font-display text-slate-300 group-hover:text-red-400 transition-colors -mt-1">
+              Del Sobresalt
+            </span>
+          </div>
+          {/* Subtitle / Slogan (hidden on mobile) */}
+          <div class="hidden lg:block h-6 w-[1px] bg-slate-900 mx-1"></div>
+          <p class="hidden lg:block text-[9px] text-slate-500 font-bold max-w-[210px] leading-tight">
+            La classificació no oficial dels titulars més moguts de Catalunya.
+          </p>
+        </a>
+
+        {/* NAVIGATION LINKS */}
+        <div class="hidden md:flex items-center gap-1 text-[10px] font-black uppercase tracking-wider">
+          {[
+            { name: "RANKING", href: "./" },
+            { name: "JORNADES", href: "#" },
+            { name: "CIUTATS", href: "#" },
+            { name: "INCIDENTS", href: "#" },
+            { name: "REGLAMENT", href: "#" },
+            { name: "SOBRE EL PROJECTE", href: "#" },
+          ].map((item) => {
+            const isActive = activeTab === item.name;
+            return (
+              <a
+                href={item.href}
+                class={`px-3.5 py-2.5 rounded-lg font-display tracking-widest transition-all ${
+                  isActive
+                    ? "text-red-500 border-b-2 border-red-500 rounded-b-none"
+                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
+                }`}
+              >
+                {item.name}
+              </a>
+            );
+          })}
+        </div>
+
+        {/* NAVIGATION RIGHT (Controls) */}
+        <div class="flex items-center gap-3 shrink-0">
+          {/* Search Placeholder (Handled interactively inside Dashboard) */}
+          <div class="hidden sm:block h-8 w-[1px] bg-slate-900"></div>
+
+          {/* Theme button moon icon */}
+          <button class="p-2 text-slate-400 hover:text-slate-200 rounded-lg hover:bg-slate-900/40 transition-colors">
+            <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </button>
+        </div>
       </nav>
     </header>
-    <main class="mx-auto max-w-5xl px-4 py-8">
-      <div class="mb-6 rounded border border-amber-400/40 bg-amber-300/10 p-4 text-sm text-amber-100">
-        {disclaimer}
-      </div>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 mx-auto w-full max-w-7xl px-4 py-6 md:py-8">
       <slot />
     </main>
+
+    <!-- Footer: Responsive sports HUD disclaimer footer -->
+    <footer class="w-full border-t border-slate-900 bg-slate-950/40 py-6 md:py-8 text-xs font-semibold text-slate-500">
+      <div class="mx-auto max-w-7xl px-4 flex flex-col gap-6 md:flex-row md:items-center md:justify-between select-none">
+        {/* Disclaimer Left */}
+        <div class="flex items-start gap-2.5 max-w-xl">
+          <span class="text-base select-none shrink-0 mt-0.5 text-amber-500/80">⚠️</span>
+          <p class="leading-relaxed text-[10px] text-slate-500 font-medium">
+            {disclaimer}
+          </p>
+        </div>
+
+        {/* Links & Socials Right */}
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6 md:shrink-0">
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[10px] uppercase font-bold tracking-wider">
+            <a href="#" class="hover:text-slate-300 transition-colors">Reglamento</a>
+            <span class="text-slate-800">•</span>
+            <a href="#" class="hover:text-slate-300 transition-colors">Metodología</a>
+            <span class="text-slate-800">•</span>
+            <a href="#" class="hover:text-slate-300 transition-colors">Fuentes</a>
+            <span class="text-slate-800">•</span>
+            <a href="#" class="hover:text-slate-300 transition-colors">Contacto</a>
+          </div>
+          
+          <div class="flex items-center gap-4 text-slate-500">
+            {/* RSS */}
+            <a href="#" class="hover:text-red-400 transition-colors">
+              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6.18 15.64a2.18 2.18 0 11-2.18 2.18 2.18 2.18 0 012.18-2.18zM3.6 11.23a.4.4 0 00-.4.4v2.33a.4.4 0 00.4.4 5.6 5.6 0 015.6 5.6.4.4 0 00.4.4h2.33a.4.4 0 00.4-.4 8.73 8.73 0 00-8.73-8.73zm0-4.9a.4.4 0 00-.4.4v2.38a.4.4 0 00.4.4 10.29 10.29 0 0110.29 10.29.4.4 0 00.4.4h2.38a.4.4 0 00.4-.4A13.47 13.47 0 003.6 6.33z"/></svg>
+            </a>
+            {/* Twitter */}
+            <a href="#" class="hover:text-red-400 transition-colors">
+              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            {/* Instagram */}
+            <a href="#" class="hover:text-red-400 transition-colors">
+              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>
-
