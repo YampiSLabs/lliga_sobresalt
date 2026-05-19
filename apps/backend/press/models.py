@@ -32,6 +32,8 @@ class RawArticle(models.Model):
     published_at = models.DateTimeField(blank=True, null=True)
     scraped_at = models.DateTimeField(default=timezone.now)
     content_hash = models.CharField(max_length=64, db_index=True)
+    ai_extraction = models.JSONField(blank=True, null=True)
+    ai_extracted_at = models.DateTimeField(blank=True, null=True)
     status = models.CharField(
         max_length=20,
         choices=RawArticleStatus.choices,

@@ -2,22 +2,20 @@ from __future__ import annotations
 
 import json
 import logging
-import time
 import unicodedata
 from typing import Any
 
-import httpx
-from django.conf import settings
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from core.choices import IncidentCategory
+from core.llm import chat_completion_json
 from press.models import RawArticle
 
 logger = logging.getLogger(__name__)
 
 MAX_RAW_TEXT_CHARS = 6000
 KEYWORDS = [
-    "apuñalamiento",
+    "apunalamiento",
     "apunyalament",
     "ganivetada",
     "arma blanca",
@@ -28,8 +26,8 @@ KEYWORDS = [
     "pelea",
     "baralla",
     "reyerta",
-    "agresión",
-    "agressió",
+    "agresion",
+    "agressio",
     "homicidio",
     "homicidi",
     "asesinato",
@@ -42,43 +40,69 @@ KEYWORDS = [
     "contenedores quemados",
     "metro",
     "tren",
-    "estación",
-    "estació",
+    "estacion",
+    "estacio",
 ]
 
 SYSTEM_PROMPT = """
-Eres un extractor de incidentes de prensa catalana para una web satírica de ranking de titulares de sucesos.
+Eres un clasificador y extractor de noticias para "La Lliga del Sobresalt", una web satirica basada solo en noticias ya publicadas por medios catalanes.
 
-Tu tarea es analizar titulares, entradillas y fragmentos de noticias publicadas por medios catalanes.
+Tu trabajo NO es redactar, opinar ni investigar. Tu trabajo es decidir si una noticia sirve como incidente revisable y devolver un JSON limpio para Django.
 
-Devuelve SIEMPRE JSON válido. No escribas markdown. No expliques nada fuera del JSON.
+Devuelve SIEMPRE un unico objeto JSON valido. No uses markdown. No anadas texto antes ni despues del JSON. No inventes claves nuevas.
 
-Reglas estrictas:
-- No inventes datos.
-- Si la ciudad no aparece claramente, usa null.
-- Si la fecha del incidente no aparece claramente, usa null.
-- No atribuyas culpabilidad. Usa lenguaje neutral.
-- No incluyas nombres de víctimas, sospechosos ni menores.
-- No menciones nacionalidad, etnia, religión u origen, aunque aparezca en el texto.
-- Si el artículo solo habla de política, opinión, economía, deportes, meteorología o sucesos fuera de Catalunya, marca is_relevant=false.
-- Si parece duplicado, actualización o noticia basada en otro medio, indícalo.
-- Diferencia entre hecho confirmado por el medio y especulación.
-- La salida debe servir para una liga satírica de titulares, no para una estadística oficial.
+CRITERIO DE RELEVANCIA
+- Marca is_relevant=true solo si el texto describe un suceso concreto ocurrido en Catalunya o claramente vinculado a Catalunya.
+- Suceso concreto significa: agresion, pelea, apunalamiento, arma blanca, homicidio, robo violento, disturbios, incivismo relevante, incidente en transporte publico o hecho similar.
+- Marca is_relevant=false si la noticia es solo politica, opinion, tribunales sin hecho nuevo, economia, deportes, meteorologia, cultura, trafico ordinario, prevencion, estadistica, entrevista, sucesos fuera de Catalunya o texto demasiado ambiguo.
+- Si is_relevant=false, category debe ser "no_relevante", severity_1_5 debe ser 1, confidence_0_1 debe reflejar la confianza del descarte, y el resto de campos no confirmados deben ser null.
 
-Categorías válidas:
-- apunyalament
-- arma_blanca
-- homicidio
-- robo_violento
-- pelea
-- agresion
-- incivismo
-- disturbios
-- transporte_publico
-- otro_suceso
-- no_relevante
+REGLAS DE EXTRACCION
+- No inventes datos. Extrae solo lo que aparezca claramente en titular, entradilla o texto.
+- Si ciudad, barrio, provincia o fecha no aparecen claramente, usa null.
+- happened_at debe ser ISO 8601 si hay fecha/hora clara. Si solo hay fecha, usa "YYYY-MM-DD". Si es relativo ("ayer", "esta madrugada") y no se puede resolver con seguridad, usa null.
+- No atribuyas culpabilidad. No conviertas detenidos, investigados o sospechosos en culpables.
+- No incluyas nombres de victimas, sospechosos, detenidos, testigos ni menores.
+- No menciones nacionalidad, etnia, religion, origen, situacion migratoria ni rasgos protegidos, aunque aparezcan en el texto.
+- Diferencia hechos confirmados de especulacion. Si algo no esta confirmado, baja confidence_0_1 y explicalo en scoring_notes.
+- Si parece actualizacion, seguimiento, repeticion de otra noticia o pieza basada en otro medio, marca is_duplicate_or_update=true.
+- Si menciona fuente policial, mossos, guardia urbana, policia local, SEM, ayuntamiento o juzgado como confirmacion, marca mentions_police_confirmation=true solo cuando sea fuente del hecho.
+- Si cita otro medio como origen de la noticia, marca mentions_other_media_as_source=true y rellena source_media_mentioned si el nombre esta claro.
 
-Devuelve este JSON:
+CATEGORIAS EXACTAS
+category debe ser exactamente uno de estos valores:
+- "apunyalament": apunalamiento o agresion con cuchillo/navaja claramente usada.
+- "arma_blanca": presencia, amenaza o uso de arma blanca sin apunalamiento claro.
+- "homicidio": muerte violenta, asesinato, homicidio o investigacion por muerte criminal.
+- "robo_violento": robo con violencia, intimidacion, atraco o tiron con agresion.
+- "pelea": pelea, reyerta, batalla campal o enfrentamiento entre varias personas.
+- "agresion": agresion fisica individual sin arma blanca clara.
+- "incivismo": vandalismo, danos, quema de contenedores leve, ocupacion conflictiva o conducta incivica relevante.
+- "disturbios": altercados colectivos, cargas, disturbios, grandes danos o desorden publico.
+- "transporte_publico": incidente relevante en metro, tren, bus, estacion o infraestructura de transporte publico. Si ademas hay apunalamiento/homicidio, prioriza la categoria mas grave.
+- "otro_suceso": suceso relevante que no encaja mejor en categorias anteriores.
+- "no_relevante": noticia descartada.
+
+SEVERIDAD
+- 1: incidente leve, sin violencia fisica clara o descarte no relevante.
+- 2: incivismo o altercado menor con poca afectacion.
+- 3: pelea/agresion/robo violento sin lesiones graves confirmadas.
+- 4: arma blanca, apunalamiento no mortal, disturbios graves o lesiones graves.
+- 5: homicidio, muerte violenta o violencia extrema confirmada.
+
+CONFIANZA
+- 0.0-0.3: texto insuficiente, ambiguo o solo indicios.
+- 0.4-0.6: suceso probable, pero faltan datos clave o hay mucha ambiguedad.
+- 0.7-0.85: titular y texto sostienen bien la extraccion.
+- 0.86-1.0: datos claros, categoria inequivoca, ubicacion y fuente consistentes.
+
+SALIDA
+- short_neutral_summary debe ser una frase breve, neutral y sin morbo. No uses nombres propios de personas.
+- scoring_notes debe explicar en una frase por que asignas categoria, severidad y confianza.
+- Usa null, no cadenas vacias, cuando falte un dato.
+- Usa booleanos reales, numeros reales e integer real; no strings para booleanos o numeros.
+
+Devuelve exactamente este JSON:
 
 {
   "is_relevant": boolean,
@@ -124,6 +148,10 @@ class ExtractedIncident(BaseModel):
         return value
 
 
+def extraction_to_dict(extraction: ExtractedIncident) -> dict[str, Any]:
+    return extraction.model_dump(mode="json")
+
+
 def text_matches_keywords(*parts: str | None) -> bool:
     haystack = normalize_text(" ".join(part or "" for part in parts))
     return any(normalize_text(keyword) in haystack for keyword in KEYWORDS)
@@ -165,25 +193,9 @@ def parse_extraction_json(payload: str) -> ExtractedIncident:
 
 
 def call_ollama(messages: list[dict[str, str]], retries: int = 2) -> str:
-    url = f"{settings.OLLAMA_BASE_URL.rstrip('/')}/chat/completions"
-    body: dict[str, Any] = {
-        "model": settings.OLLAMA_MODEL,
-        "messages": messages,
-        "temperature": 0,
-        "response_format": {"type": "json_object"},
-    }
-    last_error: Exception | None = None
-    for attempt in range(retries + 1):
-        try:
-            with httpx.Client(timeout=settings.OLLAMA_TIMEOUT_SECONDS) as client:
-                response = client.post(url, json=body)
-                response.raise_for_status()
-                data = response.json()
-                return data["choices"][0]["message"]["content"]
-        except (httpx.HTTPError, KeyError, IndexError, TypeError, ValueError) as exc:
-            last_error = exc
-            logger.warning("ollama extraction call failed attempt=%s", attempt + 1, exc_info=True)
-            if attempt < retries:
-                time.sleep(1)
-    raise RuntimeError(f"Ollama extraction failed: {last_error}")
-
+    return chat_completion_json(
+        messages,
+        temperature=0,
+        purpose="incident extraction",
+        retries=retries,
+    )

@@ -34,6 +34,18 @@ Ollama corre fuera de Docker en Windows; `.env.docker.example` usa:
 
 ```env
 OLLAMA_BASE_URL=http://host.docker.internal:11434/v1
+OLLAMA_MODEL=qwen3:4b
+OLLAMA_TIMEOUT_SECONDS=60
+```
+
+Si `OPENROUTER_API_KEY` existe, Django usa OpenRouter antes que Ollama:
+
+```env
+OPENROUTER_API_KEY=
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+OPENROUTER_MODEL=openrouter/free
+OPENROUTER_TIMEOUT_SECONDS=60
+OPENROUTER_APP_NAME=La Lliga del Sobresalt
 ```
 
 ## Frontend Astro

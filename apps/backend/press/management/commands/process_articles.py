@@ -12,7 +12,7 @@ from league.models import City
 from league.services.scoring import recalculate_incident_points
 from press.models import Incident, IncidentSource, RawArticle
 from press.services.dedupe import mark_duplicate_if_needed
-from press.services.extractor import extract_article, text_matches_keywords
+from press.services.extractor import ExtractedIncident, extract_article, extraction_to_dict, text_matches_keywords
 from satire.services.headlines import generate_headline_for_incident
 
 logger = logging.getLogger(__name__)
@@ -58,7 +58,6 @@ class Command(BaseCommand):
         )
 
 
-@transaction.atomic
 def process_article(article: RawArticle) -> str:
     if article.status not in {RawArticleStatus.NEW, RawArticleStatus.CANDIDATE}:
         return "ignored"
@@ -69,9 +68,17 @@ def process_article(article: RawArticle) -> str:
         return "ignored"
 
     extracted = extract_article(article)
+    return persist_extracted_article(article, extracted)
+
+
+@transaction.atomic
+def persist_extracted_article(article: RawArticle, extracted: ExtractedIncident) -> str:
+    article.ai_extraction = extraction_to_dict(extracted)
+    article.ai_extracted_at = timezone.now()
     if not extracted.is_relevant or extracted.category == IncidentCategory.NO_RELEVANTE:
         article.status = RawArticleStatus.IGNORED
-        article.save(update_fields=["status"])
+        article.error_message = None
+        article.save(update_fields=["ai_extraction", "ai_extracted_at", "status", "error_message"])
         logger.info("article ignored by extractor article_id=%s", article.pk)
         return "ignored"
 
@@ -94,17 +101,14 @@ def process_article(article: RawArticle) -> str:
     )
     IncidentSource.objects.create(incident=incident, article=article, is_primary=True)
     recalculate_incident_points(incident)
-    if extracted.is_duplicate_or_update:
-        mark_duplicate_if_needed(incident)
-    else:
-        mark_duplicate_if_needed(incident)
+    mark_duplicate_if_needed(incident)
     try:
         generate_headline_for_incident(incident)
     except Exception:
         logger.warning("satirical headline generation failed incident_id=%s", incident.pk, exc_info=True)
     article.status = RawArticleStatus.PROCESSED
     article.error_message = None
-    article.save(update_fields=["status", "error_message"])
+    article.save(update_fields=["ai_extraction", "ai_extracted_at", "status", "error_message"])
     logger.info("article processed article_id=%s incident_id=%s", article.pk, incident.pk)
     return "created"
 

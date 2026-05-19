@@ -2,13 +2,10 @@ from __future__ import annotations
 
 import json
 import logging
-import time
-from typing import Any
 
-import httpx
-from django.conf import settings
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
+from core.llm import chat_completion_json
 from core.choices import HeadlineTone, IncidentStatus, RiskLevel
 from press.models import Incident
 from satire.models import SatiricalHeadline
@@ -109,28 +106,12 @@ def parse_headline_json(payload: str) -> HeadlineDraft:
 
 
 def call_ollama(prompt: str, retries: int = 2) -> str:
-    url = f"{settings.OLLAMA_BASE_URL.rstrip('/')}/chat/completions"
-    body: dict[str, Any] = {
-        "model": settings.OLLAMA_MODEL,
-        "messages": [
+    return chat_completion_json(
+        [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": prompt},
         ],
-        "temperature": 0.7,
-        "response_format": {"type": "json_object"},
-    }
-    last_error: Exception | None = None
-    for attempt in range(retries + 1):
-        try:
-            with httpx.Client(timeout=settings.OLLAMA_TIMEOUT_SECONDS) as client:
-                response = client.post(url, json=body)
-                response.raise_for_status()
-                data = response.json()
-                return data["choices"][0]["message"]["content"]
-        except (httpx.HTTPError, KeyError, IndexError, TypeError, ValueError) as exc:
-            last_error = exc
-            logger.warning("ollama headline call failed attempt=%s", attempt + 1, exc_info=True)
-            if attempt < retries:
-                time.sleep(1)
-    raise RuntimeError(f"Ollama headline generation failed: {last_error}")
-
+        temperature=0.7,
+        purpose="headline generation",
+        retries=retries,
+    )
