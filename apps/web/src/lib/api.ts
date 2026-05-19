@@ -2,6 +2,7 @@ import ky from "ky";
 import type { z } from "zod";
 import { RankingResponseSchema, IncidentsResponseSchema } from "./schemas";
 import type { CityScore, Incident } from "./schemas";
+import { publicAsset } from "./assetPaths";
 
 const api = ky.create({
   prefix: import.meta.env.PUBLIC_API_BASE_URL || "http://localhost:8000",
@@ -55,7 +56,7 @@ const MOCK_INCIDENTS: Incident[] = [
     sources: [
       { outlet_name: "Betevé", url: "https://beteve.cat" }
     ],
-    image_url: "/images/barcelona_metro.png"
+    image_url: publicAsset("images/barcelona_metro.png")
   },
   {
     id: 2,
@@ -69,7 +70,7 @@ const MOCK_INCIDENTS: Incident[] = [
     sources: [
       { outlet_name: "El Caso", url: "https://elcaso.elnacional.cat" }
     ],
-    image_url: "/images/badalona_street.png"
+    image_url: publicAsset("images/badalona_street.png")
   },
   {
     id: 3,
@@ -83,7 +84,7 @@ const MOCK_INCIDENTS: Incident[] = [
     sources: [
       { outlet_name: "Segre", url: "https://www.segre.com" }
     ],
-    image_url: "/images/lleida_shop.png"
+    image_url: publicAsset("images/lleida_shop.png")
   },
   {
     id: 4,
@@ -97,7 +98,7 @@ const MOCK_INCIDENTS: Incident[] = [
     sources: [
       { outlet_name: "Diari de Tarragona", url: "https://www.diaridetarragona.com" }
     ],
-    image_url: "/images/tarragona_alley.png"
+    image_url: publicAsset("images/tarragona_alley.png")
   },
   {
     id: 5,
@@ -111,7 +112,7 @@ const MOCK_INCIDENTS: Incident[] = [
     sources: [
       { outlet_name: "El Caso", url: "https://elcaso.elnacional.cat" }
     ],
-    image_url: "/images/badalona_street.png"
+    image_url: publicAsset("images/badalona_street.png")
   },
   {
     id: 6,
@@ -125,7 +126,7 @@ const MOCK_INCIDENTS: Incident[] = [
     sources: [
       { outlet_name: "Diari de Girona", url: "https://www.diaridegirona.cat" }
     ],
-    image_url: "/images/lleida_shop.png"
+    image_url: publicAsset("images/lleida_shop.png")
   }
 ];
 
@@ -149,4 +150,3 @@ export function getRanking(): Promise<CityScore[]> {
 export function getIncidents(): Promise<Incident[]> {
   return fetchValidated("/api/incidents/", IncidentsResponseSchema, MOCK_INCIDENTS);
 }
-
