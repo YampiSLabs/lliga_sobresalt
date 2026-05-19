@@ -63,11 +63,11 @@ Variables:
 ```env
 PUBLIC_SITE_URL=https://beatrizagent.github.io/lliga_sobresalt
 PUBLIC_BASE_PATH=/lliga_sobresalt
-PUBLIC_API_BASE_URL=https://tu-vps.example.com
+PUBLIC_API_BASE_URL=https://sobresalt.yampi.eu
 ```
 
 El workflow `.github/workflows/deploy-pages.yml` publica `apps/web/dist` en GitHub Pages.
-Configura `PUBLIC_API_BASE_URL` como GitHub Actions variable del repo apuntando al backend del VPS.
+Configura `PUBLIC_API_BASE_URL=https://sobresalt.yampi.eu` como GitHub Actions variable del repo apuntando al backend del VPS.
 
 ## Backend Django
 
