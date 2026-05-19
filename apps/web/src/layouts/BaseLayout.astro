@@ -2,6 +2,10 @@
 import "../styles/global.css";
 
 const { title = "La Lliga del Sobresalt", activeTab = "RANKING" } = Astro.props;
+const assetBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const publicAsset = (path: string) => `${assetBase}${path.replace(/^\/+/, "")}`;
 const disclaimer =
   "La Lliga del Sobresalt és un projecte satíric basat únicament en notícies publicades per mitjans de premsa. No és estadística oficial ni mesura la criminalitat real.";
 ---
@@ -14,7 +18,7 @@ const disclaimer =
     <meta name="description" content={disclaimer} />
     
     <!-- Meta tags for premium SEO -->
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/png" href={publicAsset("favicon.png")} />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#030712" />
     <meta property="og:title" content={title} />
@@ -31,7 +35,7 @@ const disclaimer =
         {/* LOGO & SLOGAN */}
         <a href="./" class="flex items-center gap-3.5 group shrink-0">
           <div class="relative flex h-14 w-14 items-center justify-center rounded-xl overflow-hidden bg-slate-950 border border-red-500/30 group-hover:scale-105 transition-all duration-300 shadow-[0_0_15px_rgba(239,68,68,0.25)]">
-            <img src="/images/logo_emblem.png" alt="Logo" class="h-full w-full object-cover scale-110" />
+            <img src={publicAsset("images/logo_emblem.png")} alt="Logo" class="h-full w-full object-cover scale-110" />
             <span class="absolute inset-0 rounded-xl border border-red-500/40 animate-ping opacity-40" style="animation-duration: 2.5s;"></span>
           </div>
           <div class="flex flex-col">
