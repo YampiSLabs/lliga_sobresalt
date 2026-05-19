@@ -19,6 +19,7 @@ if not DEBUG and SECRET_KEY == "dev-only-change-me":
     raise RuntimeError("SECRET_KEY must be set when DEBUG=False")
 
 INSTALLED_APPS = [
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -35,8 +36,69 @@ INSTALLED_APPS = [
     "satire",
 ]
 
+JAZZMIN_SETTINGS = {
+    "site_title": "La Lliga Admin",
+    "site_header": "La Lliga del Sobresalt",
+    "site_brand": "La Lliga",
+    "welcome_sign": "Panell de control",
+    "copyright": "La Lliga del Sobresalt",
+    "search_model": ["press.RawArticle", "press.Incident", "league.City"],
+    "topmenu_links": [
+        {"name": "Dashboard", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Web publica", "url": "/", "new_window": True},
+    ],
+    "order_with_respect_to": [
+        "press",
+        "press.Outlet",
+        "press.RawArticle",
+        "press.Incident",
+        "press.IncidentSource",
+        "satire",
+        "league",
+        "auth",
+    ],
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "league.City": "fas fa-city",
+        "league.LeagueSeason": "fas fa-calendar",
+        "league.LeagueRound": "fas fa-stopwatch",
+        "league.CityScore": "fas fa-ranking-star",
+        "league.ScoringRule": "fas fa-scale-balanced",
+        "press.Outlet": "fas fa-newspaper",
+        "press.RawArticle": "fas fa-rss",
+        "press.Incident": "fas fa-triangle-exclamation",
+        "press.IncidentSource": "fas fa-link",
+        "satire.SatiricalHeadline": "fas fa-quote-left",
+    },
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [],
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "theme": "darkly",
+    "dark_mode_theme": "darkly",
+    "navbar": "navbar-dark",
+    "sidebar": "sidebar-dark-warning",
+    "accent": "accent-warning",
+    "brand_colour": "navbar-dark",
+    "button_classes": {
+        "primary": "btn-warning",
+        "secondary": "btn-outline-light",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success",
+    },
+    "actions_sticky_top": True,
+}
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -84,6 +146,7 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -105,6 +168,12 @@ CELERY_BEAT_SCHEDULE = {}
 OLLAMA_BASE_URL = env("OLLAMA_BASE_URL", default="http://localhost:11434/v1")
 OLLAMA_MODEL = env("OLLAMA_MODEL", default="qwen3:4b")
 OLLAMA_TIMEOUT_SECONDS = env.int("OLLAMA_TIMEOUT_SECONDS", default=60)
+OPENROUTER_API_KEY = env("OPENROUTER_API_KEY", default="")
+OPENROUTER_BASE_URL = env("OPENROUTER_BASE_URL", default="https://openrouter.ai/api/v1")
+OPENROUTER_MODEL = env("OPENROUTER_MODEL", default="openrouter/free")
+OPENROUTER_TIMEOUT_SECONDS = env.int("OPENROUTER_TIMEOUT_SECONDS", default=60)
+OPENROUTER_SITE_URL = env("OPENROUTER_SITE_URL", default="")
+OPENROUTER_APP_NAME = env("OPENROUTER_APP_NAME", default="La Lliga del Sobresalt")
 
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])

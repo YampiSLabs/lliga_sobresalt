@@ -21,10 +21,10 @@ def mark_articles_ignored(modeladmin, request, queryset):
 
 @admin.register(RawArticle)
 class RawArticleAdmin(admin.ModelAdmin):
-    list_display = ("headline", "outlet", "status", "published_at", "scraped_at")
-    list_filter = ("status", "outlet", "scraped_at")
+    list_display = ("headline", "outlet", "status", "published_at", "scraped_at", "ai_extracted_at")
+    list_filter = ("status", "outlet", "scraped_at", "ai_extracted_at")
     search_fields = ("headline", "url", "excerpt")
-    readonly_fields = ("scraped_at", "content_hash")
+    readonly_fields = ("scraped_at", "content_hash", "ai_extraction", "ai_extracted_at")
     actions = [mark_articles_ignored]
 
 
@@ -73,4 +73,3 @@ class IncidentSourceAdmin(admin.ModelAdmin):
     list_filter = ("is_primary", "created_at")
     search_fields = ("incident__canonical_title", "article__headline", "article__url")
     autocomplete_fields = ("incident", "article")
-
