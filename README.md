@@ -84,6 +84,11 @@ SOBRESALT_VPS_HOST_KEY=<pinned known_hosts line, e.g. "host ssh-ed25519 AAAA..."
 ```
 
 > **Seguridad**: No uses `root` como usuario SSH para los despliegues. Crea un usuario dedicado sin privilegios (p. ej. `deploy`) con los permisos mínimos necesarios para ejecutar `docker compose` mediante `sudo`. Configura la entrada en `authorized_keys` con una restricción `command=` apuntando únicamente al script de despliegue (`/usr/local/bin/deploy-lliga-sobresalt-backend`) y mantén `StrictHostKeyChecking=yes` para que SSH falle si la clave del host cambia inesperadamente. Esto minimiza el radio de explosión en caso de que la clave de despliegue quede comprometida.
+>
+> Ejemplo de regla mínima en `/etc/sudoers.d/deploy`:
+> ```
+> deploy ALL=(root) NOPASSWD: /usr/bin/docker compose
+> ```
 
 En el VPS, la clave publica asociada debe estar restringida en `authorized_keys` al comando `/usr/local/bin/deploy-lliga-sobresalt-backend`. Ese script descarga el commit exacto desde GitHub, crea un release en `/opt/lliga_sobresalt/releases/`, copia `/opt/lliga_sobresalt/shared/.env`, ejecuta `docker compose build/up`, espera el healthcheck y valida `/api/ranking/`, `/api/incidents/` y `/api/seasons/`.
 

@@ -64,15 +64,27 @@ for _ in $(seq 1 60); do
     ln -sfn "${release_dir}" "${CURRENT_LINK}"
     docker exec "${HEALTH_CONTAINER}" python manage.py check --deploy
     docker exec "${HEALTH_CONTAINER}" python - <<'PY'
+import sys
 import urllib.request
+import urllib.error
 
+failed = False
 for path in ("/api/ranking/", "/api/incidents/", "/api/seasons/"):
     req = urllib.request.Request(
         "http://127.0.0.1:8000" + path,
         headers={"Host": "sobresalt.yampi.eu", "X-Forwarded-Proto": "https"},
     )
-    with urllib.request.urlopen(req, timeout=10) as response:
-        print(path, response.status)
+    try:
+        with urllib.request.urlopen(req, timeout=10) as response:
+            if response.status != 200:
+                print(f"FAIL {path}: HTTP {response.status}", file=sys.stderr)
+                failed = True
+            else:
+                print(path, response.status)
+    except Exception as exc:
+        print(f"FAIL {path}: {exc}", file=sys.stderr)
+        failed = True
+sys.exit(1 if failed else 0)
 PY
     echo "deployed_release=${release_dir}"
     # Prune old releases, keeping the most recent 5
