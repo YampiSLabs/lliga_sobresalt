@@ -13,6 +13,14 @@
     "codegraph:status": "codegraph status"
   },
   "devDependencies": {
-    "@colbymchenry/codegraph": "^0.7.9"
+    "@colbymchenry/codegraph": "^0.7.9",
+    "puppeteer": "^25.0.4"
+  },
+  "pnpm": {
+    "overrides": {
+      "yaml": "2.9.0",
+      "yaml-language-server": "1.23.0",
+      "volar-service-yaml": "0.0.71"
+    }
   }
 }

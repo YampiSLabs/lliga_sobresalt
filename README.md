@@ -1,216 +1,269 @@
 # La Lliga del Sobresalt
 
-Monorepo para una web satírica de ranking/liga basada solo en noticias publicadas por medios whitelisted.
+<div align="center">
 
-- `apps/web`: Astro estático para GitHub Pages.
-- `apps/backend`: Django monolith para VPS, admin, scraping, scoring, API pública y Celery.
-- PostgreSQL + Redis viven junto al backend en Docker/VPS.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+[![Astro](https://img.shields.io/badge/Built%20with-Astro-ff5d01?style=for-the-badge&logo=astro&logoColor=white)](https://astro.build/)
+[![Django](https://img.shields.io/badge/Built%20with-Django-092e20?style=for-the-badge&logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Preact](https://img.shields.io/badge/Preact-673AB7?style=for-the-badge&logo=preact&logoColor=white)](https://preactjs.com/)
 
-El sitio no mide criminalidad real ni usa fuentes oficiales como fuente primaria.
+<p align="center">
+  <strong>El portal e-sports satírico definitivo de Cataluña.</strong><br />
+  Análisis semántico-factual de incidentes reales traducidos en tiempo real a una liga competitiva y dramática de videojuegos.
+</p>
 
-## Desarrollo Local Con Docker
+</div>
 
-```powershell
-Copy-Item .env.docker.example .env
-docker compose --env-file .env up -d --build
+---
+
+## Tabla de Contenidos
+- [El Concepto](#el-concepto)
+- [Arquitectura del Sistema de Agentes (IA)](#arquitectura-del-sistema-de-agentes-ia)
+- [Showcase Visual & Capturas de Producción](#showcase-visual--capturas-de-producción)
+- [Stack Tecnológico](#stack-tecnológico)
+- [Estructura del Monorepo](#estructura-del-monorepo)
+- [Guía de Inicio Rápido](#guía-de-inicio-rápido)
+  - [Método A: Desarrollo Rápido con Docker](#método-a-desarrollo-rápido-con-docker)
+  - [Método B: Entorno Local Nativo](#método-b-entorno-local-nativo)
+- [Ejecución y Depuración Manual de Agentes](#ejecución-y-depuración-manual-de-agentes)
+- [Integración CodeGraph](#integración-codegraph)
+- [Políticas de Seguridad y Producción](#políticas-de-seguridad-y-producción)
+- [Licencia](#licencia)
+
+---
+
+## El Concepto
+
+**La Lliga del Sobresalt** es un portal web y backend satírico que gamifica la actualidad factual de Cataluña. Inspirándose en el estilo narrativo maximalista de las ligas de videojuegos competitivos (e-sports / cyberpunk), el sistema procesa sucesos cotidianos de municipios catalanes publicados en prensa y los puntúa para generar una clasificación general y desgloses por temporada.
+
+El ecosistema funciona de forma **completamente neutral, aséptica y automatizada**, garantizando la veracidad de los hechos crudos antes de aplicar la capa creativa y humorística.
+
+> [!IMPORTANT]
+> **Claridad Editorial y Ética**: Este portal **no mide criminalidad real ni utiliza datos oficiales de seguridad**. Es un ejercicio puramente de humor y analítica satírica basado exclusivamente en lo publicado en medios de prensa tradicionales que forman parte de una lista blanca (whitelist).
+
+---
+
+## Arquitectura del Sistema de Agentes (IA)
+
+El motor del backend se basa en tres agentes autónomos secuenciales orquestados con **Celery** y persistidos en la base de datos de **Django**:
+
+```mermaid
+graph TD
+    A[Agente Scraper] -->|Raw HTML / Text | B[Agente Analista LLM]
+    B -->|Incidente Factual Validado| C[Agente Redactor Satírico]
+    C -->|Titulares Satíricos Multilingües| D[Astro Pages Frontend]
+
+    subgraph Celery Beat Scheduler
+        A
+        B
+        C
+    end
 ```
 
-Servicios:
+### 1. Agente Scraper (Extractor de Prensa)
+- **Ubicación**: [scraper.py](apps/backend/press/services/scraper.py)
+- Extrae de forma periódica las noticias de canales RSS y portales web incluidos en la lista blanca.
+- Emite una cabecera transparente identificativa: `User-Agent: LaLligaDelSobresaltBot/0.1`.
+- Respeta estrictamente los límites de peticiones (rate-limiting) y no intenta saltar paywalls.
 
-- Astro dev se ejecuta fuera de Docker con pnpm en `http://localhost:4321`.
-- Django backend se ejecuta en Docker en `http://localhost:8000`.
-- Postgres, Redis, Celery worker y Celery beat comparten la bridge `lliga_backend_bridge`.
+### 2. Agente Analista (Incidente Factual)
+- **Ubicación**: [extractor.py](apps/backend/press/services/extractor.py)
+- Analiza semánticamente las noticias utilizando LLMs para validar e identificar incidentes puntuables reales de forma aséptica.
+- Genera resúmenes factuales en tres idiomas (**Catalán, Español e Inglés**) acotados estrictamente a **160 caracteres**.
+- **Hibridación e Inteligencia Fallback**:
+  - **Prioridad 1 (Nube)**: OpenRouter (modelos de bajo coste/gratuitos, e.g., `meta-llama/llama-3-8b-instruct:free`).
+  - **Prioridad 2 (Respaldo)**: OpenCode (servicio en la nube alternativo).
+  - **Prioridad 3 (Local)**: Instancia de Ollama (`qwen3:4b` en el puerto `11434`).
+
+### 3. Agente Redactor (Sátira Deportiva)
+- **Ubicación**: [headlines.py](apps/backend/satire/services/headlines.py)
+- Traduce el incidente factual aséptico en titulares dramáticos de estilo e-sports.
+- Genera de forma síncrona chistes adaptados culturalmente y coherentes en los tres idiomas del portal.
+
+---
+
+## Showcase Visual & Capturas de Producción
+
+Las siguientes capturas han sido tomadas en tiempo real directamente de la aplicación desplegada en producción:
+
+### Dashboard Principal (Escritorio)
+Una interfaz HUD de videojuego oscura e inmersiva con degradados vibrantes, micro-animaciones premium y marcadores agregados.
+![Dashboard Principal](./docs/assets/dashboard-desktop.png)
+
+### Catalonia Interactive Heatmap
+Mapeado interactivo de nodos en SVG que muestra de manera dinámica la intensidad y el reparto de puntos a lo largo del territorio catalán.
+![Catalonia Heatmap](./docs/assets/map-section.png)
+
+### Optimización Mobile First
+Experiencia totalmente fluida y adaptada a dispositivos móviles con menús compactos y cajones interactivos de información detallada (drawers).
+![Mobile Dashboard](./docs/assets/dashboard-mobile.png)
+
+### Catálogo Factual de Incidentes
+Un compendio ordenado con filtros interactivos de búsqueda, categorías y puntuación donde se pueden consultar los sucesos y su contraste satírico.
+![Catálogo de Incidentes](./docs/assets/incidents-catalog.png)
+
+### Panel de Administración (Gestión de Módulos)
+Interfaz administrativa segura basada en Django Admin para la supervisión, administración y validación directa de los incidentes redactados, municipios y fuentes de prensa.
+![Panel de Administración](./docs/assets/admin-dashboard.png)
+
+---
+
+## Stack Tecnológico
+
+El monorepo hace uso de un conjunto de tecnologías modernas de alto rendimiento:
+
+*   **Frontend (Static Web Hub)**:
+    *   **Astro Engine**: Carga ultrarrápida e hidratación bajo demanda.
+    *   **Preact**: UI reactiva ligera para los componentes interactivos.
+    *   **Nanostores**: Gestión de estado reactivo ultra-eficiente y multi-idioma.
+    *   **TailwindCSS**: Estilizado inmersivo estilo HUD Cyberpunk.
+*   **Backend (Core de Agentes & API)**:
+    *   **Django**: Gestión administrativa, API REST pública y base de datos persistente.
+    *   **PostgreSQL**: Almacenamiento seguro y escalable de noticias e incidentes.
+*   **Orquestación y Procesamiento de Tareas**:
+    *   **Celery & Redis**: Cola de tareas asíncronas y scheduler periódico.
+    *   **Puppeteer**: Herramientas de automatización y captura de pantallas en producción.
+*   **Inteligencia Artificial**:
+    *   **OpenRouter / OpenCode / Ollama**: Modelos locales y remotos para la extracción analítica libre de sesgo.
+
+---
+
+## Estructura del Monorepo
+
+El proyecto está estructurado de forma modular utilizando `pnpm workspaces`:
+
+```bash
+lliga_sobresalt/
+├── apps/
+│   ├── web/               # Aplicación web estática generada con Astro + Preact
+│   └── backend/           # Servidor monolítico Django (API, Admin, Agentes Celery)
+├── docs/
+│   ├── assets/            # Capturas de pantalla oficiales y assets visuales
+│   └── technical_guide.md # Guía detallada de despliegue y desarrollo
+├── scripts/
+│   ├── capture_screenshots.js # Script automatizado en Puppeteer para capturar la web
+│   └── capture_admin.js       # Script automatizado en Puppeteer para capturar el panel de administración
+├── agents.md              # Especificación detallada del flujo y reglas de agentes IA
+├── package.json           # Configuración del monorepo
+├── pnpm-workspace.yaml    # Configuración de workspaces de pnpm
+└── README.md              # Documento principal del repositorio
+```
+
+---
+
+## Guía de Inicio Rápido
+
+### Requisitos Previos
+- **Node.js** (v18 o superior) e instalador **pnpm** (`npm i -g pnpm`).
+- **Docker & Docker Compose** (para ejecutar con contenedores).
+- **Python 3.14** (si prefieres ejecutar el entorno local de backend nativo).
+
+---
+
+### Método A: Desarrollo Rápido con Docker
+
+Este método arranca PostgreSQL, Redis, Celery y el backend Django de forma automática en un cluster aislado:
 
 ```powershell
+# 1. Copiar configuración base de Docker
+Copy-Item .env.docker.example .env
+
+# 2. Levantar los contenedores en segundo plano
+docker compose --env-file .env up -d --build
+
+# 3. Instalar dependencias del frontend y arrancar Astro
 pnpm install
 pnpm dev
-docker compose --env-file .env exec backend python manage.py createsuperuser
-docker compose --env-file .env exec backend python manage.py scrape_press
-docker compose --env-file .env exec backend python manage.py process_articles
-docker compose --env-file .env exec backend python manage.py recalculate_rankings
 ```
+El frontend Astro se ejecutará localmente en `http://localhost:4321` y el backend en `http://localhost:8000`.
 
-Ollama corre fuera de Docker en Windows; `.env.docker.example` usa:
+---
 
-```env
-OLLAMA_BASE_URL=http://host.docker.internal:11434/v1
-OLLAMA_MODEL=qwen3:4b
-OLLAMA_TIMEOUT_SECONDS=60
-```
+### Método B: Entorno Local Nativo
 
-Si `OPENROUTER_API_KEY` existe, Django usa OpenRouter antes que otros proveedores. Si OpenRouter falla o agota cuota, intenta OpenCode antes de caer a Ollama:
+Para trabajar de manera directa en tu entorno de archivos local:
 
-```env
-OPENROUTER_API_KEY=
-OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
-OPENROUTER_MODEL=openrouter/free
-OPENROUTER_TIMEOUT_SECONDS=60
-OPENROUTER_APP_NAME=La Lliga del Sobresalt
-OPENCODE_API_KEY=
-OPENCODE_BASE_URL=https://opencode.ai/zen/v1
-OPENCODE_MODEL=big-pickle
-OPENCODE_TIMEOUT_SECONDS=60
-```
-
-## Frontend Astro
-
-Astro genera HTML estático apto para GitHub Pages.
-
+#### 1. Backend Django (.venv)
 ```powershell
-pnpm dev
-pnpm build
-pnpm preview
-```
-
-Variables:
-
-```env
-PUBLIC_SITE_URL=https://beatrizagent.github.io/lliga_sobresalt
-PUBLIC_BASE_PATH=/lliga_sobresalt
-PUBLIC_API_BASE_URL=https://sobresalt.yampi.eu
-```
-
-El workflow `.github/workflows/deploy-pages.yml` publica `apps/web/dist` en GitHub Pages.
-Configura `PUBLIC_API_BASE_URL=https://sobresalt.yampi.eu` como GitHub Actions variable del repo apuntando al backend del VPS.
-
-## Backend CI/CD
-
-El workflow `.github/workflows/deploy-backend.yml` despliega el backend en el VPS cuando hay push a `master` o `main` que toque `apps/backend/**`, `docker-compose.prod.yml`, `ops/deploy-backend.sh` o el propio workflow.
-
-Secretos requeridos en GitHub Actions:
-
-```env
-SOBRESALT_VPS_HOST=46.202.171.172
-SOBRESALT_VPS_SSH_USER=deploy
-SOBRESALT_VPS_SSH_PORT=22
-SOBRESALT_VPS_DEPLOY_KEY=<private deploy key>
-SOBRESALT_VPS_HOST_KEY=<pinned known_hosts line, e.g. "host ssh-ed25519 AAAA...">
-```
-
-> **Seguridad**: No uses `root` como usuario SSH para los despliegues. Crea un usuario dedicado sin privilegios (p. ej. `deploy`) con los permisos mínimos necesarios para ejecutar `docker compose` mediante `sudo`. Configura la entrada en `authorized_keys` con una restricción `command=` apuntando únicamente al script de despliegue (`/usr/local/bin/deploy-lliga-sobresalt-backend`) y mantén `StrictHostKeyChecking=yes` para que SSH falle si la clave del host cambia inesperadamente. Esto minimiza el radio de explosión en caso de que la clave de despliegue quede comprometida.
->
-> Ejemplo de regla mínima en `/etc/sudoers.d/deploy`:
-> ```
-> deploy ALL=(root) NOPASSWD: /usr/bin/docker compose
-> ```
-
-En el VPS, la clave publica asociada debe estar restringida en `authorized_keys` al comando `/usr/local/bin/deploy-lliga-sobresalt-backend`. Ese script descarga el commit exacto desde GitHub, crea un release en `/opt/lliga_sobresalt/releases/`, copia `/opt/lliga_sobresalt/shared/.env`, ejecuta `docker compose build/up`, espera el healthcheck y valida `/api/ranking/`, `/api/incidents/` y `/api/seasons/`.
-
-La API publica no usa cookies ni credenciales. En produccion puede activarse `CORS_ALLOW_ALL_ORIGINS=True` para que GitHub Pages y mirrors estaticos puedan leer `/api/*` sin bloquear por origin.
-
-## Backend Django
-
-```powershell
+# Crear y activar entorno virtual de Python
 py -3.14 -m venv .venv
-.venv\Scripts\python -m pip install --upgrade pip
-.venv\Scripts\pip install -r apps/backend/requirements.txt
+.venv\Scripts\activate
+
+# Instalar requisitos
+python -m pip install --upgrade pip
+pip install -r apps/backend/requirements.txt
+
+# Configurar variables de entorno locales
 Copy-Item .env.example .env
+
+# Aplicar migraciones y lanzar servidor de desarrollo
 cd apps/backend
-..\..\.venv\Scripts\python manage.py migrate
-..\..\.venv\Scripts\python manage.py createsuperuser
-..\..\.venv\Scripts\python manage.py runserver
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
 ```
 
-Endpoints públicos para Astro:
-
-- `GET /api/ranking/`
-- `GET /api/incidents/`
-
-No exponen `raw_text`.
-
-## VPS Environment
-
-Las credenciales reales del Postgres compartido del VPS se guardan localmente en `.env.vps`.
-Ese archivo no se versiona. Para Dokploy/VPS, copia sus variables al entorno de la app backend.
-No uses `.env` local para produccion. Usa variables de Dokploy o un `.env.production` local no versionado basado en `.env.production.example`.
-
-La base de datos creada para este proyecto usa:
-
-```env
-DB_NAME=lliga_sobresalt_db
-DB_USER=lliga_sobresalt_user
-DB_HOST=app-postgres
-DB_PORT=5432
-REDIS_URL=redis://app-redis:6379/0
-```
-
-`DATABASE_URL` y `DB_PASSWORD` están en `.env.vps`.
-
-## Flujo MVP
-
-1. Crea `Outlet` en admin con `rss_url` o `section_url`.
-2. Crea `LeagueSeason` y `LeagueRound` abierta.
-3. Ejecuta:
-
+#### 2. Frontend Astro
 ```powershell
+# Desde la raíz del monorepo
+pnpm install
+pnpm dev
+```
+
+---
+
+## Ejecución y Depuración Manual de Agentes
+
+Puedes forzar la ejecución inmediata de los agentes y tareas de Celery a través de los siguientes comandos de depuración:
+
+### Vía Docker Compose
+```powershell
+# Ejecutar raspador de noticias de prensa
 docker compose --env-file .env exec backend python manage.py scrape_press
+
+# Iniciar análisis y procesado LLM de artículos pendientes
 docker compose --env-file .env exec backend python manage.py process_articles
+
+# Forzar recálculo del ranking general y desgloses de la temporada
 docker compose --env-file .env exec backend python manage.py recalculate_rankings
 ```
 
-4. Revisa `Incident` y `SatiricalHeadline` en admin.
-5. Aprueba incidentes y titulares.
-6. Astro consume API pública desde GitHub Pages.
-
-## Ollama
-
+### Vía Entorno Local Nivel de Host
 ```powershell
-ollama pull qwen3:4b
-ollama serve
+.venv\Scripts\python apps/backend/manage.py scrape_press
+.venv\Scripts\python apps/backend/manage.py process_articles
+.venv\Scripts\python apps/backend/manage.py recalculate_rankings
 ```
 
-No se usa OpenAI API, OpenRouter ni servicios de pago.
+---
 
-## Celery
+## Integración CodeGraph
 
-```powershell
-docker compose --env-file .env up -d celery_worker celery_beat
-```
-
-Tareas:
-
-- `scrape_press_task`
-- `process_articles_task`
-- `recalculate_rankings_task`
-
-## Tests Y Checks
+El repositorio está indexado semánticamente mediante **CodeGraph** para potenciar el análisis de dependencias e inteligencia contextual de IA:
 
 ```powershell
-$env:PUBLIC_API_BASE_URL="https://sobresalt.yampi.eu"; pnpm build
-pnpm backend:check
-pnpm backend:test
-docker compose -f docker-compose.prod.yml --env-file .env.production.example config
-```
-
-## CodeGraph
-
-```powershell
+# Comprobar estado de indexación de grafos local
 pnpm codegraph:status
+
+# Sincronizar el grafo de dependencias
 pnpm codegraph:sync
+
+# Lanzar consultas semánticas rápidas sobre entidades del código
 pnpm exec codegraph query Incident --limit 5
 ```
 
-CodeGraph está configurado globalmente en Codex/Gemini/opencode y este repo tiene índice local en `.codegraph/`.
+---
 
-## Seguridad Y Despliegue
+## Políticas de Seguridad y Producción
 
-- Backend en VPS detrás de HTTPS.
-- `DEBUG=False` exige `SECRET_KEY` real.
-- `DATABASE_URL` y `REDIS_URL` son obligatorias con `DEBUG=False`.
-- `ALLOWED_HOSTS` debe incluir dominio/API VPS.
-- `CSRF_TRUSTED_ORIGINS` debe incluir dominio API.
-- `CORS_ALLOWED_ORIGINS` debe incluir GitHub Pages y dominio Astro.
-- Cookies de sesión y CSRF son `HttpOnly`; en producción usa `Secure=True`.
-- Headers activos: `nosniff`, `Referrer-Policy`, `Permissions-Policy`, `X_FRAME_OPTIONS=DENY`.
-- No se publican artículos completos ni `raw_text`.
-- No se intenta saltar paywalls.
+- **Sin Bypass de Paywalls**: Los raspadores solo acceden a feeds públicos y a la porción libre de artículos.
+- **Entorno Seguro**: Asegúrate de establecer `DEBUG=False` en entornos de producción.
+- **Configuración de Cabeceras**: Configura adecuadamente `ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS` y `CSRF_TRUSTED_ORIGINS` para aislar el backend en el subdominio VPS y autorizar únicamente al subdominio HTTPS de GitHub Pages donde reside el frontend estático.
+- **Logs y Depuración**: Cualquier volcado de datos experimentales o script temporal debe alojarse estrictamente en el directorio `/debug/` en la raíz del proyecto para evitar filtraciones fortuitas.
 
-## Checklist Produccion
+---
 
-1. Rota cualquier `OPENROUTER_API_KEY` que haya pasado por `.env` local o por logs de `docker compose config`.
-2. Crea `.env.production` local desde `.env.production.example` o configura las mismas variables en Dokploy.
-3. Comprueba que `DEBUG=False`, `DATABASE_URL`, `REDIS_URL`, `ALLOWED_HOSTS=sobresalt.yampi.eu`, `CSRF_TRUSTED_ORIGINS=https://sobresalt.yampi.eu` y `CORS_ALLOWED_ORIGINS=https://beatrizagent.github.io`.
-4. En GitHub, configura la variable del repo `PUBLIC_API_BASE_URL=https://sobresalt.yampi.eu`.
-5. Despliega backend y confirma que el arranque ejecuta `python manage.py migrate` y `python manage.py collectstatic --noinput`.
-6. Ejecuta smoke test del backend: `curl https://sobresalt.yampi.eu/api/ranking/`.
-7. Ejecuta smoke test de GitHub Pages y confirma que no hay llamadas a `localhost:8000` en la consola del navegador.
+## Licencia
+
+Este proyecto está bajo la Licencia **MIT**. Consulta el archivo `LICENSE` para más detalles.

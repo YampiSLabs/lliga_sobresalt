@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 import httpx
+from django.core.cache import cache
 from django.test import override_settings
 from django.test import TestCase
 from django.urls import reverse
@@ -27,9 +28,20 @@ class SecurityHeaderTests(TestCase):
         self.assertEqual(response.headers["X-Content-Type-Options"], "nosniff")
         self.assertEqual(response.headers["Referrer-Policy"], "same-origin")
         self.assertIn("geolocation=()", response.headers["Permissions-Policy"])
+        self.assertEqual(response.headers["Cross-Origin-Opener-Policy"], "same-origin")
+        self.assertEqual(response.headers["X-Permitted-Cross-Domain-Policies"], "none")
+        self.assertIn("default-src 'self'", response.headers["Content-Security-Policy"])
+
+    def test_admin_pages_do_not_get_public_csp(self):
+        response = self.client.get("/admin/")
+
+        self.assertNotIn("Content-Security-Policy", response.headers)
 
 
 class PublicApiTests(TestCase):
+    def setUp(self):
+        cache.clear()
+
     def make_incident(self, *, city_slug: str, category: str, title: str) -> Incident:
         city, _ = City.objects.get_or_create(
             slug=city_slug,
@@ -96,6 +108,34 @@ class PublicApiTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 1)
+
+    def test_public_api_rejects_post_requests(self):
+        response = self.client.post(reverse("core:api_incidents"))
+
+        self.assertEqual(response.status_code, 405)
+
+    def test_incidents_api_rejects_invalid_category(self):
+        response = self.client.get(reverse("core:api_incidents"), {"category": "bogus"})
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["error"], "Invalid category")
+
+    def test_incidents_api_rejects_invalid_severity(self):
+        response = self.client.get(reverse("core:api_incidents"), {"severity_min": "high"})
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["error"], "Invalid severity_min")
+
+    @override_settings(PUBLIC_API_RATE_LIMIT_PER_MINUTE=2, PUBLIC_API_RATE_LIMIT_WINDOW_SECONDS=60)
+    def test_public_api_rate_limit_returns_429(self):
+        url = reverse("core:api_incidents")
+
+        self.assertEqual(self.client.get(url).status_code, 200)
+        self.assertEqual(self.client.get(url).status_code, 200)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(response.json()["error"], "Rate limit exceeded")
 
 
 class CeleryBeatScheduleTests(TestCase):
