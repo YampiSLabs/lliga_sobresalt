@@ -57,7 +57,7 @@ docker compose -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" --env-file .env config 
 docker compose -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" --env-file .env build
 docker compose -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" --env-file .env up -d
 
-for _ in $(seq 1 30); do
+for _ in $(seq 1 60); do
   status="$(docker inspect -f '{{.State.Health.Status}}' "${HEALTH_CONTAINER}" 2>/dev/null || true)"
   echo "health=${status:-unknown}"
   if [[ "${status}" == "healthy" ]]; then
