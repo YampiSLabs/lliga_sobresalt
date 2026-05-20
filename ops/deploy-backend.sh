@@ -37,7 +37,14 @@ release_dir="${RELEASES_DIR}/${timestamp}-${deploy_sha:0:12}"
 archive_path="$(mktemp)"
 
 mkdir -p "${release_dir}"
-trap 'rm -f "${archive_path}"' EXIT
+cleanup() {
+  local rc=$?
+  rm -f "${archive_path}"
+  if [[ $rc -ne 0 ]]; then
+    rm -rf "${release_dir}"
+  fi
+}
+trap cleanup EXIT
 
 echo "Deploying ${APP_NAME} backend at ${deploy_sha}"
 curl -fsSL "${REPO_ARCHIVE_BASE}/${deploy_sha}.tar.gz" -o "${archive_path}"
@@ -68,6 +75,8 @@ for path in ("/api/ranking/", "/api/incidents/", "/api/seasons/"):
         print(path, response.status)
 PY
     echo "deployed_release=${release_dir}"
+    # Prune old releases, keeping the most recent 5
+    find "${RELEASES_DIR}" -maxdepth 1 -mindepth 1 -type d | sort | head -n -5 | xargs -r rm -rf
     exit 0
   fi
   sleep 5
