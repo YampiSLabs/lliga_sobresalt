@@ -1,7 +1,7 @@
 ---
 import "../styles/global.css";
 import BreakingNewsTicker from "../components/BreakingNewsTicker";
-import { ViewTransitions } from "astro:transitions";
+import { ClientRouter } from "astro:transitions";
 import { useTranslations, localizePath } from "../lib/i18n";
 
 const { title = "La Lliga del Sobresalt", activeTab = "RANKING", lang = "ca" } = Astro.props;
@@ -37,7 +37,7 @@ const slogan = t("slogan");
     <meta property="og:type" content="website" />
 
     <title>{title}</title>
-    <ViewTransitions />
+    <ClientRouter />
   </head>
   <body class="bg-[#020617] text-slate-100 antialiased selection:bg-amber-500/30 selection:text-amber-200 min-h-screen flex flex-col justify-between overflow-x-hidden pb-12">
     <!-- Interactive Spotlight -->

@@ -120,6 +120,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "core.middleware.PublicApiRateLimitMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -192,6 +193,9 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
 }
 
+PUBLIC_API_RATE_LIMIT_PER_MINUTE = env.int("PUBLIC_API_RATE_LIMIT_PER_MINUTE", default=120)
+PUBLIC_API_RATE_LIMIT_WINDOW_SECONDS = env.int("PUBLIC_API_RATE_LIMIT_WINDOW_SECONDS", default=60)
+
 REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0") if DEBUG else required_env("REDIS_URL")
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
@@ -227,6 +231,7 @@ OPENCODE_API_KEY = env("OPENCODE_API_KEY", default="")
 OPENCODE_BASE_URL = env("OPENCODE_BASE_URL", default="https://opencode.ai/zen/v1")
 OPENCODE_MODEL = env("OPENCODE_MODEL", default="big-pickle")
 OPENCODE_TIMEOUT_SECONDS = env.int("OPENCODE_TIMEOUT_SECONDS", default=60)
+SCRAPER_MAX_IMAGE_BYTES = env.int("SCRAPER_MAX_IMAGE_BYTES", default=5 * 1024 * 1024)
 
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[] if not DEBUG else ["http://localhost:8000"])
 CORS_ALLOW_ALL_ORIGINS = env.bool("CORS_ALLOW_ALL_ORIGINS", default=False)

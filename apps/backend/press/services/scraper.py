@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import ipaddress
 import io
 import logging
 import os
@@ -8,6 +9,7 @@ import re
 import uuid
 from dataclasses import dataclass
 from PIL import Image
+from PIL import UnidentifiedImageError
 from datetime import datetime
 from email.utils import parsedate_to_datetime
 from typing import Iterable
@@ -103,12 +105,18 @@ def scrape_outlet(outlet: Outlet) -> int:
 
 
 def scrape_rss(rss_url: str) -> list[ScrapedArticle]:
+    if not is_safe_public_url(rss_url):
+        logger.warning("rss url rejected url=%s", rss_url)
+        return []
     parsed = feedparser.parse(rss_url, request_headers={"User-Agent": USER_AGENT})
     articles: list[ScrapedArticle] = []
     for entry in parsed.entries[:50]:
         url = getattr(entry, "link", None)
         title = getattr(entry, "title", "").strip()
         if not url or not title:
+            continue
+        if not is_safe_public_url(url):
+            logger.warning("rss entry url rejected url=%s", url)
             continue
         excerpt = getattr(entry, "summary", None)
 
@@ -180,9 +188,20 @@ def scrape_article_url(url: str) -> ScrapedArticle | None:
 
 
 def fetch_html(url: str) -> str | None:
+    if not is_safe_public_url(url):
+        logger.warning("fetch rejected unsafe url=%s", url)
+        return None
     try:
-        with httpx.Client(timeout=REQUEST_TIMEOUT, headers={"User-Agent": USER_AGENT}) as client:
+        with httpx.Client(
+            timeout=REQUEST_TIMEOUT,
+            headers={"User-Agent": USER_AGENT},
+            max_redirects=3,
+        ) as client:
             response = client.get(url, follow_redirects=True)
+            final_url = response_url_or_default(response, url)
+            if not is_safe_public_url(final_url):
+                logger.warning("fetch rejected unsafe final url=%s", final_url)
+                return None
             response.raise_for_status()
             content_type = response.headers.get("content-type", "")
             if "html" not in content_type and "xml" not in content_type and content_type:
@@ -228,10 +247,25 @@ def extract_text_and_image_from_url(url: str) -> tuple[str | None, str | None]:
 def download_image(image_url: str, outlet_slug: str) -> tuple[str | None, str | None]:
     if not image_url:
         return None, None
+    if not is_safe_public_url(image_url):
+        logger.warning("image rejected unsafe url=%s", image_url)
+        return None, None
     try:
-        with httpx.Client(timeout=10, headers={"User-Agent": USER_AGENT}) as client:
+        with httpx.Client(timeout=10, headers={"User-Agent": USER_AGENT}, max_redirects=3) as client:
             response = client.get(image_url, follow_redirects=True)
             if response.status_code == 200:
+                final_url = response_url_or_default(response, image_url)
+                if not is_safe_public_url(final_url):
+                    logger.warning("image rejected unsafe final url=%s", final_url)
+                    return None, None
+                content_type = response.headers.get("content-type", "")
+                if content_type and not content_type.lower().startswith("image/"):
+                    logger.warning("image rejected content_type=%s url=%s", content_type, image_url)
+                    return None, None
+                max_bytes = getattr(settings, "SCRAPER_MAX_IMAGE_BYTES", 5 * 1024 * 1024)
+                if len(response.content) > max_bytes:
+                    logger.warning("image rejected oversized bytes=%s url=%s", len(response.content), image_url)
+                    return None, None
                 uid = uuid.uuid4().hex
                 filename_main = f"{outlet_slug}_{uid}.webp"
                 filename_thumb = f"{outlet_slug}_{uid}_thumb.webp"
@@ -244,6 +278,10 @@ def download_image(image_url: str, outlet_slug: str) -> tuple[str | None, str | 
 
                 # Cargar imagen en memoria con PIL
                 image_data = io.BytesIO(response.content)
+                with Image.open(image_data) as img:
+                    img.verify()
+
+                image_data.seek(0)
                 with Image.open(image_data) as img:
                     # Normalizar canal de color a RGB si es necesario
                     if img.mode not in ("RGB", "RGBA"):
@@ -271,6 +309,8 @@ def download_image(image_url: str, outlet_slug: str) -> tuple[str | None, str | 
                     img_thumb.save(path_thumb, format="WEBP", quality=65)
 
                 return f"/media/news_images/{filename_main}", f"/media/news_images/{filename_thumb}"
+    except (Image.DecompressionBombError, UnidentifiedImageError) as e:
+        logger.warning("Rejected unsafe image %s: %s", image_url, e, exc_info=True)
     except Exception as e:
         logger.warning("Failed to download or optimize image %s: %s", image_url, e, exc_info=True)
     return None, None
@@ -290,15 +330,54 @@ def extract_internal_links(html: str, base_url: str, domain: str) -> list[str]:
     links: list[str] = []
     for anchor in soup.find_all("a", href=True):
         url = urljoin(base_url, anchor["href"])
+        if not is_allowed_outlet_url(url, domain):
+            continue
         parsed = urlparse(url)
-        if parsed.scheme not in {"http", "https"}:
-            continue
-        if not parsed.netloc.endswith(domain):
-            continue
         clean_url = parsed._replace(fragment="").geturl()
         if clean_url not in links:
             links.append(clean_url)
     return links
+
+
+def is_allowed_outlet_url(url: str, domain: str) -> bool:
+    parsed = urlparse(url)
+    host = (parsed.hostname or "").lower().rstrip(".")
+    allowed_domain = domain.lower().rstrip(".")
+    if parsed.scheme not in {"http", "https"} or not host:
+        return False
+    return host == allowed_domain or host.endswith(f".{allowed_domain}")
+
+
+def response_url_or_default(response: httpx.Response, default: str) -> str:
+    response_url = getattr(response, "url", default)
+    if isinstance(response_url, (str, httpx.URL)):
+        return str(response_url)
+    return default
+
+
+def is_safe_public_url(url: str) -> bool:
+    parsed = urlparse(url)
+    host = (parsed.hostname or "").lower().rstrip(".")
+    if parsed.scheme not in {"http", "https"} or not host:
+        return False
+    if host in {"localhost", "localhost.localdomain"} or host.endswith(".localhost"):
+        return False
+    try:
+        return is_public_ip(host)
+    except ValueError:
+        return True
+
+
+def is_public_ip(address: str) -> bool:
+    ip = ipaddress.ip_address(address)
+    return not (
+        ip.is_private
+        or ip.is_loopback
+        or ip.is_link_local
+        or ip.is_multicast
+        or ip.is_reserved
+        or ip.is_unspecified
+    )
 
 
 def is_probable_article_url(url: str) -> bool:

@@ -55,3 +55,7 @@ yarn-error.log*
 
 # Custom Debug Folder
 /debug/
+
+# Automated Captures and Scripts
+/scripts/capture_admin.js
+/scripts/capture_screenshots.js

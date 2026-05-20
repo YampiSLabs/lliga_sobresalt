@@ -1,8 +1,11 @@
+import re
+
 from django.shortcuts import get_object_or_404, render
 from django.db.models import Prefetch, Q
 from django.http import JsonResponse
+from django.views.decorators.http import require_GET
 
-from core.choices import IncidentStatus, RoundStatus
+from core.choices import IncidentCategory, IncidentStatus, RoundStatus
 from league.models import City, CityScore, LeagueSeason, LeagueRound
 from league.services.ranking import get_active_round
 from press.models import Incident
@@ -83,6 +86,7 @@ def public_incidents():
     )
 
 
+@require_GET
 def api_ranking(request):
     round_id = request.GET.get("round_id") or request.GET.get("round")
     if round_id:
@@ -109,6 +113,7 @@ def api_ranking(request):
     )
 
 
+@require_GET
 def api_incidents(request):
     incidents = public_incidents().prefetch_related("sources__article__outlet")
     city = request.GET.get("city")
@@ -119,27 +124,33 @@ def api_incidents(request):
     sort = request.GET.get("sort")
 
     if city:
+        if not is_valid_slug_param(city):
+            return JsonResponse({"error": "Invalid city"}, status=400)
         incidents = incidents.filter(city__slug=city)
     if category:
-        categories = [c.strip() for c in category.split(",") if c.strip()]
+        categories = parse_categories(category)
+        if categories is None:
+            return JsonResponse({"error": "Invalid category"}, status=400)
         if len(categories) == 1:
             incidents = incidents.filter(category=categories[0])
         elif len(categories) > 1:
             incidents = incidents.filter(category__in=categories)
     if search_query:
+        if len(search_query) > 120:
+            return JsonResponse({"error": "Invalid search"}, status=400)
         incidents = incidents.filter(
             Q(canonical_title__icontains=search_query) | Q(short_neutral_summary__icontains=search_query)
         )
     if severity_min:
-        try:
-            incidents = incidents.filter(severity_1_5__gte=int(severity_min))
-        except ValueError:
-            pass
+        parsed = parse_severity_param(severity_min)
+        if parsed is None:
+            return JsonResponse({"error": "Invalid severity_min"}, status=400)
+        incidents = incidents.filter(severity_1_5__gte=parsed)
     if severity_max:
-        try:
-            incidents = incidents.filter(severity_1_5__lte=int(severity_max))
-        except ValueError:
-            pass
+        parsed = parse_severity_param(severity_max)
+        if parsed is None:
+            return JsonResponse({"error": "Invalid severity_max"}, status=400)
+        incidents = incidents.filter(severity_1_5__lte=parsed)
 
     if sort:
         sort_mapping = {
@@ -151,10 +162,13 @@ def api_incidents(request):
             "severity_desc": "-severity_1_5",
         }
         order_by_field = sort_mapping.get(sort)
-        if order_by_field:
-            incidents = incidents.order_by(order_by_field)
+        if not order_by_field:
+            return JsonResponse({"error": "Invalid sort"}, status=400)
+        incidents = incidents.order_by(order_by_field)
 
     limit = parse_limit(request.GET.get("limit"), default=50, maximum=100)
+    if limit is None:
+        return JsonResponse({"error": "Invalid limit"}, status=400)
     incidents = incidents[:limit]
     return JsonResponse(
         [
@@ -192,6 +206,7 @@ def api_incidents(request):
     )
 
 
+@require_GET
 def api_seasons(request):
     seasons = LeagueSeason.objects.prefetch_related(
         "rounds", "rounds__city_scores", "rounds__city_scores__city"
@@ -250,13 +265,38 @@ def api_seasons(request):
     return JsonResponse(data, safe=False)
 
 
-def parse_limit(value: str | None, *, default: int, maximum: int) -> int:
+SLUG_PARAM_RE = re.compile(r"^[a-z0-9-]{1,120}$")
+
+
+def is_valid_slug_param(value: str) -> bool:
+    return bool(SLUG_PARAM_RE.fullmatch(value))
+
+
+def parse_categories(value: str) -> list[str] | None:
+    categories = [item.strip() for item in value.split(",") if item.strip()]
+    valid_categories = {choice.value for choice in IncidentCategory}
+    if not categories or any(category not in valid_categories for category in categories):
+        return None
+    return categories
+
+
+def parse_severity_param(value: str) -> int | None:
+    try:
+        parsed = int(value)
+    except ValueError:
+        return None
+    if parsed < 1 or parsed > 5:
+        return None
+    return parsed
+
+
+def parse_limit(value: str | None, *, default: int, maximum: int) -> int | None:
     if not value:
         return default
     try:
         parsed = int(value)
     except ValueError:
-        return default
+        return None
     if parsed < 1:
-        return default
+        return None
     return min(parsed, maximum)

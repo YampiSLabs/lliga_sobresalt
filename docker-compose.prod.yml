@@ -5,19 +5,30 @@ services:
     image: lliga-sobresalt-backend:latest
     container_name: lliga_sobresalt_backend
     restart: unless-stopped
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    pids_limit: 256
     environment: &backend_environment
       SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY}
-      DEBUG: ${DEBUG:-False}
+      DEBUG: "False"
       DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
       REDIS_URL: ${REDIS_URL:?Set REDIS_URL}
       ALLOWED_HOSTS: ${ALLOWED_HOSTS:?Set ALLOWED_HOSTS}
       CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:?Set CSRF_TRUSTED_ORIGINS}
       CORS_ALLOW_ALL_ORIGINS: ${CORS_ALLOW_ALL_ORIGINS:-False}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:?Set CORS_ALLOWED_ORIGINS}
-      CSRF_COOKIE_SECURE: ${CSRF_COOKIE_SECURE:-True}
-      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-True}
-      SECURE_SSL_REDIRECT: ${SECURE_SSL_REDIRECT:-True}
-      SECURE_HSTS_SECONDS: ${SECURE_HSTS_SECONDS:-31536000}
+      CSRF_COOKIE_SECURE: "True"
+      SESSION_COOKIE_SECURE: "True"
+      SECURE_SSL_REDIRECT: "True"
+      SECURE_HSTS_SECONDS: "31536000"
+      PUBLIC_API_RATE_LIMIT_PER_MINUTE: ${PUBLIC_API_RATE_LIMIT_PER_MINUTE:-120}
+      PUBLIC_API_RATE_LIMIT_WINDOW_SECONDS: ${PUBLIC_API_RATE_LIMIT_WINDOW_SECONDS:-60}
+      SCRAPER_MAX_IMAGE_BYTES: ${SCRAPER_MAX_IMAGE_BYTES:-5242880}
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434/v1}
       OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3:4b}
       OLLAMA_TIMEOUT_SECONDS: ${OLLAMA_TIMEOUT_SECONDS:-60}
@@ -75,6 +86,14 @@ services:
     image: lliga-sobresalt-backend:latest
     container_name: lliga_sobresalt_celery_worker
     restart: unless-stopped
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    pids_limit: 256
     environment: *backend_environment
     command: celery -A config worker -l info
     networks:
@@ -93,6 +112,14 @@ services:
     image: lliga-sobresalt-backend:latest
     container_name: lliga_sobresalt_celery_beat
     restart: unless-stopped
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    pids_limit: 128
     environment: *backend_environment
     command: celery -A config beat -l info
     networks:

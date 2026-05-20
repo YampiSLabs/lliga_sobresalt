@@ -20,8 +20,11 @@ from press.services.extractor import ExtractedIncident, parse_extraction_json, t
 from press.services.scraper import (
     ScrapedArticle,
     content_hash_for,
+    download_image,
     extract_internal_links,
+    is_allowed_outlet_url,
     is_probable_article_url,
+    is_safe_public_url,
     parse_feed_date,
     scrape_outlet,
     scrape_rss,
@@ -550,6 +553,33 @@ class ScraperServiceTests(TestCase):
     def test_parse_feed_date_returns_none_for_invalid_values(self):
         self.assertIsNone(parse_feed_date(None))
         self.assertIsNone(parse_feed_date("not-a-date"))
+
+    def test_allowed_outlet_url_rejects_lookalike_domain(self):
+        self.assertFalse(is_allowed_outlet_url("https://evil-elnacional.cat/news/1", "elnacional.cat"))
+
+    def test_allowed_outlet_url_accepts_exact_domain_and_subdomain(self):
+        self.assertTrue(is_allowed_outlet_url("https://elnacional.cat/news/1", "elnacional.cat"))
+        self.assertTrue(is_allowed_outlet_url("https://www.elnacional.cat/news/1", "elnacional.cat"))
+
+    def test_safe_public_url_rejects_private_or_local_addresses(self):
+        self.assertFalse(is_safe_public_url("http://127.0.0.1/private"))
+        self.assertFalse(is_safe_public_url("http://localhost/private"))
+        self.assertFalse(is_safe_public_url("http://10.0.0.5/private"))
+
+    @patch("press.services.scraper.Image.open")
+    @patch("press.services.scraper.httpx.Client")
+    def test_download_image_rejects_non_image_content_type_before_pil(self, client_class, image_open_mock):
+        response = MagicMock()
+        response.status_code = 200
+        response.headers = {"content-type": "text/html"}
+        response.content = b"<html></html>"
+        client = client_class.return_value.__enter__.return_value
+        client.get.return_value = response
+
+        result = download_image("https://example.com/image", "example")
+
+        self.assertEqual(result, (None, None))
+        image_open_mock.assert_not_called()
 
 
 class CeleryTaskTests(TestCase):
