@@ -69,6 +69,29 @@ PUBLIC_API_BASE_URL=https://sobresalt.yampi.eu
 El workflow `.github/workflows/deploy-pages.yml` publica `apps/web/dist` en GitHub Pages.
 Configura `PUBLIC_API_BASE_URL=https://sobresalt.yampi.eu` como GitHub Actions variable del repo apuntando al backend del VPS.
 
+## Backend CI/CD
+
+El workflow `.github/workflows/deploy-backend.yml` despliega el backend en el VPS cuando hay push a `master` o `main` que toque `apps/backend/**`, `docker-compose.prod.yml`, `ops/deploy-backend.sh` o el propio workflow.
+
+Secretos requeridos en GitHub Actions:
+
+```env
+SOBRESALT_VPS_HOST=46.202.171.172
+SOBRESALT_VPS_SSH_USER=deploy
+SOBRESALT_VPS_SSH_PORT=22
+SOBRESALT_VPS_DEPLOY_KEY=<private deploy key>
+SOBRESALT_VPS_HOST_KEY=<pinned known_hosts line, e.g. "host ssh-ed25519 AAAA...">
+```
+
+> **Seguridad**: No uses `root` como usuario SSH para los despliegues. Crea un usuario dedicado sin privilegios (p. ej. `deploy`) con los permisos mínimos necesarios para ejecutar `docker compose` mediante `sudo`. Configura la entrada en `authorized_keys` con una restricción `command=` apuntando únicamente al script de despliegue (`/usr/local/bin/deploy-lliga-sobresalt-backend`) y mantén `StrictHostKeyChecking=yes` para que SSH falle si la clave del host cambia inesperadamente. Esto minimiza el radio de explosión en caso de que la clave de despliegue quede comprometida.
+>
+> Ejemplo de regla mínima en `/etc/sudoers.d/deploy`:
+> ```
+> deploy ALL=(root) NOPASSWD: /usr/bin/docker compose
+> ```
+
+En el VPS, la clave publica asociada debe estar restringida en `authorized_keys` al comando `/usr/local/bin/deploy-lliga-sobresalt-backend`. Ese script descarga el commit exacto desde GitHub, crea un release en `/opt/lliga_sobresalt/releases/`, copia `/opt/lliga_sobresalt/shared/.env`, ejecuta `docker compose build/up`, espera el healthcheck y valida `/api/ranking/`, `/api/incidents/` y `/api/seasons/`.
+
 ## Backend Django
 
 ```powershell

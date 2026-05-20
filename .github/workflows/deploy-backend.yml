@@ -1,0 +1,61 @@
+name: Deploy Backend to VPS
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - "apps/backend/**"
+      - "docker-compose.prod.yml"
+      - "ops/deploy-backend.sh"
+      - ".github/workflows/deploy-backend.yml"
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "Commit SHA to deploy. Defaults to the workflow commit."
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production-backend
+      url: https://sobresalt.yampi.eu
+    steps:
+      - name: Resolve deploy SHA
+        id: deploy
+        run: |
+          DEPLOY_SHA="${{ inputs.sha || github.sha }}"
+          if [[ ! "$DEPLOY_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Invalid SHA: $DEPLOY_SHA" >&2
+            exit 1
+          fi
+          echo "sha=$DEPLOY_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Add SSH key
+        run: |
+          mkdir -p ~/.ssh
+          install -m 600 /dev/null ~/.ssh/deploy_key
+          printf '%s\n' "${{ secrets.SOBRESALT_VPS_DEPLOY_KEY }}" > ~/.ssh/deploy_key
+
+      - name: Pin VPS host key
+        run: |
+          install -m 600 /dev/null ~/.ssh/known_hosts
+          printf '%s\n' "${{ secrets.SOBRESALT_VPS_HOST_KEY }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy backend
+        run: |
+          ssh \
+            -i ~/.ssh/deploy_key \
+            -p "${{ secrets.SOBRESALT_VPS_SSH_PORT || '22' }}" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            "${{ secrets.SOBRESALT_VPS_SSH_USER }}@${{ secrets.SOBRESALT_VPS_HOST }}" \
+            "deploy ${{ steps.deploy.outputs.sha }}"
