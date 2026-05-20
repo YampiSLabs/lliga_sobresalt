@@ -68,7 +68,6 @@ PUBLIC_API_BASE_URL=https://sobresalt.yampi.eu
 
 El workflow `.github/workflows/deploy-pages.yml` publica `apps/web/dist` en GitHub Pages.
 Configura `PUBLIC_API_BASE_URL=https://sobresalt.yampi.eu` como GitHub Actions variable del repo apuntando al backend del VPS.
-En builds de produccion, `PUBLIC_API_BASE_URL` es obligatorio. La web publica no usa datos mock si la API no responde.
 
 ## Backend Django
 

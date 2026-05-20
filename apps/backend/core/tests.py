@@ -11,6 +11,8 @@ from core.llm import chat_completion_json, get_llm_config
 from league.models import City
 from press.models import Incident
 
+from core.llm import chat_completion_json, get_llm_config
+
 
 class FrontendAssetTests(TestCase):
     def test_base_template_uses_local_compiled_css(self):
