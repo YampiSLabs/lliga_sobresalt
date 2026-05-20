@@ -1,0 +1,19 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getRanking } from "../lib/api";
+import Dashboard from "../components/Dashboard.tsx";
+import type { LanguageCode } from "../lib/i18n";
+import { useTranslations } from "../lib/i18n";
+
+interface Props {
+  lang: LanguageCode;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const ranking = await getRanking(undefined, lang);
+---
+
+<BaseLayout title={`${t("nav.ranking")} · La Lliga del Sobresalt`} lang={lang}>
+  <Dashboard initialRanking={ranking} initialIncidents={[]} fullRankingView lang={lang} client:load />
+</BaseLayout>

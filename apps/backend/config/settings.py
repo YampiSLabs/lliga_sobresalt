@@ -1,25 +1,42 @@
 from pathlib import Path
+import sys
 
 import environ
+from celery.schedules import crontab
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = BASE_DIR.parent.parent
 
 env = environ.Env(
     DEBUG=(bool, False),
     ALLOWED_HOSTS=(list, ["localhost", "127.0.0.1"]),
 )
-env_file = BASE_DIR / ".env"
-if env_file.exists():
-    environ.Env.read_env(env_file)
+for env_file in (ROOT_DIR / ".env", BASE_DIR / ".env"):
+    if env_file.exists():
+        environ.Env.read_env(env_file)
 
-SECRET_KEY = env("SECRET_KEY", default="dev-only-change-me")
-DEBUG = env("DEBUG", default=True)
-ALLOWED_HOSTS = env("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
-if not DEBUG and SECRET_KEY == "dev-only-change-me":
-    raise RuntimeError("SECRET_KEY must be set when DEBUG=False")
+DEBUG = env.bool("DEBUG", default=False)
+IS_TESTING = "test" in sys.argv
+
+
+def required_env(name: str) -> str:
+    value = env(name, default="")
+    if not value:
+        raise RuntimeError(f"{name} must be set when DEBUG=False")
+    return value
+
+
+SECRET_KEY = env("SECRET_KEY", default="dev-only-change-me") if DEBUG else required_env("SECRET_KEY")
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"] if DEBUG else [])
+if not DEBUG:
+    if SECRET_KEY == "dev-only-change-me":
+        raise RuntimeError("SECRET_KEY must be a real production value when DEBUG=False")
+    if not ALLOWED_HOSTS:
+        raise RuntimeError("ALLOWED_HOSTS must be set when DEBUG=False")
 
 INSTALLED_APPS = [
     "jazzmin",
+    "modeltranslation",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -101,6 +118,7 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -128,8 +146,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-DATABASE_URL = env("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
-DATABASES = {"default": env.db_url("DATABASE_URL", default=DATABASE_URL)}
+if IS_TESTING:
+    DATABASE_URL = env("TEST_DATABASE_URL", default="sqlite:///:memory:")
+else:
+    DATABASE_URL = env("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}") if DEBUG else required_env("DATABASE_URL")
+DATABASES = {
+    "default": env.db_url("TEST_DATABASE_URL" if IS_TESTING else "DATABASE_URL", default=DATABASE_URL)
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -143,10 +166,25 @@ TIME_ZONE = "Europe/Madrid"
 USE_I18N = True
 USE_TZ = True
 
+from django.utils.translation import gettext_lazy as _
+
+LANGUAGES = [
+    ("ca", _("Catalan")),
+    ("es", _("Spanish")),
+    ("en", _("English")),
+]
+
+MODELTRANSLATION_DEFAULT_LANGUAGE = "ca"
+MODELTRANSLATION_LANGUAGES = ("ca", "es", "en")
+MODELTRANSLATION_FALLBACK_LANGUAGES = ("ca",)
+
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -154,16 +192,26 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
 }
 
-REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0")
+REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0") if DEBUG else required_env("REDIS_URL")
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_TASK_IGNORE_RESULT = True
 
-# Suggested Celery Beat cadence for production:
-# - scrape_press_task: every 1 hour
-# - process_articles_task: every 1 hour
-# - recalculate_rankings_task: every 6 hours
-CELERY_BEAT_SCHEDULE = {}
+CELERY_BEAT_SCHEDULE = {
+    "scrape-press-hourly": {
+        "task": "scrape_press_task",
+        "schedule": crontab(minute=0),
+    },
+    "process-articles-every-30-minutes": {
+        "task": "process_articles_task",
+        "schedule": crontab(minute="15,45"),
+        "args": (None,),
+    },
+    "recalculate-rankings-hourly": {
+        "task": "recalculate_rankings_task",
+        "schedule": crontab(minute=55),
+    },
+}
 
 OLLAMA_BASE_URL = env("OLLAMA_BASE_URL", default="http://localhost:11434/v1")
 OLLAMA_MODEL = env("OLLAMA_MODEL", default="qwen3:4b")
@@ -172,18 +220,24 @@ OPENROUTER_API_KEY = env("OPENROUTER_API_KEY", default="")
 OPENROUTER_BASE_URL = env("OPENROUTER_BASE_URL", default="https://openrouter.ai/api/v1")
 OPENROUTER_MODEL = env("OPENROUTER_MODEL", default="openrouter/free")
 OPENROUTER_TIMEOUT_SECONDS = env.int("OPENROUTER_TIMEOUT_SECONDS", default=60)
+OPENROUTER_MAX_ARTICLES_PER_BATCH = env.int("OPENROUTER_MAX_ARTICLES_PER_BATCH", default=5)
 OPENROUTER_SITE_URL = env("OPENROUTER_SITE_URL", default="")
 OPENROUTER_APP_NAME = env("OPENROUTER_APP_NAME", default="La Lliga del Sobresalt")
 
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
-CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[] if not DEBUG else ["http://localhost:8000"])
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[] if not DEBUG else ["http://localhost:4321"])
+if not DEBUG:
+    if not CSRF_TRUSTED_ORIGINS:
+        raise RuntimeError("CSRF_TRUSTED_ORIGINS must be set when DEBUG=False")
+    if not CORS_ALLOWED_ORIGINS:
+        raise RuntimeError("CORS_ALLOWED_ORIGINS must be set when DEBUG=False")
 CORS_ALLOW_CREDENTIALS = False
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=not DEBUG)
 SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=not DEBUG)
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
-SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
+SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=not DEBUG)
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=0 if DEBUG else 31536000)
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", default=not DEBUG)

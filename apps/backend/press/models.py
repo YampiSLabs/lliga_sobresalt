@@ -40,6 +40,8 @@ class RawArticle(models.Model):
         default=RawArticleStatus.NEW,
         db_index=True,
     )
+    image_url = models.CharField(max_length=1000, blank=True, null=True)
+    thumbnail_url = models.CharField(max_length=1000, blank=True, null=True)
     error_message = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -84,6 +86,9 @@ class Incident(models.Model):
     mentions_police_confirmation = models.BooleanField(default=False)
     mentions_other_media_as_source = models.BooleanField(default=False)
     source_media_mentioned = models.CharField(max_length=255, blank=True, null=True)
+    image_url = models.CharField(max_length=1000, blank=True, null=True)
+    thumbnail_url = models.CharField(max_length=1000, blank=True, null=True)
+    image_disclaimer = models.CharField(max_length=500, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -1,0 +1,111 @@
+---
+import type { CityScore, Incident } from "../lib/schemas";
+import { useTranslations } from "../lib/i18n";
+import RankingTable from "./RankingTable.tsx";
+
+interface Props {
+  ranking?: CityScore[];
+  incidents?: Incident[];
+  lang?: "ca" | "es" | "en";
+}
+
+const { ranking = [], incidents = [], lang = "ca" } = Astro.props;
+
+const t = useTranslations(lang);
+
+const assetBase = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const publicAsset = (path: string) => `${assetBase}${path.replace(/^\/+/, "")}`;
+
+// Dynamic stats calculations
+const totalIncidentsCount = incidents.length;
+
+// Find the city in streak (the active leader or top ranked city)
+const leader = ranking[0];
+const streakCityName = leader?.city.name || "BARCELONA";
+const streakJornades = leader ? Math.max(1, Math.min(4, Math.floor(leader.points / 10) + 1)) : 4;
+
+// Localized strings
+const textSeason = {
+  ca: "TEMPORADA 2026 ACTIVA",
+  es: "TEMPORADA 2026 ACTIVA",
+  en: "2026 SEASON ACTIVE"
+}[lang];
+
+const textTitle = {
+  ca: `EL RÀNQUING QUE <br/> <span class="bg-gradient-to-r from-amber-500 via-yellow-200 to-amber-500 bg-clip-text text-transparent animate-text-gradient font-display">NO VOLDRIES</span> <br/> LIDERAR.`,
+  es: `EL RANKING QUE <br/> <span class="bg-gradient-to-r from-amber-500 via-yellow-200 to-amber-500 bg-clip-text text-transparent animate-text-gradient font-display">NO QUERRÍAS</span> <br/> LIDERAR.`,
+  en: `THE RANKING <br/> <span class="bg-gradient-to-r from-amber-500 via-yellow-200 to-amber-500 bg-clip-text text-transparent animate-text-gradient font-display">YOU WOULDN'T</span> <br/> WANT TO LEAD.`
+}[lang];
+
+const textDesc = {
+  ca: "Analitzem en temps real els titulars de la premsa per classificar els municipis més moguts de Catalunya. Pura sàtira basada en fets reals.",
+  es: "Analizamos en tiempo real los titulares de la prensa para clasificar los municipios más movidos de Catalunya. Pura sátira basada en hechos reales.",
+  en: "We analyze press headlines in real time to rank Catalonia's most agitated municipalities. Pure satire based on real events."
+}[lang];
+
+const btnView = {
+  ca: "VEURE CLASSIFICACIÓ",
+  es: "VER CLASIFICACIÓN",
+  en: "VIEW SCOREBOARD"
+}[lang];
+
+const btnInfo = {
+  ca: "MÉS INFORMACIÓ",
+  es: "MÁS INFORMACIÓN",
+  en: "MORE DETAILS"
+}[lang];
+---
+
+<section class="relative w-full rounded-3xl overflow-hidden border border-slate-900 bg-slate-950 min-h-[400px] flex flex-col lg:flex-row items-stretch shadow-2xl mb-8 group sobresalt-hero">
+  <!-- Background Image with Overlay -->
+  <div class="absolute inset-0 z-0">
+    <img
+      src={publicAsset("images/hero_bg.png")}
+      alt="Catalonia Data Map"
+      class="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-1000"
+    />
+    <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
+  </div>
+
+  <!-- Content Left -->
+  <div class="relative z-10 flex-1 p-8 md:p-12 flex flex-col justify-center gap-6 sobresalt-hero-content">
+    <div class="flex items-center gap-3">
+      <span class="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-500 text-[10px] font-black uppercase tracking-[0.2em] animate-pulse">
+        {textSeason}
+      </span>
+      <div class="h-[1px] w-12 bg-slate-800"></div>
+      <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">LIVE DATA FEED</span>
+    </div>
+
+    <h1 class="text-4xl md:text-6xl font-black font-display text-white leading-[0.9] uppercase tracking-tighter sobresalt-hero-title" set:html={textTitle}>
+    </h1>
+
+    <p class="text-slate-400 text-sm md:text-base max-w-md leading-relaxed font-medium sobresalt-hero-desc">
+      {textDesc}
+    </p>
+
+    <div class="flex flex-wrap gap-4 mt-2 sobresalt-hero-actions">
+      <a href="#jornades" class="px-8 py-4 rounded-xl bg-amber-500 text-slate-950 font-black text-xs uppercase tracking-widest hover:bg-white transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(245,158,11,0.3)] text-center sobresalt-hero-btn-primary">
+        {btnView}
+      </a>
+      <a href={t("label.back") === "Go back" ? "/en/premsa/" : (t("label.back") === "Volver atrás" ? "/es/premsa/" : "/premsa/")} class="px-8 py-4 rounded-xl border border-slate-800 bg-slate-900/50 backdrop-blur-md text-white font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all text-center sobresalt-hero-btn-secondary">
+        {btnInfo}
+      </a>
+    </div>
+  </div>
+
+  <!-- Data Display Right (Ranking Table Live) -->
+  <div class="relative z-10 hidden lg:flex lg:w-[48%] xl:w-[45%] p-6 flex-col justify-center border-l border-white/5 bg-slate-950/20 backdrop-blur-md sobresalt-hero-ranking-wrapper">
+    <RankingTable client:load rows={ranking} lang={lang} />
+  </div>
+
+  <!-- Corner Badge -->
+  <div class="absolute top-0 right-0 p-6 z-20">
+    <div class="h-12 w-12 rounded-full border border-white/10 flex items-center justify-center backdrop-blur-md">
+      <span class="text-white text-xs font-mono">24/7</span>
+    </div>
+  </div>
+</section>

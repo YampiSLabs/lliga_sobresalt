@@ -1,0 +1,50 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getIncidents } from "../lib/api";
+import IncidentsCatalog from "../components/IncidentsCatalog.tsx";
+import { Flame } from "lucide-preact";
+import type { LanguageCode } from "../lib/i18n";
+import { useTranslations } from "../lib/i18n";
+
+interface Props {
+  lang: LanguageCode;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const incidents = await getIncidents(lang);
+
+const textLabel = {
+  ca: "REGISTRE DE SUCCESSOS",
+  es: "REGISTRO DE SUCESOS",
+  en: "INCIDENTS REGISTRY",
+}[lang] || "REGISTRE DE SUCCESSOS";
+
+const textTitle = {
+  ca: "CATÀLEG D'INCIDENTS",
+  es: "CATÁLOGO DE INCIDENTES",
+  en: "INCIDENTS CATALOG",
+}[lang] || "CATÀLEG D'INCIDENTS";
+---
+
+<BaseLayout title={`${t("nav.incidents")} · La Lliga del Sobresalt`} activeTab="INCIDENTS" lang={lang}>
+  <div class="space-y-6 max-w-6xl mx-auto">
+    <!-- Header telemetry section -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-900 pb-4 gap-4 select-none">
+      <div class="space-y-1">
+        <span class="font-mono text-[9px] text-slate-500 font-extrabold uppercase tracking-widest">{textLabel}</span>
+        <h1 class="text-3xl font-black font-display text-white uppercase tracking-tight flex items-center gap-2">
+          <Flame class="h-6 w-6 text-amber-500 animate-pulse" />
+          {textTitle}
+        </h1>
+      </div>
+      <div class="flex items-center gap-2 text-[10px] text-slate-400 font-mono">
+        <span class="rounded bg-slate-900 border border-slate-800 px-2.5 py-1 font-bold text-amber-500">VAR-IA INTELLIGENCE</span>
+      </div>
+    </div>
+
+    {/* Dynamic incidents search and filtering grid catalog */}
+    <IncidentsCatalog client:load initialIncidents={incidents} lang={lang} />
+  </div>
+</BaseLayout>

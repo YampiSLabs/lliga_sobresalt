@@ -1,8 +1,13 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import logging
+import os
+import re
+import uuid
 from dataclasses import dataclass
+from PIL import Image
 from datetime import datetime
 from email.utils import parsedate_to_datetime
 from typing import Iterable
@@ -12,15 +17,18 @@ import feedparser
 import httpx
 import trafilatura
 from bs4 import BeautifulSoup
+from django.conf import settings
 from django.utils import timezone
 
 from core.choices import RawArticleStatus
 from press.models import Outlet, RawArticle
+from press.services.extractor import text_matches_keywords
 
 logger = logging.getLogger(__name__)
 
 USER_AGENT = "LaLligaDelSobresaltBot/0.1 (+local MVP; respects paywalls)"
 REQUEST_TIMEOUT = 15
+ARTICLE_PATH_RE = re.compile(r"/(?:\d{4}/\d{2}/\d{2}/[^/]+|ca/[^/]+/[^/]+_\d+(?:_\d+)?)\.html$")
 
 
 @dataclass(frozen=True)
@@ -30,6 +38,7 @@ class ScrapedArticle:
     excerpt: str | None = None
     raw_text: str | None = None
     published_at: datetime | None = None
+    image_url: str | None = None
 
 
 def content_hash_for(headline: str, excerpt: str | None, raw_text: str | None) -> str:
@@ -67,8 +76,16 @@ def scrape_outlet(outlet: Outlet) -> int:
         article_hash = content_hash_for(article.headline, article.excerpt, article.raw_text)
         if RawArticle.objects.filter(content_hash=article_hash).exists():
             status = RawArticleStatus.IGNORED
+        elif not text_matches_keywords(article.headline, article.excerpt):
+            status = RawArticleStatus.IGNORED
         else:
             status = RawArticleStatus.NEW
+
+        downloaded_image_url = None
+        downloaded_thumbnail_url = None
+        if status != RawArticleStatus.IGNORED and article.image_url:
+            downloaded_image_url, downloaded_thumbnail_url = download_image(article.image_url, outlet.slug)
+
         RawArticle.objects.create(
             outlet=outlet,
             url=article.url,
@@ -78,6 +95,8 @@ def scrape_outlet(outlet: Outlet) -> int:
             published_at=article.published_at,
             content_hash=article_hash,
             status=status,
+            image_url=downloaded_image_url,
+            thumbnail_url=downloaded_thumbnail_url,
         )
         created += 1
     return created
@@ -92,7 +111,25 @@ def scrape_rss(rss_url: str) -> list[ScrapedArticle]:
         if not url or not title:
             continue
         excerpt = getattr(entry, "summary", None)
-        raw_text = extract_text_from_url(url)
+
+        if RawArticle.objects.filter(url=url).exists():
+            continue
+
+        if not text_matches_keywords(title, excerpt):
+            published_at = parse_feed_date(getattr(entry, "published", None))
+            articles.append(
+                ScrapedArticle(
+                    url=url,
+                    headline=title,
+                    excerpt=excerpt,
+                    raw_text=None,
+                    published_at=published_at,
+                    image_url=None,
+                )
+            )
+            continue
+
+        raw_text, image_url = extract_text_and_image_from_url(url)
         published_at = parse_feed_date(getattr(entry, "published", None))
         articles.append(
             ScrapedArticle(
@@ -101,6 +138,7 @@ def scrape_rss(rss_url: str) -> list[ScrapedArticle]:
                 excerpt=excerpt,
                 raw_text=raw_text,
                 published_at=published_at,
+                image_url=image_url,
             )
         )
     return articles
@@ -113,7 +151,17 @@ def scrape_section(outlet: Outlet) -> list[ScrapedArticle]:
     if not html:
         return []
     urls = extract_internal_links(html, outlet.section_url, outlet.domain)
-    return [article for article in (scrape_article_url(url) for url in urls[:30]) if article]
+    urls = [url for url in urls if is_probable_article_url(url)]
+
+    # Pre-filter to avoid scraping URLs we already have in the database
+    new_urls = []
+    for url in urls:
+        if not RawArticle.objects.filter(url=url).exists():
+            new_urls.append(url)
+            if len(new_urls) >= 30:
+                break
+
+    return [article for article in (scrape_article_url(url) for url in new_urls) if article]
 
 
 def scrape_article_url(url: str) -> ScrapedArticle | None:
@@ -126,8 +174,9 @@ def scrape_article_url(url: str) -> ScrapedArticle | None:
         return None
     excerpt_node = soup.find("meta", attrs={"name": "description"})
     excerpt = excerpt_node.get("content") if excerpt_node else None
+    image_url = extract_og_image(soup)
     raw_text = trafilatura.extract(html, include_comments=False, include_tables=False)
-    return ScrapedArticle(url=url, headline=headline, excerpt=excerpt, raw_text=raw_text)
+    return ScrapedArticle(url=url, headline=headline, excerpt=excerpt, raw_text=raw_text, image_url=image_url)
 
 
 def fetch_html(url: str) -> str | None:
@@ -155,6 +204,78 @@ def extract_text_from_url(url: str) -> str | None:
         return None
 
 
+def extract_og_image(soup: BeautifulSoup) -> str | None:
+    meta = soup.find("meta", property="og:image") or soup.find("meta", attrs={"name": "og:image"})
+    if meta and meta.get("content"):
+        return meta.get("content").strip()
+    return None
+
+
+def extract_text_and_image_from_url(url: str) -> tuple[str | None, str | None]:
+    try:
+        html = fetch_html(url)
+        if not html:
+            return None, None
+        soup = BeautifulSoup(html, "html.parser")
+        image_url = extract_og_image(soup)
+        raw_text = trafilatura.extract(html, include_comments=False, include_tables=False)
+        return raw_text, image_url
+    except Exception:
+        logger.warning("text and image extraction failed url=%s", url, exc_info=True)
+        return None, None
+
+
+def download_image(image_url: str, outlet_slug: str) -> tuple[str | None, str | None]:
+    if not image_url:
+        return None, None
+    try:
+        with httpx.Client(timeout=10, headers={"User-Agent": USER_AGENT}) as client:
+            response = client.get(image_url, follow_redirects=True)
+            if response.status_code == 200:
+                uid = uuid.uuid4().hex
+                filename_main = f"{outlet_slug}_{uid}.webp"
+                filename_thumb = f"{outlet_slug}_{uid}_thumb.webp"
+
+                media_dir = os.path.join(settings.MEDIA_ROOT, "news_images")
+                os.makedirs(media_dir, exist_ok=True)
+
+                path_main = os.path.join(media_dir, filename_main)
+                path_thumb = os.path.join(media_dir, filename_thumb)
+
+                # Cargar imagen en memoria con PIL
+                image_data = io.BytesIO(response.content)
+                with Image.open(image_data) as img:
+                    # Normalizar canal de color a RGB si es necesario
+                    if img.mode not in ("RGB", "RGBA"):
+                        img_converted = img.convert("RGB")
+                    else:
+                        img_converted = img
+
+                    # 1. Comprimir imagen principal (WebP, max-width 1200px)
+                    max_width = 1200
+                    if img_converted.width > max_width:
+                        ratio = max_width / float(img_converted.width)
+                        new_height = int(float(img_converted.height) * ratio)
+                        img_main = img_converted.resize((max_width, new_height), Image.Resampling.LANCZOS)
+                    else:
+                        img_main = img_converted
+
+                    img_main.save(path_main, format="WEBP", quality=80)
+
+                    # 2. Generar Thumbnail de mínimo espacio (WebP, max-width 320px)
+                    thumb_width = 320
+                    ratio_thumb = thumb_width / float(img_converted.width)
+                    thumb_height = int(float(img_converted.height) * ratio_thumb)
+                    img_thumb = img_converted.resize((thumb_width, thumb_height), Image.Resampling.LANCZOS)
+
+                    img_thumb.save(path_thumb, format="WEBP", quality=65)
+
+                return f"/media/news_images/{filename_main}", f"/media/news_images/{filename_thumb}"
+    except Exception as e:
+        logger.warning("Failed to download or optimize image %s: %s", image_url, e, exc_info=True)
+    return None, None
+
+
 def extract_headline(soup: BeautifulSoup) -> str:
     h1 = soup.find("h1")
     if h1 and h1.get_text(strip=True):
@@ -178,6 +299,11 @@ def extract_internal_links(html: str, base_url: str, domain: str) -> list[str]:
         if clean_url not in links:
             links.append(clean_url)
     return links
+
+
+def is_probable_article_url(url: str) -> bool:
+    path = urlparse(url).path
+    return bool(ARTICLE_PATH_RE.search(path))
 
 
 def parse_feed_date(value: str | None) -> datetime | None:

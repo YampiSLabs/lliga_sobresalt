@@ -15,10 +15,10 @@ logger = logging.getLogger(__name__)
 SYSTEM_PROMPT = """
 Eres un redactor satírico de una liga ficticia llamada "La Lliga del Sobresalt".
 
-Generas titulares breves con tono de crónica deportiva absurda a partir de incidentes publicados en prensa catalana.
+Generas titulares breves con tono de crónica deportiva absurda a partir de incidentes publicados en prensa catalana, con versiones en Catalán, Español e Inglés.
 
 Reglas:
-- Máximo 110 caracteres.
+- Máximo 110 caracteres por titular.
 - Tono de liga, jornada, derbi, clasificación, VAR, descuento o playoff.
 - No añadas hechos nuevos.
 - No bromees sobre víctimas, lesiones graves o muertes.
@@ -31,7 +31,9 @@ Reglas:
 Devuelve solo JSON:
 
 {
-  "headline": string,
+  "headline_ca": string,
+  "headline_es": string,
+  "headline_en": string,
   "tone": "deportivo|absurdo|irónico|suave",
   "risk_level": "low|medium|high",
   "why_safe": string
@@ -40,7 +42,9 @@ Devuelve solo JSON:
 
 
 class HeadlineDraft(BaseModel):
-    headline: str = Field(max_length=110)
+    headline_ca: str = Field(max_length=110)
+    headline_es: str = Field(max_length=110)
+    headline_en: str = Field(max_length=110)
     tone: str
     risk_level: str
     why_safe: str
@@ -48,10 +52,17 @@ class HeadlineDraft(BaseModel):
     @field_validator("tone")
     @classmethod
     def validate_tone(cls, value: str) -> str:
-        normalized = "ironico" if value == "irónico" else value
-        if normalized not in {choice.value for choice in HeadlineTone}:
-            raise ValueError(f"Invalid tone: {value}")
-        return normalized
+        val_clean = value.replace("irónico", "ironico").casefold().strip()
+        parts = [p.strip() for p in val_clean.split("|") if p.strip()]
+        valid_tones = {choice.value for choice in HeadlineTone}
+        for part in parts:
+            if part in valid_tones:
+                return part
+        for part in parts:
+            for vt in valid_tones:
+                if vt in part:
+                    return vt
+        return "deportivo"
 
     @field_validator("risk_level")
     @classmethod
@@ -67,19 +78,19 @@ def can_generate_headline(incident: Incident) -> bool:
         and incident.category != "no_relevante"
         and not incident.is_duplicate_of_id
     )
-
-
-def generate_headline_for_incident(incident: Incident) -> SatiricalHeadline | None:
+def generate_headline_for_incident(incident: Incident, approve: bool = False) -> SatiricalHeadline | None:
     if not can_generate_headline(incident):
         return None
     draft = parse_headline_json(call_ollama(build_prompt(incident)))
     return SatiricalHeadline.objects.create(
         incident=incident,
-        text=draft.headline,
+        text_ca=draft.headline_ca,
+        text_es=draft.headline_es,
+        text_en=draft.headline_en,
         tone=draft.tone,
         risk_level=draft.risk_level,
         why_safe=draft.why_safe,
-        approved=False,
+        approved=approve,
     )
 
 

@@ -15,7 +15,7 @@ def title_similarity(left: str, right: str) -> float:
     return SequenceMatcher(None, left.casefold(), right.casefold()).ratio()
 
 
-def find_duplicate_for(incident: Incident) -> Incident | None:
+def find_duplicate_for(incident: Incident, is_llm_duplicate: bool = False) -> Incident | None:
     if not incident.city_id:
         return None
     candidates = Incident.objects.filter(
@@ -29,14 +29,23 @@ def find_duplicate_for(incident: Incident) -> Incident | None:
         start = incident.happened_at - timedelta(days=2)
         end = incident.happened_at + timedelta(days=2)
         candidates = candidates.filter(Q(happened_at__range=(start, end)) | Q(happened_at__isnull=True))
+
+    # 1. Si el LLM lo catalogó como duplicado o actualización y hay candidatos previos en el mismo rango,
+    # asociarlo directamente con el candidato más reciente.
+    if is_llm_duplicate and candidates.exists():
+        return candidates.order_by("-happened_at").first()
+
+    # 2. Si no, usamos similitud de títulos basada en SequenceMatcher con umbral dinámico.
     for candidate in candidates:
-        if title_similarity(incident.canonical_title, candidate.canonical_title) > SIMILARITY_THRESHOLD:
+        sim = title_similarity(incident.canonical_title, candidate.canonical_title)
+        threshold = 0.70 if (incident.happened_at and candidate.happened_at and incident.happened_at.date() == candidate.happened_at.date()) else SIMILARITY_THRESHOLD
+        if sim > threshold:
             return candidate
     return None
 
 
-def mark_duplicate_if_needed(incident: Incident) -> bool:
-    duplicate = find_duplicate_for(incident)
+def mark_duplicate_if_needed(incident: Incident, is_llm_duplicate: bool = False) -> bool:
+    duplicate = find_duplicate_for(incident, is_llm_duplicate=is_llm_duplicate)
     if not duplicate:
         return False
     incident.status = IncidentStatus.DUPLICATE
@@ -44,4 +53,3 @@ def mark_duplicate_if_needed(incident: Incident) -> bool:
     incident.points = 0
     incident.save(update_fields=["status", "is_duplicate_of", "points", "updated_at"])
     return True
-

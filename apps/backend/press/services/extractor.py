@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import unicodedata
 from typing import Any
 
@@ -40,14 +41,16 @@ KEYWORDS = [
     "contenedores quemados",
     "metro",
     "tren",
-    "estacion",
-    "estacio",
+    "estacion de metro",
+    "estacion de tren",
+    "estacio de metro",
+    "estacio de tren",
 ]
 
 SYSTEM_PROMPT = """
 Eres un clasificador y extractor de noticias para "La Lliga del Sobresalt", una web satirica basada solo en noticias ya publicadas por medios catalanes.
 
-Tu trabajo NO es redactar, opinar ni investigar. Tu trabajo es decidir si una noticia sirve como incidente revisable y devolver un JSON limpio para Django.
+Tu trabajo NO es redactar, opinar ni investigar. Tu trabajo es decidir si una noticia sirve como incidente revisable y devolver un JSON limpio para Django con soporte multilingue.
 
 Devuelve SIEMPRE un unico objeto JSON valido. No uses markdown. No anadas texto antes ni despues del JSON. No inventes claves nuevas.
 
@@ -96,9 +99,13 @@ CONFIANZA
 - 0.7-0.85: titular y texto sostienen bien la extraccion.
 - 0.86-1.0: datos claros, categoria inequivoca, ubicacion y fuente consistentes.
 
-SALIDA
-- short_neutral_summary debe ser una frase breve, neutral y sin morbo. No uses nombres propios de personas.
-- scoring_notes debe explicar en una frase por que asignas categoria, severidad y confianza.
+SALIDA Y TRADUCCION
+- short_neutral_summary_ca: una frase breve, neutral y sin morbo en Catalan.
+- short_neutral_summary_es: una frase breve, neutral y sin morbo en Espanol.
+- short_neutral_summary_en: una frase breve, neutral y sin morbo en Ingles.
+- scoring_notes_ca: explicacion en Catalan de por que asignas categoria, severidad y confianza.
+- scoring_notes_es: explicacion en Espanol de por que asignas categoria, severidad y confianza.
+- scoring_notes_en: explicacion en Ingles de por que asignas categoria, severidad y confianza.
 - Usa null, no cadenas vacias, cuando falte un dato.
 - Usa booleanos reales, numeros reales e integer real; no strings para booleanos o numeros.
 
@@ -117,8 +124,12 @@ Devuelve exactamente este JSON:
   "mentions_police_confirmation": boolean,
   "mentions_other_media_as_source": boolean,
   "source_media_mentioned": string | null,
-  "short_neutral_summary": string | null,
-  "scoring_notes": string | null
+  "short_neutral_summary_ca": string | null,
+  "short_neutral_summary_es": string | null,
+  "short_neutral_summary_en": string | null,
+  "scoring_notes_ca": string | null,
+  "scoring_notes_es": string | null,
+  "scoring_notes_en": string | null
 }
 """.strip()
 
@@ -136,8 +147,12 @@ class ExtractedIncident(BaseModel):
     mentions_police_confirmation: bool
     mentions_other_media_as_source: bool
     source_media_mentioned: str | None
-    short_neutral_summary: str | None
-    scoring_notes: str | None
+    short_neutral_summary_ca: str | None
+    short_neutral_summary_es: str | None
+    short_neutral_summary_en: str | None
+    scoring_notes_ca: str | None
+    scoring_notes_es: str | None
+    scoring_notes_en: str | None
 
     @field_validator("category")
     @classmethod
@@ -154,7 +169,13 @@ def extraction_to_dict(extraction: ExtractedIncident) -> dict[str, Any]:
 
 def text_matches_keywords(*parts: str | None) -> bool:
     haystack = normalize_text(" ".join(part or "" for part in parts))
-    return any(normalize_text(keyword) in haystack for keyword in KEYWORDS)
+    return any(keyword_matches(haystack, keyword) for keyword in KEYWORDS)
+
+
+def keyword_matches(haystack: str, keyword: str) -> bool:
+    normalized_keyword = normalize_text(keyword)
+    pattern = rf"(?<!\w){re.escape(normalized_keyword)}(?!\w)"
+    return bool(re.search(pattern, haystack))
 
 
 def normalize_text(value: str) -> str:

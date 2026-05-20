@@ -42,7 +42,13 @@ def chat_completion_json(
                 exc_info=True,
             )
             if attempt < retries:
-                time.sleep(1)
+                sleep_time = (2 ** attempt) * 2
+                logger.info(
+                    "Sleeping %s seconds before retrying %s call...",
+                    sleep_time,
+                    purpose,
+                )
+                time.sleep(sleep_time)
     raise RuntimeError(f"{purpose} failed via {config['provider']}: {last_error}")
 
 

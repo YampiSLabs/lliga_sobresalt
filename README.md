@@ -68,6 +68,7 @@ PUBLIC_API_BASE_URL=https://sobresalt.yampi.eu
 
 El workflow `.github/workflows/deploy-pages.yml` publica `apps/web/dist` en GitHub Pages.
 Configura `PUBLIC_API_BASE_URL=https://sobresalt.yampi.eu` como GitHub Actions variable del repo apuntando al backend del VPS.
+En builds de produccion, `PUBLIC_API_BASE_URL` es obligatorio. La web publica no usa datos mock si la API no responde.
 
 ## Backend Django
 
@@ -93,6 +94,7 @@ No exponen `raw_text`.
 
 Las credenciales reales del Postgres compartido del VPS se guardan localmente en `.env.vps`.
 Ese archivo no se versiona. Para Dokploy/VPS, copia sus variables al entorno de la app backend.
+No uses `.env` local para produccion. Usa variables de Dokploy o un `.env.production` local no versionado basado en `.env.production.example`.
 
 La base de datos creada para este proyecto usa:
 
@@ -146,10 +148,10 @@ Tareas:
 ## Tests Y Checks
 
 ```powershell
-pnpm build
+$env:PUBLIC_API_BASE_URL="https://sobresalt.yampi.eu"; pnpm build
 pnpm backend:check
 pnpm backend:test
-docker compose --env-file .env config
+docker compose -f docker-compose.prod.yml --env-file .env.production.example config
 ```
 
 ## CodeGraph
@@ -166,6 +168,7 @@ CodeGraph está configurado globalmente en Codex/Gemini/opencode y este repo tie
 
 - Backend en VPS detrás de HTTPS.
 - `DEBUG=False` exige `SECRET_KEY` real.
+- `DATABASE_URL` y `REDIS_URL` son obligatorias con `DEBUG=False`.
 - `ALLOWED_HOSTS` debe incluir dominio/API VPS.
 - `CSRF_TRUSTED_ORIGINS` debe incluir dominio API.
 - `CORS_ALLOWED_ORIGINS` debe incluir GitHub Pages y dominio Astro.
@@ -173,3 +176,13 @@ CodeGraph está configurado globalmente en Codex/Gemini/opencode y este repo tie
 - Headers activos: `nosniff`, `Referrer-Policy`, `Permissions-Policy`, `X_FRAME_OPTIONS=DENY`.
 - No se publican artículos completos ni `raw_text`.
 - No se intenta saltar paywalls.
+
+## Checklist Produccion
+
+1. Rota cualquier `OPENROUTER_API_KEY` que haya pasado por `.env` local o por logs de `docker compose config`.
+2. Crea `.env.production` local desde `.env.production.example` o configura las mismas variables en Dokploy.
+3. Comprueba que `DEBUG=False`, `DATABASE_URL`, `REDIS_URL`, `ALLOWED_HOSTS=sobresalt.yampi.eu`, `CSRF_TRUSTED_ORIGINS=https://sobresalt.yampi.eu` y `CORS_ALLOWED_ORIGINS=https://beatrizagent.github.io`.
+4. En GitHub, configura la variable del repo `PUBLIC_API_BASE_URL=https://sobresalt.yampi.eu`.
+5. Despliega backend y confirma que el arranque ejecuta `python manage.py migrate` y `python manage.py collectstatic --noinput`.
+6. Ejecuta smoke test del backend: `curl https://sobresalt.yampi.eu/api/ranking/`.
+7. Ejecuta smoke test de GitHub Pages y confirma que no hay llamadas a `localhost:8000` en la consola del navegador.
