@@ -7,6 +7,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from django.conf import settings
+from django.urls import URLPattern
 
 from core.choices import IncidentCategory, IncidentStatus
 from core.llm import chat_completion_json, get_llm_config, get_llm_configs
@@ -36,6 +37,17 @@ class SecurityHeaderTests(TestCase):
         response = self.client.get("/admin/")
 
         self.assertNotIn("Content-Security-Policy", response.headers)
+
+
+class MediaServingConfigTests(TestCase):
+    @override_settings(DEBUG=False, SERVE_MEDIA_FILES=True, MEDIA_URL="/media/")
+    def test_media_urlpatterns_are_available_when_explicitly_enabled(self):
+        from config.urls import media_urlpatterns
+
+        patterns = media_urlpatterns()
+
+        self.assertTrue(patterns)
+        self.assertTrue(all(isinstance(pattern, URLPattern) for pattern in patterns))
 
 
 class PublicApiTests(TestCase):

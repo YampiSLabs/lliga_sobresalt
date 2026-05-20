@@ -14,6 +14,7 @@ from press.admin import (
     scrape_selected_outlets_now,
 )
 from press.management.commands.process_articles import process_article
+from press.management.commands.repair_missing_media import repair_incident_media
 from press.models import Incident, Outlet, RawArticle
 from press.services.dedupe import mark_duplicate_if_needed, title_similarity
 from press.services.extractor import ExtractedIncident, parse_extraction_json, text_matches_keywords
@@ -761,3 +762,56 @@ class OptimizedScraperTests(TestCase):
         self.assertEqual(articles[0].raw_text, "Cuerpo del artículo")
         self.assertEqual(articles[0].image_url, "https://example.com/image.jpg")
         extract_mock.assert_called_once_with("https://example.com/news/relevant")
+
+
+class MissingMediaRepairTests(TestCase):
+    def setUp(self):
+        self.outlet = Outlet.objects.create(
+            name="Diari Test",
+            slug="diari-test",
+            domain="example.com",
+            homepage_url="https://example.com",
+        )
+        self.article = RawArticle.objects.create(
+            outlet=self.outlet,
+            url="https://example.com/news/relevant",
+            headline="Apuñalamiento grave en una estación de tren",
+            content_hash="hash-media",
+            status=RawArticleStatus.PROCESSED,
+            image_url="/media/news_images/missing.webp",
+            thumbnail_url="/media/news_images/missing_thumb.webp",
+        )
+        self.city = City.objects.create(name="Barcelona", slug="barcelona")
+        self.incident = Incident.objects.create(
+            canonical_title="Incidente con imagen perdida",
+            city=self.city,
+            category=IncidentCategory.APUNYALAMENT,
+            severity_1_5=3,
+            confidence_0_1=0.9,
+            status=IncidentStatus.APPROVED,
+            points=10,
+            image_url="/media/news_images/missing.webp",
+            thumbnail_url="/media/news_images/missing_thumb.webp",
+        )
+        self.incident.sources.create(article=self.article, is_primary=True)
+
+    @patch("press.management.commands.repair_missing_media.download_image")
+    @patch("press.management.commands.repair_missing_media.extract_text_and_image_from_url")
+    def test_repair_incident_media_redownloads_missing_local_media(self, extract_mock, download_mock):
+        extract_mock.return_value = ("Article body", "https://example.com/original.jpg")
+        download_mock.return_value = (
+            "/media/news_images/new.webp",
+            "/media/news_images/new_thumb.webp",
+        )
+
+        result = repair_incident_media(self.incident)
+
+        self.assertEqual(result, "repaired")
+        self.incident.refresh_from_db()
+        self.article.refresh_from_db()
+        self.assertEqual(self.incident.image_url, "/media/news_images/new.webp")
+        self.assertEqual(self.incident.thumbnail_url, "/media/news_images/new_thumb.webp")
+        self.assertEqual(self.article.image_url, "/media/news_images/new.webp")
+        self.assertEqual(self.incident.image_disclaimer_es, "Imagen original de Diari Test")
+        extract_mock.assert_called_once_with("https://example.com/news/relevant")
+        download_mock.assert_called_once_with("https://example.com/original.jpg", "diari-test")
