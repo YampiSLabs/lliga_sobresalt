@@ -35,8 +35,6 @@ fi
 timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
 release_dir="${RELEASES_DIR}/${timestamp}-${deploy_sha:0:12}"
 archive_path="$(mktemp)"
-
-mkdir -p "${release_dir}"
 cleanup() {
   local rc=$?
   rm -f "${archive_path}"
@@ -45,6 +43,8 @@ cleanup() {
   fi
 }
 trap cleanup EXIT
+
+mkdir -p "${release_dir}"
 
 echo "Deploying ${APP_NAME} backend at ${deploy_sha}"
 curl -fsSL "${REPO_ARCHIVE_BASE}/${deploy_sha}.tar.gz" -o "${archive_path}"
