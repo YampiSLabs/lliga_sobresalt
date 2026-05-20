@@ -38,7 +38,7 @@ OLLAMA_MODEL=qwen3:4b
 OLLAMA_TIMEOUT_SECONDS=60
 ```
 
-Si `OPENROUTER_API_KEY` existe, Django usa OpenRouter antes que Ollama:
+Si `OPENROUTER_API_KEY` existe, Django usa OpenRouter antes que otros proveedores. Si OpenRouter falla o agota cuota, intenta OpenCode antes de caer a Ollama:
 
 ```env
 OPENROUTER_API_KEY=
@@ -46,6 +46,10 @@ OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
 OPENROUTER_MODEL=openrouter/free
 OPENROUTER_TIMEOUT_SECONDS=60
 OPENROUTER_APP_NAME=La Lliga del Sobresalt
+OPENCODE_API_KEY=
+OPENCODE_BASE_URL=https://opencode.ai/zen/v1
+OPENCODE_MODEL=big-pickle
+OPENCODE_TIMEOUT_SECONDS=60
 ```
 
 ## Frontend Astro
