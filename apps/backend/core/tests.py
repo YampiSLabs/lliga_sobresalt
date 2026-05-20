@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock, patch
 
+import httpx
 from django.test import override_settings
 from django.test import TestCase
 from django.urls import reverse
@@ -7,12 +8,9 @@ from django.utils import timezone
 from django.conf import settings
 
 from core.choices import IncidentCategory, IncidentStatus
-from core.llm import chat_completion_json, get_llm_config
+from core.llm import chat_completion_json, get_llm_config, get_llm_configs
 from league.models import City
 from press.models import Incident
-
-from core.llm import chat_completion_json, get_llm_config
-
 
 class FrontendAssetTests(TestCase):
     def test_base_template_uses_local_compiled_css(self):
@@ -133,6 +131,29 @@ class LlmConfigTests(TestCase):
         self.assertEqual(config["headers"]["X-Title"], "La Lliga del Sobresalt")
 
     @override_settings(
+        OPENROUTER_API_KEY="test-openrouter-key",
+        OPENROUTER_BASE_URL="https://openrouter.ai/api/v1",
+        OPENROUTER_MODEL="openrouter/free",
+        OPENROUTER_TIMEOUT_SECONDS=60,
+        OPENROUTER_SITE_URL="",
+        OPENROUTER_APP_NAME="La Lliga del Sobresalt",
+        OPENCODE_API_KEY="test-opencode-key",
+        OPENCODE_BASE_URL="https://opencode.ai/zen/v1",
+        OPENCODE_MODEL="big-pickle",
+        OPENCODE_TIMEOUT_SECONDS=60,
+        OLLAMA_BASE_URL="http://localhost:11434/v1",
+        OLLAMA_MODEL="qwen3:4b",
+        OLLAMA_TIMEOUT_SECONDS=60,
+    )
+    def test_llm_configs_include_opencode_between_openrouter_and_ollama(self):
+        configs = get_llm_configs()
+
+        self.assertEqual([config["provider"] for config in configs], ["openrouter", "opencode", "ollama"])
+        self.assertEqual(configs[1]["url"], "https://opencode.ai/zen/v1/chat/completions")
+        self.assertEqual(configs[1]["model"], "big-pickle")
+        self.assertEqual(configs[1]["headers"]["Authorization"], "Bearer test-opencode-key")
+
+    @override_settings(
         OPENROUTER_API_KEY="",
         OLLAMA_BASE_URL="http://localhost:11434/v1",
         OLLAMA_MODEL="qwen3:4b",
@@ -174,6 +195,44 @@ class LlmConfigTests(TestCase):
         self.assertEqual(kwargs["json"]["model"], "openrouter/free")
         self.assertEqual(kwargs["json"]["response_format"], {"type": "json_object"})
         self.assertEqual(kwargs["headers"]["Authorization"], "Bearer test-key")
+
+    @override_settings(
+        OPENROUTER_API_KEY="test-openrouter-key",
+        OPENROUTER_BASE_URL="https://openrouter.ai/api/v1",
+        OPENROUTER_MODEL="openrouter/free",
+        OPENROUTER_TIMEOUT_SECONDS=60,
+        OPENROUTER_SITE_URL="",
+        OPENROUTER_APP_NAME="La Lliga del Sobresalt",
+        OPENCODE_API_KEY="test-opencode-key",
+        OPENCODE_BASE_URL="https://opencode.ai/zen/v1",
+        OPENCODE_MODEL="big-pickle",
+        OPENCODE_TIMEOUT_SECONDS=60,
+    )
+    @patch("core.llm.httpx.Client")
+    def test_chat_completion_falls_back_to_opencode_after_openrouter_failure(self, client_class):
+        openrouter_response = MagicMock()
+        openrouter_response.raise_for_status.side_effect = httpx.HTTPStatusError(
+            "rate limited",
+            request=httpx.Request("POST", "https://openrouter.ai/api/v1/chat/completions"),
+            response=httpx.Response(429),
+        )
+        opencode_response = MagicMock()
+        opencode_response.json.return_value = {"choices": [{"message": {"content": '{"ok":true}'}}]}
+        client = client_class.return_value.__enter__.return_value
+        client.post.side_effect = [openrouter_response, opencode_response]
+
+        result = chat_completion_json(
+            [{"role": "user", "content": "Devuelve JSON"}],
+            temperature=0,
+            purpose="test",
+            retries=0,
+        )
+
+        self.assertEqual(result, '{"ok":true}')
+        self.assertEqual(client.post.call_count, 2)
+        _, opencode_kwargs = client.post.call_args
+        self.assertEqual(opencode_kwargs["json"]["model"], "big-pickle")
+        self.assertEqual(opencode_kwargs["headers"]["Authorization"], "Bearer test-opencode-key")
 
 
 class SeasonsApiTests(TestCase):
