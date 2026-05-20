@@ -39,6 +39,10 @@ cleanup() {
   local rc=$?
   rm -f "${archive_path}"
   if [[ $rc -ne 0 ]]; then
+    # Tear down any containers started during a failed deploy before removing the dir.
+    if [[ -f "${release_dir}/${COMPOSE_FILE}" ]]; then
+      (cd "${release_dir}" && docker compose -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" --env-file .env down 2>/dev/null) || true
+    fi
     rm -rf "${release_dir}"
   fi
 }
@@ -87,7 +91,7 @@ for path in ("/api/ranking/", "/api/incidents/", "/api/seasons/"):
 sys.exit(1 if failed else 0)
 PY
     echo "deployed_release=${release_dir}"
-    # Prune old releases, keeping the most recent 5
+    # Release dirs are named YYYYMMDDTHHMMSSZ-<sha>, so lexicographic sort == chronological sort.
     find "${RELEASES_DIR}" -maxdepth 1 -mindepth 1 -type d | sort | head -n -5 | xargs -r rm -rf
     exit 0
   fi
