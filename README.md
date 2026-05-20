@@ -80,6 +80,7 @@ SOBRESALT_VPS_HOST=46.202.171.172
 SOBRESALT_VPS_SSH_USER=root
 SOBRESALT_VPS_SSH_PORT=22
 SOBRESALT_VPS_DEPLOY_KEY=<private deploy key>
+SOBRESALT_VPS_HOST_KEY=<pinned known_hosts line, e.g. "host ssh-ed25519 AAAA...">
 ```
 
 En el VPS, la clave publica asociada debe estar restringida en `authorized_keys` al comando `/usr/local/bin/deploy-lliga-sobresalt-backend`. Ese script descarga el commit exacto desde GitHub, crea un release en `/opt/lliga_sobresalt/releases/`, copia `/opt/lliga_sobresalt/shared/.env`, ejecuta `docker compose build/up`, espera el healthcheck y valida `/api/ranking/`, `/api/incidents/` y `/api/seasons/`.

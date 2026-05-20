@@ -44,9 +44,10 @@ jobs:
           install -m 600 /dev/null ~/.ssh/deploy_key
           printf '%s\n' "${{ secrets.SOBRESALT_VPS_DEPLOY_KEY }}" > ~/.ssh/deploy_key
 
-      - name: Trust VPS host key
+      - name: Pin VPS host key
         run: |
-          ssh-keyscan -p "${{ secrets.SOBRESALT_VPS_SSH_PORT || '22' }}" "${{ secrets.SOBRESALT_VPS_HOST }}" >> ~/.ssh/known_hosts
+          install -m 600 /dev/null ~/.ssh/known_hosts
+          printf '%s\n' "${{ secrets.SOBRESALT_VPS_HOST_KEY }}" >> ~/.ssh/known_hosts
 
       - name: Deploy backend
         run: |
@@ -55,5 +56,6 @@ jobs:
             -p "${{ secrets.SOBRESALT_VPS_SSH_PORT || '22' }}" \
             -o BatchMode=yes \
             -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
             "${{ secrets.SOBRESALT_VPS_SSH_USER }}@${{ secrets.SOBRESALT_VPS_HOST }}" \
             "deploy ${{ steps.deploy.outputs.sha }}"
