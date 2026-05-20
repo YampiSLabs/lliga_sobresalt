@@ -1,80 +1,24 @@
 import { useState } from "preact/hooks";
 
 type ChartPoint = {
-  round: number;
+  roundIndex: number;
   score: number;
 };
 
-type CityData = {
+type CityChartData = {
   name: string;
+  slug: string;
   color: string;
   glowColor: string;
   points: ChartPoint[];
 };
 
-const CHART_DATA: Record<string, CityData> = {
-  barcelona: {
-    name: "Barcelona",
-    color: "rgb(239, 68, 68)", // Red
-    glowColor: "rgba(239, 68, 68, 0.4)",
-    points: [
-      { round: 1, score: 20 },
-      { round: 2, score: 38 },
-      { round: 3, score: 55 },
-      { round: 7, score: 78 },
-      { round: 9, score: 85 },
-      { round: 11, score: 92 },
-      { round: 12, score: 104 },
-    ],
-  },
-  badalona: {
-    name: "Badalona",
-    color: "rgb(245, 158, 11)", // Amber/Yellow
-    glowColor: "rgba(245, 158, 11, 0.4)",
-    points: [
-      { round: 1, score: 15 },
-      { round: 2, score: 22 },
-      { round: 3, score: 29 },
-      { round: 7, score: 38 },
-      { round: 9, score: 45 },
-      { round: 11, score: 50 },
-      { round: 12, score: 56 },
-    ],
-  },
-  lleida: {
-    name: "Lleida",
-    color: "rgb(59, 130, 246)", // Blue
-    glowColor: "rgba(59, 130, 246, 0.4)",
-    points: [
-      { round: 1, score: 10 },
-      { round: 2, score: 16 },
-      { round: 3, score: 21 },
-      { round: 7, score: 26 },
-      { round: 9, score: 30 },
-      { round: 11, score: 34 },
-      { round: 12, score: 39 },
-    ],
-  },
-  tarragona: {
-    name: "Tarragona",
-    color: "rgb(168, 85, 247)", // Purple
-    glowColor: "rgba(168, 85, 247, 0.4)",
-    points: [
-      { round: 1, score: 5 },
-      { round: 2, score: 10 },
-      { round: 3, score: 14 },
-      { round: 7, score: 18 },
-      { round: 9, score: 22 },
-      { round: 11, score: 26 },
-      { round: 12, score: 31 },
-    ],
-  },
+type ScoreChartProps = {
+  citiesData?: CityChartData[];
+  roundsNames?: string[];
 };
 
-const ROUNDS = [1, 2, 3, 7, 9, 11, 12];
-const Y_AXIS_TICKS = [0, 25, 50, 75, 100];
-
-export default function ScoreChart() {
+export default function ScoreChart({ citiesData = [], roundsNames = [] }: ScoreChartProps) {
   const [hoveredCity, setHoveredCity] = useState<string | null>(null);
 
   // SVG dimensions
@@ -89,18 +33,31 @@ export default function ScoreChart() {
   const chartWidth = width - paddingLeft - paddingRight;
   const chartHeight = height - paddingTop - paddingBottom;
 
-  // Coordinate mapping helper
-  const getX = (round: number) => {
-    // Proportional placement based on round index in ROUNDS list
-    const index = ROUNDS.indexOf(round);
-    if (index === -1) return paddingLeft;
-    return paddingLeft + (index / (ROUNDS.length - 1)) * chartWidth;
+  // Find max score among all data points to scale Y axis dynamically
+  const maxPlottedScore = Math.max(
+    10,
+    ...citiesData.flatMap(c => c.points.map(p => p.score))
+  );
+  // Round up to nearest nice interval (e.g. multiple of 25)
+  const maxAxisVal = Math.ceil(maxPlottedScore / 25) * 25;
+  const Y_AXIS_TICKS = [
+    0,
+    Math.round(maxAxisVal * 0.25),
+    Math.round(maxAxisVal * 0.5),
+    Math.round(maxAxisVal * 0.75),
+    maxAxisVal
+  ];
+
+  // Coordinate mapping helpers
+  const getX = (roundIndex: number) => {
+    if (roundsNames.length <= 1) return paddingLeft + chartWidth / 2;
+    return paddingLeft + (roundIndex / (roundsNames.length - 1)) * chartWidth;
   };
 
   const getY = (score: number) => {
     // y = 0 represents the top of the chart, so we invert
-    const cappedScore = Math.min(100, Math.max(0, score));
-    return paddingTop + chartHeight - (cappedScore / 100) * chartHeight;
+    const cappedScore = Math.min(maxAxisVal, Math.max(0, score));
+    return paddingTop + chartHeight - (cappedScore / maxAxisVal) * chartHeight;
   };
 
   return (
@@ -145,10 +102,10 @@ export default function ScoreChart() {
         })}
 
         {/* 2. Dotted Vertical Round lines */}
-        {ROUNDS.map((round) => {
-          const x = getX(round);
+        {roundsNames.map((_, index) => {
+          const x = getX(index);
           return (
-            <g key={round} class="opacity-20">
+            <g key={index} class="opacity-20">
               <line
                 x1={x}
                 y1={paddingTop}
@@ -163,11 +120,11 @@ export default function ScoreChart() {
         })}
 
         {/* 3. Render X Axis Round Labels */}
-        {ROUNDS.map((round) => {
-          const x = getX(round);
+        {roundsNames.map((round, index) => {
+          const x = getX(index);
           return (
             <text
-              key={round}
+              key={index}
               x={x}
               y={height - 6}
               text-anchor="middle"
@@ -176,13 +133,14 @@ export default function ScoreChart() {
               font-weight="bold"
               class="font-display font-mono"
             >
-              {round}
+              {round.replace("Jornada ", "J")}
             </text>
           );
         })}
 
         {/* 4. Draw Lines & Nodes for Cities */}
-        {Object.entries(CHART_DATA).map(([slug, city]) => {
+        {citiesData.map((city) => {
+          const slug = city.slug;
           const isHovered = hoveredCity === slug;
           const isAnyHovered = hoveredCity !== null;
           const opacity = isAnyHovered ? (isHovered ? 1.0 : 0.25) : 0.85;
@@ -190,15 +148,16 @@ export default function ScoreChart() {
           // Build string path
           let pathD = "";
           city.points.forEach((p, idx) => {
-            const x = getX(p.round);
+            const x = getX(p.roundIndex);
             const y = getY(p.score);
             if (idx === 0) {
               pathD += `M ${x},${y}`;
             } else {
-              // Smooth bezier interpolation or straight lines
               pathD += ` L ${x},${y}`;
             }
           });
+
+          if (!pathD) return null;
 
           return (
             <g
@@ -211,12 +170,12 @@ export default function ScoreChart() {
               {/* Background gradient area underneath the active line */}
               {isHovered && (
                 <path
-                  d={`${pathD} L ${getX(ROUNDS[ROUNDS.length - 1])},${getY(0)} L ${getX(ROUNDS[0])},${getY(0)} Z`}
+                  d={`${pathD} L ${getX(roundsNames.length - 1)},${getY(0)} L ${getX(0)},${getY(0)} Z`}
                   fill={`url(#area-${slug})`}
                   opacity="0.15"
                 />
               )}
-              
+
               {/* Gradient definition */}
               <defs>
                 <linearGradient id={`area-${slug}`} x1="0" y1="0" x2="0" y2="1">
@@ -249,10 +208,10 @@ export default function ScoreChart() {
 
               {/* Nodes representing each round score */}
               {city.points.map((p) => {
-                const cx = getX(p.round);
+                const cx = getX(p.roundIndex);
                 const cy = getY(p.score);
                 return (
-                  <g key={p.round} class="group/dot cursor-pointer">
+                  <g key={p.roundIndex} class="group/dot cursor-pointer">
                     {/* Ring glow on hover */}
                     <circle
                       cx={cx}
@@ -279,9 +238,10 @@ export default function ScoreChart() {
         })}
       </svg>
 
-      {/* Interactive Legend Matching Mockup */}
+      {/* Interactive Legend */}
       <div class="flex flex-wrap items-center justify-center gap-x-3.5 gap-y-1.5 mt-3 border-t border-slate-900/60 pt-2.5">
-        {Object.entries(CHART_DATA).map(([slug, city]) => {
+        {citiesData.map((city) => {
+          const slug = city.slug;
           const isActive = hoveredCity === slug;
           return (
             <div

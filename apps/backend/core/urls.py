@@ -11,4 +11,5 @@ urlpatterns = [
     path("incidents/<int:pk>/", views.incident_detail, name="incident_detail"),
     path("api/ranking/", views.api_ranking, name="api_ranking"),
     path("api/incidents/", views.api_incidents, name="api_incidents"),
+    path("api/seasons/", views.api_seasons, name="api_seasons"),
 ]

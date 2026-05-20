@@ -15,3 +15,5 @@ django-cors-headers>=4.4
 django-jazzmin>=3.0,<4.0
 gunicorn>=23.0,<24.0
 whitenoise>=6.8,<7.0
+django-modeltranslation
+Pillow>=10.3.0

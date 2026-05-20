@@ -1,0 +1,59 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { AlertOctagon, Terminal, Home, Cpu } from "lucide-preact";
+---
+
+<BaseLayout title="Sobresalt Crític: 404 Desconnexió">
+  <div class="min-h-[70vh] flex flex-col items-center justify-center py-10 text-center font-mono select-none relative overflow-hidden">
+    <!-- Subtle technical grid background inside container -->
+    <div class="absolute inset-0 hud-grid opacity-5 pointer-events-none"></div>
+
+    <!-- Glowing Alert Icon -->
+    <div class="relative flex items-center justify-center h-24 w-24 rounded-full bg-red-500/10 border border-red-500/40 text-red-500 mb-8 animate-pulse shadow-[0_0_30px_rgba(239,68,68,0.15)]">
+      <AlertOctagon class="h-12 w-12" />
+      <span class="absolute inset-0 rounded-full border border-red-500/30 animate-ping opacity-45"></span>
+    </div>
+
+    <!-- Error HUD details -->
+    <div class="space-y-4 max-w-2xl relative z-10">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-slate-900 border border-slate-800 text-[10px] font-black text-red-400 uppercase tracking-widest">
+        <Terminal class="h-3.5 w-3.5" />
+        STATUS CODE: 404_TELEMETRY_LOST
+      </span>
+
+      <h1 class="text-7xl sm:text-9xl font-black font-display text-white tracking-tighter leading-none select-none">
+        404
+      </h1>
+
+      <h2 class="text-lg sm:text-2xl font-black text-amber-500 uppercase tracking-tight max-w-lg mx-auto">
+        SOBRESALT CRÍTIC: LA PÀGINA HA ESTAT FURTADA O NO EXISTEIX
+      </h2>
+
+      <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed font-medium">
+        El mòdul de telemetria ha perdut el senyal d'aquest vector. És possible que el succés hagi estat arxivat, censurat pel comitè o que s'hagi volatilitzat sota circumstàncies extremadament absurdes.
+      </p>
+    </div>
+
+    <!-- Back to safety button -->
+    <div class="mt-10 relative z-10">
+      <a
+        href="/"
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-amber-500 bg-amber-500/10 hover:bg-amber-500/20 text-xs font-black uppercase tracking-widest text-amber-400 hover:text-white transition-all cursor-pointer duration-300 hover:scale-[1.03] shadow-[0_0_25px_rgba(245,158,11,0.18)]"
+      >
+        <Home class="h-4 w-4" />
+        RESTABLIR CONNEXIÓ (INICI)
+      </a>
+    </div>
+
+    <!-- Terminal Output Simulation Footer -->
+    <div class="mt-12 bg-slate-950/60 border border-slate-900/80 rounded-lg p-3 max-w-sm text-[8px] text-slate-600 space-y-1 text-left select-none">
+      <div class="flex items-center gap-1.5 text-red-500/60 font-bold">
+        <span class="h-1 w-1 rounded-full bg-red-500 animate-ping"></span>
+        <span>ERROR SYSTEM LOG:</span>
+      </div>
+      <div>&gt; ERR_CONNECTION_TERMINATED_BY_ABSURDITY</div>
+      <div>&gt; VECTOR_SLUG_NOT_RESOLVED_BY_VAR</div>
+      <div>&gt; REDIRECTING_TO_STABLE_SPORTS_HUD... DONE</div>
+    </div>
+  </div>
+</BaseLayout>

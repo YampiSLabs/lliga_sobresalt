@@ -1,0 +1,306 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getIncidents, getMediaUrl } from "../lib/api";
+import { ArrowLeft, Calendar, ShieldAlert, FileText, Cpu } from "lucide-preact";
+import type { LanguageCode } from "../lib/i18n";
+import { useTranslations, formatDate, localizePath } from "../lib/i18n";
+
+interface Props {
+  id: string;
+  lang: LanguageCode;
+}
+
+const { id, lang } = Astro.props;
+const t = useTranslations(lang);
+
+const incidents = await getIncidents(lang);
+const incident = incidents.find((inc) => inc.id.toString() === id);
+
+if (!incident) {
+  return Astro.redirect(localizePath("./", lang));
+}
+
+const formattedHappenedAt = incident.happened_at
+  ? formatDate(incident.happened_at, lang)
+  : { ca: "Jornada 12 de La Lliga", es: "Jornada 12 de La Lliga", en: "Round 12 of The League" }[lang];
+
+// Deterministic points breakdown simulation based on incident ID
+const varAnalysisBreakdown = [
+  {
+    label: {
+      ca: "Gravetat Absurda (Coeficient de Ridiculitat)",
+      es: "Gravedad Absurda (Coeficiente de Ridiculez)",
+      en: "Absurd Severity (Ridiculousness Coefficient)",
+    }[lang],
+    points: Math.floor(incident.points * 0.4),
+  },
+  {
+    label: {
+      ca: "Alarma Social (Impacte en Grups de WhatsApp)",
+      es: "Alarma Social (Impacto en Grupos de WhatsApp)",
+      en: "Social Alarm (Impact on WhatsApp Groups)",
+    }[lang],
+    points: Math.floor(incident.points * 0.3),
+  },
+  {
+    label: {
+      ca: "Vandalisme Creatiu i Espontanietat",
+      es: "Vandalismo Creativo y Espontaneidad",
+      en: "Creative Vandalism & Spontaneity",
+    }[lang],
+    points: Math.floor(incident.points * 0.2),
+  },
+  {
+    label: {
+      ca: "Bonus de Territorialitat o Clàssic de la Jornada",
+      es: "Bonus de Territorialidad o Clásico de la Jornada",
+      en: "Territorial Bonus or Round Classic",
+    }[lang],
+    points: Math.max(
+      2,
+      incident.points -
+        Math.floor(incident.points * 0.4) -
+        Math.floor(incident.points * 0.3) -
+        Math.floor(incident.points * 0.2)
+    ),
+  },
+];
+
+// Localized Labels
+const textBack = {
+  ca: "TORNAR AL RANKING",
+  es: "VOLVER AL RANKING",
+  en: "BACK TO SCOREBOARD",
+}[lang];
+
+const textReport = {
+  ca: "ACTA OFICIAL",
+  es: "ACTA OFICIAL",
+  en: "OFFICIAL REPORT",
+}[lang];
+
+const textCity = {
+  ca: "CIUTAT:",
+  es: "CIUDAD:",
+  en: "CITY:",
+}[lang];
+
+const textCategory = {
+  ca: "CATEGORIA:",
+  es: "CATEGORÍA:",
+  en: "CATEGORY:",
+}[lang];
+
+const textSummaryHeader = {
+  ca: "RESUM FACTUAL DEL CAS",
+  es: "RESUMEN FACTUAL DEL CASO",
+  en: "FACTUAL CASE SUMMARY",
+}[lang];
+
+const textSourcesHeader = {
+  ca: "FONTS DE PREMSA HOMOLOGADES",
+  es: "FUENTES DE PRENSA HOMOLOGADAS",
+  en: "APPROVED MEDIA SOURCES",
+}[lang];
+
+const textReadOriginal = {
+  ca: "LLEGIR ORIGINAL",
+  es: "LEER ORIGINAL",
+  en: "READ ORIGINAL",
+}[lang];
+
+const textVarAnalysis = {
+  ca: "ANÀLISI DEL VAR (IA)",
+  es: "ANÁLISIS DEL VAR (IA)",
+  en: "VAR (AI) ANALYSIS",
+}[lang];
+
+const textVarCriteria = {
+  ca: "CRITERI D'AVALUACIÓ",
+  es: "CRITERIO DE EVALUACIÓN",
+  en: "EVALUATION CRITERIA",
+}[lang];
+
+const textFinalVarScore = {
+  ca: "PUNTUACIÓ FINAL VAR:",
+  es: "PUNTUACIÓN FINAL VAR:",
+  en: "FINAL VAR SCORE:",
+}[lang];
+
+const textTimestamp = {
+  ca: "TIMESTAMP DECISIÓ",
+  es: "TIMESTAMP DECISIÓN",
+  en: "DECISION TIMESTAMP",
+}[lang];
+
+const textDecisionStatus = {
+  ca: "STATUS DEL JUTJAT",
+  es: "ESTADO DEL JUICIO",
+  en: "DECISION STATUS",
+}[lang];
+
+const textApprovedAndClosed = {
+  ca: "HOMOLOGAT I TANCAT",
+  es: "HOMOLOGADO Y CERRADO",
+  en: "APPROVED AND CLOSED",
+}[lang];
+
+const textNote = {
+  ca: "*Nota: Les decisions del Comité de Sobresalts són inapel·lables i tenen un marge d'absurditat del 99.8%.",
+  es: "*Nota: Las decisiones del Comité de Sobresaltos son inapelables y tienen un margen de absurdo del 99.8%.",
+  en: "*Note: Decisions of the Competition Committee are final and have an absurdity margin of 99.8%.",
+}[lang];
+---
+
+<BaseLayout title={`${incident.satirical_headline || "Sobresalt"} · Detall de l'Incident`} lang={lang}>
+  <div class="space-y-8">
+    <!-- Navigation header -->
+    <div class="flex items-center justify-between border-b border-slate-900 pb-4 select-none">
+      <a
+        href={localizePath("./", lang)}
+        class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-900 bg-slate-950/40 hover:bg-slate-900/30 text-[9px] font-black uppercase tracking-wider text-amber-500 hover:text-amber-400 transition-all cursor-pointer duration-300 hover:scale-[1.02]"
+      >
+        <ArrowLeft class="h-3.5 w-3.5" />
+        {textBack}
+      </a>
+      <span class="font-mono text-[9px] font-bold bg-amber-500/10 border border-amber-500/30 text-amber-400 px-2 py-0.5 rounded uppercase">
+        {textReport} #{incident.id}
+      </span>
+    </div>
+
+    <!-- Title & Metadata Hero Block -->
+    <div class="space-y-4">
+      <div class="flex flex-wrap items-center gap-2 text-[10px] uppercase font-bold text-slate-500 font-mono">
+        <span class="inline-flex items-center gap-1">
+          <Calendar class="h-3.5 w-3.5 text-amber-500" />
+          {formattedHappenedAt}
+        </span>
+        <span>•</span>
+        <span class="inline-flex items-center gap-1">
+          <ShieldAlert class="h-3.5 w-3.5 text-amber-500" />
+          {textCity} {incident.city?.name || "Desconeguda"}
+        </span>
+        <span>•</span>
+        <span class="inline-block px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 font-black">
+          {textCategory} {incident.category.toUpperCase()}
+        </span>
+      </div>
+
+      <!-- Giant Headline -->
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black font-display text-amber-500 uppercase tracking-tight leading-none break-words max-w-5xl select-none">
+        {incident.satirical_headline || incident.canonical_title}
+      </h1>
+
+      <p class="text-slate-400 text-sm md:text-md max-w-3xl leading-relaxed italic border-l-2 border-slate-800 pl-4 py-1">
+        "{incident.canonical_title}"
+      </p>
+    </div>
+
+    <!-- Main Grid Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <!-- Left side: Incident detail text & source card -->
+      <div class="lg:col-span-7 space-y-6">
+        {incident.image_url && (
+          <div class="space-y-2">
+            <div class="overflow-hidden rounded-2xl border border-slate-900 bg-slate-950/20 shadow-xl max-h-[350px]">
+              <img
+                src={getMediaUrl(incident.image_url)}
+                alt="Imatge de referència"
+                class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+              />
+            </div>
+            {incident.image_disclaimer && (
+              <p class="text-[10px] text-slate-500 italic text-right font-mono tracking-wide px-2 select-none">
+                * {incident.image_disclaimer}
+              </p>
+            )}
+          </div>
+        )}
+
+        <div class="hud-panel p-6 rounded-2xl bg-slate-950/30 border border-slate-900/60 space-y-4">
+          <h2 class="text-sm font-black font-mono tracking-widest text-slate-400 uppercase flex items-center gap-2 border-b border-slate-900 pb-3">
+            <FileText class="h-4.5 w-4.5 text-amber-500" />
+            {textSummaryHeader}
+          </h2>
+          <p class="text-slate-300 text-xs md:text-sm leading-relaxed font-medium">
+            {incident.short_neutral_summary || "No s'ha aportat cap resum neutral ampliat per a aquesta acta."}
+          </p>
+        </div>
+
+        {/* Source Box */}
+        {incident.sources && incident.sources.length > 0 && (
+          <div class="hud-panel p-5 rounded-xl bg-slate-950/30 border border-slate-900/40">
+            <span class="block font-mono text-[9px] text-slate-500 font-extrabold uppercase tracking-widest mb-3">{textSourcesHeader}</span>
+            <div class="flex flex-wrap gap-3">
+              {incident.sources.map((src) => (
+                <a
+                  href={src.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-800 bg-slate-900/40 text-[10px] font-bold text-slate-300 hover:text-white hover:border-slate-700 transition-all cursor-pointer"
+                >
+                  <span class="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                  {src.outlet_name.toUpperCase()} ({textReadOriginal})
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <!-- Right side: Military Receipt VAR Analysis -->
+      <div class="lg:col-span-5">
+        <div class="relative rounded-2xl border border-slate-800 bg-slate-950 shadow-xl overflow-hidden font-mono">
+          <div class="absolute inset-0 hud-grid opacity-5 pointer-events-none"></div>
+          <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500"></div>
+
+          {/* Ticket Header */}
+          <div class="p-6 pb-4 border-b border-dashed border-slate-800 flex flex-col items-center text-center">
+            <Cpu class="h-8 w-8 text-amber-500 mb-2 animate-pulse" />
+            <h3 class="text-xs font-black uppercase tracking-widest text-slate-300">{textVarAnalysis}</h3>
+            <span class="text-[8px] text-slate-500 font-bold">SOBRESALT IA-DECISION MODULE v4.2</span>
+          </div>
+
+          {/* Ticket Content */}
+          <div class="p-6 space-y-4 text-[11px] text-slate-400 leading-normal">
+            <div class="flex justify-between font-bold border-b border-slate-900 pb-1 text-slate-500 text-[9px] uppercase tracking-wider">
+              <span>{textVarCriteria}</span>
+              <span>{t("label.points").toUpperCase()}</span>
+            </div>
+
+            {varAnalysisBreakdown.map((item) => (
+              <div class="flex justify-between items-start gap-4">
+                <span class="text-slate-300">{item.label}</span>
+                <span class="text-amber-500 font-black shrink-0">+{item.points} PTS</span>
+              </div>
+            ))}
+
+            <div class="border-t border-dashed border-slate-800 my-4"></div>
+
+            <div class="flex justify-between items-center text-xs font-black text-white bg-amber-500/5 border border-amber-500/20 p-3 rounded-lg">
+              <span class="uppercase tracking-widest">{textFinalVarScore}</span>
+              <span class="text-lg text-amber-500 tracking-tight">+{incident.points} PTS</span>
+            </div>
+          </div>
+
+          {/* Ticket Footer details */}
+          <div class="bg-slate-900/30 px-6 py-4 border-t border-slate-800/80 text-[8px] text-slate-500 space-y-1.5 select-none">
+            <div class="flex justify-between">
+              <span>{textTimestamp}</span>
+              <span>{new Date().toISOString().slice(0, 19).replace('T', ' ')}</span>
+            </div>
+            <div class="flex justify-between">
+              <span>{textDecisionStatus}</span>
+              <span class="text-green-500 font-bold">{textApprovedAndClosed}</span>
+            </div>
+            <p class="text-[7px] leading-tight text-center text-slate-600 font-medium pt-2 border-t border-slate-900">
+              {textNote}
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</BaseLayout>

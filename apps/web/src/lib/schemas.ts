@@ -28,10 +28,41 @@ export const IncidentSchema = z.object({
   happened_at: z.string().nullable(),
   sources: z.array(SourceSchema),
   image_url: z.string().optional().nullable(),
+  thumbnail_url: z.string().optional().nullable(),
+  image_disclaimer: z.string().optional().nullable(),
 });
 
 export const RankingResponseSchema = z.array(CityScoreSchema);
 export const IncidentsResponseSchema = z.array(IncidentSchema);
+
+export const PodiumItemSchema = z.object({
+  pos: z.number().int(),
+  name: z.string(),
+  slug: z.string(),
+  points: z.number(),
+  incidents_count: z.number().int(),
+});
+
+export const RoundBriefSchema = z.object({
+  id: z.number().int(),
+  name: z.string(),
+  starts_at: z.string().nullable(),
+  ends_at: z.string().nullable(),
+  status: z.string(),
+});
+
+export const SeasonSchema = z.object({
+  id: z.number().int(),
+  name: z.string(),
+  starts_at: z.string().nullable(),
+  ends_at: z.string().nullable(),
+  status: z.string(),
+  winner: PodiumItemSchema.nullable(),
+  podium: z.array(PodiumItemSchema),
+  rounds: z.array(RoundBriefSchema),
+});
+
+export const SeasonsResponseSchema = z.array(SeasonSchema);
 
 export type City = {
   name: string;
@@ -61,5 +92,10 @@ export type Incident = {
   happened_at: string | null;
   sources: Source[];
   image_url?: string | null;
+  thumbnail_url?: string | null;
+  image_disclaimer?: string | null;
 };
 
+export type PodiumItem = z.infer<typeof PodiumItemSchema>;
+export type RoundBrief = z.infer<typeof RoundBriefSchema>;
+export type Season = z.infer<typeof SeasonSchema>;

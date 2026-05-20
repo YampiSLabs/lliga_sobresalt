@@ -11,8 +11,27 @@ export default defineConfig({
   site,
   base,
   output: "static",
+  i18n: {
+    defaultLocale: "ca",
+    locales: ["ca", "es", "en"],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
   integrations: [sitemap(), preact(), mdx()],
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      proxy: {
+        "/api": {
+          target: "http://localhost:8000",
+          changeOrigin: true,
+        },
+        "/media": {
+          target: "http://localhost:8000",
+          changeOrigin: true,
+        },
+      },
+    },
   },
 });

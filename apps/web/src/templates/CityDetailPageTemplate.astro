@@ -1,0 +1,146 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getRanking, getIncidents } from "../lib/api";
+import CityDashboard from "../components/CityDashboard.tsx";
+import { getCityShieldSrc } from "../lib/cityShields";
+import { ArrowLeft } from "lucide-preact";
+import type { LanguageCode } from "../lib/i18n";
+import { useTranslations, localizePath } from "../lib/i18n";
+
+interface Props {
+  slug: string;
+  lang: LanguageCode;
+}
+
+const { slug, lang } = Astro.props;
+const t = useTranslations(lang);
+
+const ranking = await getRanking(undefined, lang);
+const row = ranking.find((r) => r.city.slug === slug) || {
+  position: 0,
+  points: 0,
+  incidents_count: 0,
+  city: { name: slug.toUpperCase(), slug },
+};
+
+const incidents = await getIncidents(lang);
+const cityIncidents = incidents.filter((i) => i.city?.slug === slug);
+const shieldSrc = getCityShieldSrc(slug);
+
+// Localized Texts
+const textBack = {
+  ca: "TORNAR AL RANKING",
+  es: "VOLVER AL RANKING",
+  en: "BACK TO SCOREBOARD",
+}[lang] || "TORNAR AL RANKING";
+
+const textStatus = {
+  ca: "ESTAT:",
+  es: "ESTADO:",
+  en: "STATUS:",
+}[lang] || "ESTAT:";
+
+const textActive = {
+  ca: "ACTIU",
+  es: "ACTIVO",
+  en: "ACTIVE",
+}[lang] || "ACTIU";
+
+const textMonitored = {
+  ca: "MUNICIPI MONITORITZAT",
+  es: "MUNICIPIO MONITORIZADO",
+  en: "MONITORED MUNICIPALITY",
+}[lang] || "MUNICIPI MONITORITZAT";
+
+const textClassification = {
+  ca: "CLASSIFICACIÓ",
+  es: "CLASIFICACIÓN",
+  en: "RANKING",
+}[lang] || "CLASSIFICACIÓ";
+
+const textPointsAccum = {
+  ca: "PUNTS ACUMULATS",
+  es: "PUNTOS ACUMULADOS",
+  en: "ACCUMULATED POINTS",
+}[lang] || "PUNTS ACUMULATS";
+
+const textIncidents = {
+  ca: "INCIDENTS",
+  es: "INCIDENTES",
+  en: "INCIDENTS",
+}[lang] || "INCIDENTS";
+---
+
+<BaseLayout title={`${row.city.name} · ${t("nav.ciutats")} · La Lliga del Sobresalt`} lang={lang}>
+  <div class="space-y-6">
+    <!-- Breadcrumb & Back button -->
+    <div class="flex items-center justify-between border-b border-slate-900 pb-4 select-none">
+      <a
+        href={localizePath("./", lang)}
+        class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-900 bg-slate-950/40 hover:bg-slate-900/30 text-[9px] font-black uppercase tracking-wider text-amber-500 hover:text-amber-400 transition-all cursor-pointer duration-300 hover:scale-[1.02]"
+      >
+        <ArrowLeft class="h-3.5 w-3.5" />
+        {textBack}
+      </a>
+      <div class="flex items-center gap-2 text-[10px] text-slate-500 font-mono">
+        <span>{textStatus}</span>
+        <span class="text-green-400 font-bold flex items-center gap-1">
+          <span class="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span>
+          {textActive}
+        </span>
+      </div>
+    </div>
+
+    <!-- Widescreen Header Banner -->
+    <div class="relative overflow-hidden rounded-2xl border border-slate-900 bg-slate-950/40 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="absolute inset-0 bg-radial-gradient from-amber-500/5 to-transparent pointer-events-none"></div>
+
+      <div class="flex items-center gap-5 z-10">
+        {shieldSrc ? (
+          <img
+            src={shieldSrc}
+            alt=""
+            class="h-20 w-20 object-contain drop-shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-transform duration-500 hover:scale-105"
+            style={{ viewTransitionName: `shield-${slug}` }}
+          />
+        ) : (
+          <div class="h-20 w-20 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-slate-400">
+            {row.city.name.slice(0, 2)}
+          </div>
+        )}
+        <div class="space-y-1">
+          <span class="font-mono text-[9px] text-slate-500 font-black tracking-widest uppercase">{textMonitored}</span>
+          <h1 class="text-3xl md:text-5xl font-black font-display text-white uppercase tracking-tighter leading-none">
+            {row.city.name}
+          </h1>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-6 border-t md:border-t-0 md:border-l border-slate-900 pt-4 md:pt-0 md:pl-8 z-10 w-full md:w-auto justify-around md:justify-start">
+        <div class="text-center md:text-left">
+          <span class="block font-mono text-[8px] text-slate-500 uppercase font-black">{textClassification}</span>
+          <span class="text-3xl font-black font-mono text-white">#{row.position || "-"}</span>
+        </div>
+        <div class="text-center md:text-left">
+          <span class="block font-mono text-[8px] text-slate-500 uppercase font-black">{textPointsAccum}</span>
+          <span class="text-3xl font-black font-mono text-amber-500">{row.points}</span>
+        </div>
+        <div class="text-center md:text-left">
+          <span class="block font-mono text-[8px] text-slate-500 uppercase font-black">{textIncidents}</span>
+          <span class="text-3xl font-black font-mono text-slate-300">{row.incidents_count}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bento Grid Interactive Dashboard -->
+    <CityDashboard
+      client:load
+      citySlug={slug}
+      cityName={row.city.name}
+      points={row.points}
+      position={row.position}
+      incidents={cityIncidents}
+      lang={lang}
+    />
+  </div>
+</BaseLayout>

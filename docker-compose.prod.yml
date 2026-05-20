@@ -5,16 +5,14 @@ services:
     image: lliga-sobresalt-backend:latest
     container_name: lliga_sobresalt_backend
     restart: unless-stopped
-    env_file:
-      - .env
     environment: &backend_environment
-      SECRET_KEY: ${SECRET_KEY}
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY}
       DEBUG: ${DEBUG:-False}
-      DATABASE_URL: ${DATABASE_URL}
-      REDIS_URL: ${REDIS_URL}
-      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-sobresalt.yampi.eu}
-      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-https://sobresalt.yampi.eu}
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-https://beatrizagent.github.io}
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
+      REDIS_URL: ${REDIS_URL:?Set REDIS_URL}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:?Set ALLOWED_HOSTS}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:?Set CSRF_TRUSTED_ORIGINS}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:?Set CORS_ALLOWED_ORIGINS}
       CSRF_COOKIE_SECURE: ${CSRF_COOKIE_SECURE:-True}
       SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-True}
       SECURE_SSL_REDIRECT: ${SECURE_SSL_REDIRECT:-True}
@@ -26,6 +24,7 @@ services:
       OPENROUTER_BASE_URL: ${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
       OPENROUTER_MODEL: ${OPENROUTER_MODEL:-openrouter/free}
       OPENROUTER_TIMEOUT_SECONDS: ${OPENROUTER_TIMEOUT_SECONDS:-60}
+      OPENROUTER_MAX_ARTICLES_PER_BATCH: ${OPENROUTER_MAX_ARTICLES_PER_BATCH:-5}
       OPENROUTER_APP_NAME: ${OPENROUTER_APP_NAME:-La Lliga del Sobresalt}
     command: >
       sh -c "python manage.py migrate &&
@@ -71,8 +70,6 @@ services:
     image: lliga-sobresalt-backend:latest
     container_name: lliga_sobresalt_celery_worker
     restart: unless-stopped
-    env_file:
-      - .env
     environment: *backend_environment
     command: celery -A config worker -l info
     networks:
@@ -91,8 +88,6 @@ services:
     image: lliga-sobresalt-backend:latest
     container_name: lliga_sobresalt_celery_beat
     restart: unless-stopped
-    env_file:
-      - .env
     environment: *backend_environment
     command: celery -A config beat -l info
     networks:

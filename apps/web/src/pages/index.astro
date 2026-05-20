@@ -1,11 +1,5 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import { getIncidents, getRanking } from "../lib/api";
-import Dashboard from "../components/Dashboard.tsx";
-
-const [ranking, incidents] = await Promise.all([getRanking(), getIncidents()]);
+import IndexPageTemplate from "../templates/IndexPageTemplate.astro";
 ---
 
-<BaseLayout>
-  <Dashboard initialRanking={ranking} initialIncidents={incidents} client:load />
-</BaseLayout>
+<IndexPageTemplate lang="ca" />

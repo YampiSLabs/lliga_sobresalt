@@ -1,0 +1,15 @@
+---
+import IncidentDetailPageTemplate from "../../templates/IncidentDetailPageTemplate.astro";
+import { getIncidents } from "../../lib/api";
+
+export async function getStaticPaths() {
+  const incidents = await getIncidents("ca");
+  return incidents.map((incident) => ({
+    params: { id: incident.id.toString() },
+  }));
+}
+
+const { id } = Astro.params;
+---
+
+<IncidentDetailPageTemplate id={id!} lang="ca" />

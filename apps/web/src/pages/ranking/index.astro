@@ -1,11 +1,5 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getRanking } from "../../lib/api";
-import Dashboard from "../../components/Dashboard.tsx";
-
-const ranking = await getRanking();
+import RankingPageTemplate from "../../templates/RankingPageTemplate.astro";
 ---
 
-<BaseLayout title="Ranking semanal · La Lliga del Sobresalt">
-  <Dashboard initialRanking={ranking} initialIncidents={[]} fullRankingView client:load />
-</BaseLayout>
+<RankingPageTemplate lang="ca" />

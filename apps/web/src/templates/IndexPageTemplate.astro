@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getIncidents, getRanking, getSeasons } from "../lib/api";
+import Dashboard from "../components/Dashboard.tsx";
+import Hero from "../components/Hero.astro";
+import type { LanguageCode } from "../lib/i18n";
+
+interface Props {
+  lang: LanguageCode;
+}
+
+const { lang } = Astro.props;
+
+const [ranking, incidents, seasons] = await Promise.all([
+  getRanking(undefined, lang),
+  getIncidents(lang),
+  getSeasons(lang),
+]);
+---
+
+<BaseLayout lang={lang} activeTab="RANKING">
+  <Hero ranking={ranking} incidents={incidents} lang={lang} />
+  <Dashboard
+    initialRanking={ranking}
+    initialIncidents={incidents}
+    initialSeasons={seasons}
+    lang={lang}
+    client:load
+  />
+</BaseLayout>

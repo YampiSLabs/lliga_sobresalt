@@ -1,0 +1,15 @@
+---
+import CityDetailPageTemplate from "../../../templates/CityDetailPageTemplate.astro";
+import { getRanking } from "../../../lib/api";
+
+export async function getStaticPaths() {
+  const ranking = await getRanking(undefined, "en");
+  return ranking.map((row) => ({
+    params: { slug: row.city.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+---
+
+<CityDetailPageTemplate slug={slug!} lang="en" />
