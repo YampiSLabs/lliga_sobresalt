@@ -229,11 +229,12 @@ OPENCODE_MODEL = env("OPENCODE_MODEL", default="big-pickle")
 OPENCODE_TIMEOUT_SECONDS = env.int("OPENCODE_TIMEOUT_SECONDS", default=60)
 
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[] if not DEBUG else ["http://localhost:8000"])
+CORS_ALLOW_ALL_ORIGINS = env.bool("CORS_ALLOW_ALL_ORIGINS", default=False)
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[] if not DEBUG else ["http://localhost:4321"])
 if not DEBUG:
     if not CSRF_TRUSTED_ORIGINS:
         raise RuntimeError("CSRF_TRUSTED_ORIGINS must be set when DEBUG=False")
-    if not CORS_ALLOWED_ORIGINS:
+    if not CORS_ALLOW_ALL_ORIGINS and not CORS_ALLOWED_ORIGINS:
         raise RuntimeError("CORS_ALLOWED_ORIGINS must be set when DEBUG=False")
 CORS_ALLOW_CREDENTIALS = False
 CSRF_COOKIE_HTTPONLY = True
