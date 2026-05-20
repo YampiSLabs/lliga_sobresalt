@@ -29,6 +29,9 @@ services:
       PUBLIC_API_RATE_LIMIT_PER_MINUTE: ${PUBLIC_API_RATE_LIMIT_PER_MINUTE:-120}
       PUBLIC_API_RATE_LIMIT_WINDOW_SECONDS: ${PUBLIC_API_RATE_LIMIT_WINDOW_SECONDS:-60}
       SCRAPER_MAX_IMAGE_BYTES: ${SCRAPER_MAX_IMAGE_BYTES:-5242880}
+      MEDIA_URL: ${MEDIA_URL:-/media/}
+      MEDIA_ROOT: ${MEDIA_ROOT:-/app/media}
+      SERVE_MEDIA_FILES: ${SERVE_MEDIA_FILES:-True}
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434/v1}
       OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3:4b}
       OLLAMA_TIMEOUT_SECONDS: ${OLLAMA_TIMEOUT_SECONDS:-60}
@@ -48,6 +51,8 @@ services:
              gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120"
     expose:
       - "8000"
+    volumes:
+      - media_data:/app/media
     networks:
       - dokploy-network
     mem_limit: 768m
@@ -96,6 +101,8 @@ services:
     pids_limit: 256
     environment: *backend_environment
     command: celery -A config worker -l info
+    volumes:
+      - media_data:/app/media
     networks:
       - dokploy-network
     mem_limit: 768m
@@ -122,6 +129,8 @@ services:
     pids_limit: 128
     environment: *backend_environment
     command: celery -A config beat -l info
+    volumes:
+      - media_data:/app/media
     networks:
       - dokploy-network
     mem_limit: 256m
@@ -135,3 +144,6 @@ services:
 networks:
   dokploy-network:
     external: true
+
+volumes:
+  media_data:

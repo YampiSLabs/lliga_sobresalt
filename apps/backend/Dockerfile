@@ -12,7 +12,7 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY --chown=app:app . .
-RUN chown -R app:app /app
+RUN mkdir -p /app/media && chown -R app:app /app
 
 USER app
 
