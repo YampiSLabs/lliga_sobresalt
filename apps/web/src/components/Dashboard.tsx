@@ -10,7 +10,13 @@ import {
   Flame,
   Link2,
   Info,
-  ShieldAlert
+  ShieldAlert,
+  Star,
+  Diamond,
+  Crosshair,
+  Zap,
+  User,
+  Trash2
 } from "lucide-preact";
 import CataloniaMap from "./CataloniaMap";
 import RankingTable from "./RankingTable";
@@ -18,7 +24,7 @@ import CityDashboard from "./CityDashboard";
 import ScoreChart from "./ScoreChart";
 import { getRanking, getMediaUrl } from "../lib/api";
 import type { CityScore, Incident, Season, RoundBrief } from "../lib/schemas";
-import { useTranslations, type LanguageCode } from "../lib/i18n";
+import { type LanguageCode } from "../lib/i18n";
 
 interface Props {
   initialRanking: CityScore[];
@@ -39,28 +45,28 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
       color: "text-red-400",
       bg: "bg-red-500/10",
       border: "border-red-500/20",
-      badge: { ca: "Ganivets d'Or 🔪", es: "Cuchillos de Oro 🔪", en: "Golden Knives 🔪" }[lang]
+      badge: { ca: "Ganivets d'Or", es: "Cuchillos de Oro", en: "Golden Knives" }[lang]
     },
     pelea: {
       label: { ca: "Baralles", es: "Peleas", en: "Fights" }[lang],
       color: "text-rose-400",
       bg: "bg-rose-500/10",
       border: "border-rose-500/20",
-      badge: { ca: "Combat Urbà 👊", es: "Combate Urbano 👊", en: "Urban Combat 👊" }[lang]
+      badge: { ca: "Combat Urbà", es: "Combate Urbano", en: "Urban Combat" }[lang]
     },
     robo_violento: {
       label: { ca: "Robatoris", es: "Robos", en: "Robberies" }[lang],
       color: "text-amber-400",
       bg: "bg-amber-500/10",
       border: "border-amber-500/20",
-      badge: { ca: "Saqueig VIP 👤", es: "Saqueo VIP 👤", en: "VIP Looting 👤" }[lang]
+      badge: { ca: "Saqueig VIP", es: "Saqueo VIP", en: "VIP Looting" }[lang]
     },
     incivismo: {
       label: { ca: "Incivisme", es: "Incivismo", en: "Vandalism" }[lang],
       color: "text-blue-400",
       bg: "bg-blue-500/10",
       border: "border-blue-500/20",
-      badge: { ca: "Mala Vida 🗑️", es: "Mala Vida 🗑️", en: "Trashy Life 🗑️" }[lang]
+      badge: { ca: "Mala Vida", es: "Mala Vida", en: "Trashy Life" }[lang]
     },
   };
   // --- STATE ---
@@ -151,7 +157,6 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
         key,
         points,
         label: CATEGORY_MAP[key]?.label || key,
-        icon: CATEGORY_MAP[key]?.icon || "🔸",
         barBg: CATEGORY_MAP[key]?.bg.replace("/10", "/40") || "bg-slate-700"
       }))
       .sort((a, b) => b.points - a.points);
@@ -367,13 +372,13 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
                 <span class="text-red-400 font-mono">{tickerData.baja.delta < 0 ? tickerData.baja.delta : `-${tickerData.baja.delta}`}</span>
               </div>
               <div class="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer" onClick={() => setActiveCitySlug(tickerData.leader.city.slug)}>
-                <span class="text-amber-400">★</span>
+                <Star class="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
                 <span>{{ ca: "LÍDER:", es: "LÍDER:", en: "LEADER:" }[lang]}</span>
                 <strong class="text-white">{tickerData.leader.city.name}</strong>
                 <span class="text-amber-400 font-mono">+{tickerData.leader.points}</span>
               </div>
               <div class="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer" onClick={() => setActiveCitySlug(tickerData.enRacha.city.slug)}>
-                <span class="text-red-500">🔥</span>
+                <Flame class="h-3.5 w-3.5 text-red-500 fill-red-500" />
                 <span>{{ ca: "EN RATXA:", es: "EN RACHA:", en: "ON FIRE:" }[lang]}</span>
                 <strong class="text-white">{tickerData.enRacha.city.name}</strong>
                 <span class="text-green-400 font-mono">+{tickerData.enRacha.delta || 0}</span>
@@ -417,17 +422,17 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
             }[lang]}
           </p>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-[10px] font-bold">
-            <div class="bg-slate-900/30 p-2.5 rounded-lg border border-slate-900 text-red-400">
-              {{ ca: "🔪 Arma blanca: +12 pts", es: "🔪 Arma blanca: +12 pts", en: "🔪 Knife presence: +12 pts" }[lang]}
+            <div class="bg-slate-900/30 p-2.5 rounded-lg border border-slate-900 text-red-400 flex items-center gap-1.5">
+              <Crosshair class="h-3 w-3 shrink-0" /> {{ ca: "Arma blanca: +12 pts", es: "Arma blanca: +12 pts", en: "Knife: +12 pts" }[lang]}
             </div>
-            <div class="bg-slate-900/30 p-2.5 rounded-lg border border-slate-900 text-rose-400">
-              {{ ca: "👊 Agressions i baralles: +8 pts", es: "👊 Agresiones y peleas: +8 pts", en: "👊 Assaults and fights: +8 pts" }[lang]}
+            <div class="bg-slate-900/30 p-2.5 rounded-lg border border-slate-900 text-rose-400 flex items-center gap-1.5">
+              <Zap class="h-3 w-3 shrink-0" /> {{ ca: "Agressions i baralles: +8 pts", es: "Agresiones y peleas: +8 pts", en: "Assaults and fights: +8 pts" }[lang]}
             </div>
-            <div class="bg-slate-900/30 p-2.5 rounded-lg border border-slate-900 text-amber-400">
-              {{ ca: "👤 Robatoris violents: +6 pts", es: "👤 Robos violentos: +6 pts", en: "👤 Violent robberies: +6 pts" }[lang]}
+            <div class="bg-slate-900/30 p-2.5 rounded-lg border border-slate-900 text-amber-400 flex items-center gap-1.5">
+              <User class="h-3 w-3 shrink-0" /> {{ ca: "Robatoris violents: +6 pts", es: "Robos violentos: +6 pts", en: "Violent robberies: +6 pts" }[lang]}
             </div>
-            <div class="bg-slate-900/30 p-2.5 rounded-lg border border-slate-900 text-blue-400">
-              {{ ca: "🗑️ Incivisme públic: +4 pts", es: "🗑️ Incivismo público: +4 pts", en: "🗑️ Public vandalism: +4 pts" }[lang]}
+            <div class="bg-slate-900/30 p-2.5 rounded-lg border border-slate-900 text-blue-400 flex items-center gap-1.5">
+              <Trash2 class="h-3 w-3 shrink-0" /> {{ ca: "Incivisme públic: +4 pts", es: "Incivismo público: +4 pts", en: "Public vandalism: +4 pts" }[lang]}
             </div>
           </div>
         </div>
@@ -458,6 +463,8 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
             {/* General Tab */}
             <button
               onClick={() => handleSelectRound(null)}
+              aria-pressed={selectedRoundId === null}
+              aria-label={{ ca: "Mostrar acumulat general", es: "Mostrar acumulado general", en: "Show general accumulation" }[lang]}
               class={`flex-shrink-0 flex flex-col justify-between items-start p-4 rounded-xl border min-w-[140px] transition-all duration-300 hover:scale-[1.02] cursor-pointer ${
                 selectedRoundId === null
                   ? "bg-amber-500/5 border-amber-500 text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
@@ -471,7 +478,7 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
                 {{ ca: "ACUMULAT", es: "ACUMULADO", en: "ACCUMULATED" }[lang]}
               </span>
               <span class="inline-flex items-center gap-1.5 font-mono text-[8px] font-bold text-slate-400 mt-2 bg-slate-900/60 border border-slate-800 px-1.5 py-0.5 rounded">
-                ⚡ {{ ca: "GENERAL", es: "GENERAL", en: "GENERAL" }[lang]}
+                <Zap class="h-3 w-3 shrink-0" /> {{ ca: "GENERAL", es: "GENERAL", en: "GENERAL" }[lang]}
               </span>
             </button>
 
@@ -485,6 +492,8 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
                 <button
                   key={rnd.id}
                   onClick={() => handleSelectRound(rnd.id)}
+                  aria-pressed={isSelected}
+                  aria-label={`${lang === "en" ? "Show round" : "Mostrar"} ${rnd.name}`}
                   class={`flex-shrink-0 flex flex-col justify-between items-start p-4 rounded-xl border min-w-[160px] transition-all duration-300 hover:scale-[1.02] cursor-pointer ${
                     isSelected
                       ? "bg-amber-500/5 border-amber-500 text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
@@ -533,6 +542,7 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
           </div>
           <input
             type="text"
+            aria-label={{ ca: "Cerca municipis, titulars, successos", es: "Busca municipios, titulares, sucesos", en: "Search municipalities, headlines, events" }[lang]}
             placeholder={{ ca: "Cerca municipis, titulars, successos...", es: "Busca municipios, titulares, sucesos...", en: "Search municipalities, headlines, events..." }[lang]}
             value={searchQuery}
             onInput={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
@@ -541,6 +551,7 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
+              aria-label={{ ca: "Netejar cerca", es: "Limpiar búsqueda", en: "Clear search" }[lang]}
               class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-200"
             >
               <X class="h-4 w-4" />
@@ -555,6 +566,7 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
           </span>
           <button
             onClick={() => setSelectedCategory(null)}
+            aria-pressed={selectedCategory === null}
             class={`rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-widest border transition-all duration-200 ${
               selectedCategory === null
                 ? "bg-red-500/10 border-red-500/30 text-red-400"
@@ -571,6 +583,8 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
               <button
                 key={catKey}
                 onClick={() => setSelectedCategory(catKey)}
+                aria-pressed={isActive}
+                aria-label={`${mapped.label} ${isActive ? "(" + (lang === "en" ? "active" : "actiu") + ")" : ""}`}
                 class={`rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-widest border transition-all duration-200 ${
                   isActive
                     ? `${mapped.bg} ${mapped.border} ${mapped.color}`
@@ -704,7 +718,7 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
                     <div key={idx} class="space-y-1 text-[10px] font-bold">
                       <div class="flex items-center justify-between text-slate-300">
                         <span class="flex items-center gap-1">
-                          <span class="text-xs">{item.icon}</span>
+                          <span class="text-xs"><Diamond class="h-3.5 w-3.5 text-amber-500" /></span>
                           <span>{item.label}</span>
                         </span>
                         <span class="font-mono text-slate-100">{item.points} pts</span>
@@ -759,13 +773,14 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
           {/* Cards Grid */}
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             {filteredIncidents.slice(0, 4).map((incident, index) => {
-              const mappedCat = CATEGORY_MAP[incident.category] || { label: incident.category, color: "text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/20", badge: { ca: "Sobresalt 💫", es: "Sobresalto 💫", en: "Shocking 💫" }[lang] };
+              const mappedCat = CATEGORY_MAP[incident.category] || { label: incident.category, color: "text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/20", badge: { ca: "Sobresalt", es: "Sobresalto", en: "Shocking" }[lang] };
 
               return (
                 <article
                   key={incident.id}
                   onClick={() => setSelectedIncidentId(incident.id)}
-                  class={`relative flex flex-col justify-between gap-4 p-4 rounded-xl border border-slate-900 bg-slate-950/60 overflow-hidden cursor-pointer transition-all duration-300 min-h-[260px] hover:border-amber-500/40 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)] group`}
+                  style={{ animationDelay: `${index * 60}ms` }}
+                  class={`stagger-fade-in relative flex flex-col justify-between gap-4 p-4 rounded-xl border border-slate-900 bg-slate-950/60 overflow-hidden cursor-pointer transition-all duration-300 min-h-[260px] hover:border-amber-500/40 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)] group`}
                 >
                   {/* Incident Background Image with Premium Blending */}
                   {(incident.thumbnail_url || incident.image_url) && (

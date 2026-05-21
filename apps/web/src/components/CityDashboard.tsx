@@ -50,30 +50,30 @@ const getCategoryFallbackGradient = (category: string) => {
   if (cat.includes("apunyalament") || cat.includes("arma_blanca")) {
     return {
       gradient: "from-red-950/80 to-rose-900/40 text-rose-400 border-rose-950",
-      label: "🔪 AB"
+      label: "NAV"
     };
   }
   if (cat.includes("pelea") || cat.includes("agressió") || cat.includes("agressio") || cat.includes("agresión") || cat.includes("agresion")) {
     return {
       gradient: "from-amber-950/80 to-orange-900/40 text-orange-400 border-orange-950",
-      label: "👊 AG"
+      label: "BAR"
     };
   }
   if (cat.includes("robo") || cat.includes("violència") || cat.includes("violencia")) {
     return {
       gradient: "from-violet-950/80 to-indigo-900/40 text-indigo-400 border-indigo-950",
-      label: "👤 RO"
+      label: "ROB"
     };
   }
   if (cat.includes("incivisme") || cat.includes("incivismo") || cat.includes("vandalismo") || cat.includes("vandalisme")) {
     return {
       gradient: "from-yellow-950/80 to-amber-900/40 text-amber-400 border-amber-950",
-      label: "🗑️ IN"
+      label: "INC"
     };
   }
   return {
     gradient: "from-slate-900 to-slate-800 text-slate-400 border-slate-950",
-    label: "💫 SO"
+    label: "ALT"
   };
 };
 

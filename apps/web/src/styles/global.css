@@ -32,6 +32,61 @@ body {
   position: relative;
 }
 
+/* Focus-visible ring for keyboard nav */
+*:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Skip link for keyboard users */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 8px;
+  z-index: 10000;
+  padding: 8px 16px;
+  background: var(--color-brand-primary);
+  color: #020617;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 0 0 8px 8px;
+  transition: top 0.2s;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* Reduced motion: kill animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .scanner-line {
+    display: none;
+  }
+  .animate-marquee {
+    animation: none;
+  }
+  .animate-pulse {
+    animation: none;
+  }
+  .animate-text-gradient {
+    animation: none;
+    background-size: 100%;
+  }
+}
+
+/* Tabular numbers for data display */
+.font-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
 /* Grainy texture overlay */
 body::before {
   content: "";
@@ -135,6 +190,28 @@ body::before {
   background: linear-gradient(to right, transparent, var(--color-brand-primary), transparent);
   animation: scanner 4s infinite linear;
   pointer-events: none;
+}
+
+/* Drawer Slide-in Animation */
+@keyframes slide-in-right {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(0); }
+}
+
+.animate-slide-in {
+  animation: slide-in-right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Stagger fade-in for card grids */
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .stagger-fade-in {
+    animation: fade-in-up 0.4s ease-out both;
+  }
 }
 
 /* Text Gradient Animation */

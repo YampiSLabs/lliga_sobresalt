@@ -1,5 +1,6 @@
 import { useState } from "preact/hooks";
 import { useAutoAnimate } from "@formkit/auto-animate/preact";
+import { Flame } from "lucide-preact";
 import type { CityScore } from "../lib/schemas";
 import { getCityShieldSrc } from "../lib/cityShields";
 import { useTranslations } from "../lib/i18n";
@@ -126,14 +127,14 @@ export default function RankingTable({
         </div>
       </div>
 
-      {/* Grid Headers */}
-      <div className="grid grid-cols-12 gap-2 px-4 py-2 text-[9px] font-black uppercase tracking-widest text-slate-500 border-b border-slate-900/60 font-mono sobresalt-ranking-column-titles">
+      {/* Grid Headers - responsive columns */}
+      <div className="grid grid-cols-10 sm:grid-cols-12 gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-[9px] font-black uppercase tracking-widest text-slate-500 border-b border-slate-900/60 font-mono sobresalt-ranking-column-titles">
         <div className="col-span-1 text-center">#</div>
-        <div className="col-span-4">{textMunicipis}</div>
+        <div className="col-span-5 sm:col-span-4">{textMunicipis}</div>
         <div className="col-span-2 text-right">{t("label.points").toUpperCase()}</div>
-        <div className="col-span-2 text-center">{t("label.incidents").toUpperCase()}</div>
-        <div className="col-span-1 text-center">{textRacha}</div>
-        <div className="col-span-2 text-right">{textTendencia}</div>
+        <div className="hidden sm:block col-span-2 text-center">{t("label.incidents").toUpperCase()}</div>
+        <div className="hidden sm:block col-span-1 text-center">{textRacha}</div>
+        <div className="hidden sm:block col-span-2 text-right">{textTendencia}</div>
       </div>
 
       {/* Rows list with Auto-Animate parent */}
@@ -148,6 +149,15 @@ export default function RankingTable({
             return (
               <div
                 key={row.slug}
+                role="button"
+                tabindex={0}
+                aria-label={`${row.name}: ${row.points} ${t("label.points")}`}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    if (setSelectedCitySlug) setSelectedCitySlug(row.slug);
+                  }
+                }}
                 onClick={() => {
                   if (setSelectedCitySlug) {
                     setSelectedCitySlug(row.slug);
@@ -167,7 +177,7 @@ export default function RankingTable({
                     setLocalActiveRow(null);
                   }
                 }}
-                className={`grid grid-cols-12 gap-2 items-center py-3 px-4 rounded-lg bg-slate-950/40 border transition-all duration-300 ease-out cursor-pointer relative overflow-hidden group sobresalt-ranking-row sobresalt-ranking-row-${row.slug} ${
+                className={`grid grid-cols-10 sm:grid-cols-12 gap-1 sm:gap-2 items-center py-2.5 sm:py-3 px-2 sm:px-4 rounded-lg bg-slate-950/40 border transition-all duration-300 ease-out cursor-pointer relative overflow-hidden group sobresalt-ranking-row sobresalt-ranking-row-${row.slug} ${
                   isHovered
                     ? "border-amber-500/80 bg-slate-900/40 scale-[1.01] shadow-[0_0_15px_rgba(245,158,11,0.15)]"
                     : "border-slate-900/80 hover:border-slate-800 hover:bg-slate-900/25"
@@ -196,11 +206,11 @@ export default function RankingTable({
                 </div>
 
                 {/* Shield & City name */}
-                <div className="col-span-4 flex items-center gap-2.5 sobresalt-ranking-cell-municipality">
+                <div className="col-span-5 sm:col-span-4 flex items-center gap-2 sm:gap-2.5 sobresalt-ranking-cell-municipality">
                   {shieldSrc ? (
                     <img
                       src={shieldSrc}
-                      alt=""
+                      alt={`${row.name} ${lang === "en" ? "shield" : "escut"}`}
                       className="h-5 w-5 shrink-0 object-contain drop-shadow-[0_0_6px_rgba(255,255,255,0.18)]"
                       // Set transition-name on the shield to enable View Transitions!
                       style={{ viewTransitionName: `shield-${row.slug}` }}
@@ -219,17 +229,19 @@ export default function RankingTable({
                 </div>
 
                 {/* Incident count */}
-                <div className="col-span-2 text-center font-mono text-xs font-bold text-slate-400 sobresalt-ranking-cell-incidents">
+                <div className="hidden sm:block col-span-2 text-center font-mono text-xs font-bold text-slate-400 sobresalt-ranking-cell-incidents">
                   {row.incidentsCount}
                 </div>
 
                 {/* Racha flames */}
-                <div className="col-span-1 text-center text-xs sobresalt-ranking-cell-streak">
-                  {"🔥".repeat(row.streak)}
+                <div className="hidden sm:flex col-span-1 items-center justify-center gap-0.5 sobresalt-ranking-cell-streak">
+                  {Array.from({ length: row.streak }).map((_, i) => (
+                    <Flame key={i} class="h-3 w-3 text-orange-500 fill-orange-500" />
+                  ))}
                 </div>
 
                 {/* Trend Badge */}
-                <div className="col-span-2 text-right font-mono text-[9px] font-black sobresalt-ranking-cell-trend">
+                <div className="hidden sm:block col-span-2 text-right font-mono text-[9px] font-black sobresalt-ranking-cell-trend">
                   {row.trend === "up" ? (
                     <span className="text-green-400">▲ +{row.delta}</span>
                   ) : row.trend === "down" ? (

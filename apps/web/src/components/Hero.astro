@@ -1,15 +1,14 @@
 ---
-import type { CityScore, Incident } from "../lib/schemas";
+import type { CityScore } from "../lib/schemas";
 import { useTranslations } from "../lib/i18n";
 import RankingTable from "./RankingTable.tsx";
 
 interface Props {
   ranking?: CityScore[];
-  incidents?: Incident[];
   lang?: "ca" | "es" | "en";
 }
 
-const { ranking = [], incidents = [], lang = "ca" } = Astro.props;
+const { ranking = [], lang = "ca" } = Astro.props;
 
 const t = useTranslations(lang);
 
@@ -17,14 +16,6 @@ const assetBase = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const publicAsset = (path: string) => `${assetBase}${path.replace(/^\/+/, "")}`;
-
-// Dynamic stats calculations
-const totalIncidentsCount = incidents.length;
-
-// Find the city in streak (the active leader or top ranked city)
-const leader = ranking[0];
-const streakCityName = leader?.city.name || "BARCELONA";
-const streakJornades = leader ? Math.max(1, Math.min(4, Math.floor(leader.points / 10) + 1)) : 4;
 
 // Localized strings
 const textSeason = {
