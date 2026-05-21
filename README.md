@@ -163,15 +163,7 @@ lliga_sobresalt/
 
 ### Método A: Desarrollo Rápido con Docker
 
-<<<<<<< codex/public-api-cors
 Este método arranca PostgreSQL, Redis, Celery y el backend Django de forma automática en un cluster aislado:
-=======
-En el VPS, la clave publica asociada debe estar restringida en `authorized_keys` al comando `/usr/local/bin/deploy-lliga-sobresalt-backend`. Ese script descarga el commit exacto desde GitHub, crea un release en `/opt/lliga_sobresalt/releases/`, copia `/opt/lliga_sobresalt/shared/.env`, ejecuta `docker compose build/up`, espera el healthcheck y valida `/api/ranking/`, `/api/incidents/` y `/api/seasons/`.
-
-La API publica no usa cookies ni credenciales. En produccion puede activarse `CORS_ALLOW_ALL_ORIGINS=True` para que GitHub Pages y mirrors estaticos puedan leer `/api/*` sin bloquear por origin.
-
-## Backend Django
->>>>>>> master
 
 ```powershell
 # 1. Copiar configuración base de Docker
