@@ -1,11 +1,17 @@
+import { Award, Trophy } from "lucide-preact";
 import type { CityScore } from "../lib/schemas";
 
 type Props = {
   podium: CityScore[];
 };
 
-const medals = ["🥇", "🥈", "🥉"];
 const colors = ["text-yellow-400", "text-slate-300", "text-amber-600"];
+
+const medalIcons = [
+  <Trophy class="h-6 w-6 text-yellow-400" />,
+  <Award class="h-6 w-6 text-slate-300" />,
+  <Award class="h-6 w-6 text-amber-600" />,
+];
 
 export default function TopThree({ podium }: Props) {
   const top = podium.slice(0, 3);
@@ -22,7 +28,7 @@ export default function TopThree({ podium }: Props) {
               : "border-slate-700 bg-slate-900"
           }`}
         >
-          <div className="text-2xl">{medals[i]}</div>
+          <div className="text-2xl flex justify-center">{medalIcons[i]}</div>
           <div className={`mt-1 text-lg font-black ${colors[i]}`}>
             {entry.city.name}
           </div>

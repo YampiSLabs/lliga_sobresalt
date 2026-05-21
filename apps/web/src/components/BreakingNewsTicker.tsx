@@ -34,7 +34,7 @@ export default function BreakingNewsTicker({ lang = "ca" }: { lang?: "ca" | "es"
     }[lang] || "ULTIMA HORA";
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 h-10 md:h-12 border-t border-slate-800 bg-slate-950/95 backdrop-blur-md flex items-center select-none overflow-hidden font-mono text-xs shadow-[0_-10px_30px_rgba(0,0,0,0.5)] sobresalt-ticker-container">
+    <div role="region" aria-live="polite" aria-label={lang === "en" ? "Breaking news ticker" : "Tíquer d'últimes notícies"} className="fixed bottom-0 left-0 right-0 z-50 h-10 md:h-12 border-t border-slate-800 bg-slate-950/95 backdrop-blur-md flex items-center select-none overflow-hidden font-mono text-xs shadow-[0_-10px_30px_rgba(0,0,0,0.5)] sobresalt-ticker-container">
       <div className="absolute left-0 top-0 bottom-0 z-10 px-4 bg-amber-500 text-slate-950 font-black tracking-widest flex items-center gap-1.5 shadow-[5px_0_15px_rgba(245,158,11,0.3)] sobresalt-ticker-badge">
         <span className="inline-block h-2.5 w-2.5 rounded-full bg-slate-950 animate-pulse" />
         <span className="font-sans font-black text-[10px] md:text-xs">{badgeText}</span>

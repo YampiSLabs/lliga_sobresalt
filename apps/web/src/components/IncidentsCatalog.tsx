@@ -11,7 +11,6 @@ import {
   ChevronDown
 } from "lucide-preact";
 import type { Incident } from "../lib/schemas";
-import { useTranslations } from "../lib/i18n";
 import { getMediaUrl } from "../lib/api";
 
 interface Props {
@@ -37,28 +36,28 @@ export default function IncidentsCatalog({ initialIncidents, lang = "ca" }: Prop
       color: "text-red-400",
       bg: "bg-red-500/10",
       border: "border-red-500/20",
-      badge: { ca: "Ganivets d'Or 🔪", es: "Cuchillos de Oro 🔪", en: "Golden Knives 🔪" }[lang]
+      badge: { ca: "Ganivets d'Or", es: "Cuchillos de Oro", en: "Golden Knives" }[lang]
     },
     pelea: {
       label: { ca: "Baralles", es: "Peleas", en: "Fights" }[lang],
       color: "text-rose-400",
       bg: "bg-rose-500/10",
       border: "border-rose-500/20",
-      badge: { ca: "Combat Urbà 👊", es: "Combate Urbano 👊", en: "Urban Combat 👊" }[lang]
+      badge: { ca: "Combat Urbà", es: "Combate Urbano", en: "Urban Combat" }[lang]
     },
     robo_violento: {
       label: { ca: "Robatoris", es: "Robos", en: "Robberies" }[lang],
       color: "text-amber-400",
       bg: "bg-amber-500/10",
       border: "border-amber-500/20",
-      badge: { ca: "Saqueig VIP 👤", es: "Saqueo VIP 👤", en: "VIP Looting 👤" }[lang]
+      badge: { ca: "Saqueig VIP", es: "Saqueo VIP", en: "VIP Looting" }[lang]
     },
     incivismo: {
       label: { ca: "Incivisme", es: "Incivismo", en: "Vandalism" }[lang],
       color: "text-blue-400",
       bg: "bg-blue-500/10",
       border: "border-blue-500/20",
-      badge: { ca: "Mala Vida 🗑️", es: "Mala Vida 🗑️", en: "Trashy Life 🗑️" }[lang]
+      badge: { ca: "Mala Vida", es: "Mala Vida", en: "Trashy Life" }[lang]
     },
   };
 
@@ -255,6 +254,7 @@ export default function IncidentsCatalog({ initialIncidents, lang = "ca" }: Prop
             </div>
             <input
               type="text"
+              aria-label={textPlaceholder}
               placeholder={textPlaceholder}
               value={searchQuery}
               onInput={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
@@ -263,6 +263,7 @@ export default function IncidentsCatalog({ initialIncidents, lang = "ca" }: Prop
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
+                aria-label={lang === "en" ? "Clear search" : "Netejar cerca"}
                 class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-200"
               >
                 <X class="h-4 w-4" />
@@ -277,6 +278,7 @@ export default function IncidentsCatalog({ initialIncidents, lang = "ca" }: Prop
               <div class="relative">
                 <select
                   value={sortBy}
+                  aria-label={textSort}
                   onChange={(e) => setSortBy((e.target as HTMLSelectElement).value as SortOption)}
                   class="appearance-none rounded-lg border border-slate-800 bg-slate-900/40 text-slate-200 px-3 py-1.5 pr-8 text-[11px] font-bold focus:outline-none focus:border-amber-500/50 cursor-pointer sobresalt-catalog-sort"
                 >
@@ -297,6 +299,7 @@ export default function IncidentsCatalog({ initialIncidents, lang = "ca" }: Prop
                 max="20"
                 step="2"
                 value={minPoints}
+                aria-label={textMinPoints}
                 onInput={(e) => setMinPoints(parseInt((e.target as HTMLInputElement).value))}
                 class="w-24 accent-amber-500 cursor-pointer sobresalt-catalog-points-slider"
               />
@@ -310,6 +313,7 @@ export default function IncidentsCatalog({ initialIncidents, lang = "ca" }: Prop
           <span class="text-slate-500 font-bold uppercase tracking-wider mr-1">{textFilterCategory}</span>
           <button
             onClick={() => setSelectedCategory(null)}
+            aria-pressed={selectedCategory === null}
             class={`rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-widest border transition-all duration-200 sobresalt-catalog-category-btn ${
               selectedCategory === null
                 ? "bg-amber-500/10 border-amber-500/30 text-amber-400"
@@ -326,6 +330,7 @@ export default function IncidentsCatalog({ initialIncidents, lang = "ca" }: Prop
               <button
                 key={catKey}
                 onClick={() => setSelectedCategory(catKey)}
+                aria-pressed={isActive}
                 class={`rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-widest border transition-all duration-200 sobresalt-catalog-category-btn ${
                   isActive
                     ? `${mapped.bg} ${mapped.border} ${mapped.color}`
@@ -341,14 +346,18 @@ export default function IncidentsCatalog({ initialIncidents, lang = "ca" }: Prop
 
       {/* 2. Grid of Incidents */}
       {filteredAndSorted.length > 0 ? (
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sobresalt-catalog-grid">
-          {filteredAndSorted.map((incident) => {
-            const mappedCat = CATEGORY_MAP[incident.category] || { label: incident.category, color: "text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/20", badge: "Incident 💫" };
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 sobresalt-catalog-grid">
+          {filteredAndSorted.map((incident, idx) => {
+            const mappedCat = CATEGORY_MAP[incident.category] || { label: incident.category, color: "text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/20", badge: "Altres" };
+            const isFeatured = idx === 0 && filteredAndSorted.length > 1;
+            const colSpan = isFeatured ? "sm:col-span-2 md:col-span-2" : "";
+            const minHeight = isFeatured ? "min-h-[320px]" : (idx % 3 === 2 ? "min-h-[300px]" : "min-h-[260px]");
             return (
               <article
                 key={incident.id}
+                style={{ animationDelay: `${idx * 50}ms` }}
+                class={`${colSpan} ${minHeight} hud-panel p-5 rounded-2xl bg-slate-950/20 border border-slate-900/60 flex flex-col justify-between relative overflow-hidden group hover:border-amber-500/30 transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_0_20px_rgba(245,158,11,0.06)] cursor-pointer sobresalt-catalog-card sobresalt-catalog-card-${incident.id} stagger-fade-in`}
                 onClick={() => setSelectedIncidentId(incident.id)}
-                class={`hud-panel p-5 rounded-2xl bg-slate-950/20 border border-slate-900/60 flex flex-col justify-between min-h-[280px] relative overflow-hidden group hover:border-amber-500/30 transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_0_20px_rgba(245,158,11,0.06)] cursor-pointer sobresalt-catalog-card sobresalt-catalog-card-${incident.id}`}
               >
                 {(incident.thumbnail_url || incident.image_url) && (
                   <img
@@ -394,12 +403,21 @@ export default function IncidentsCatalog({ initialIncidents, lang = "ca" }: Prop
           })}
         </div>
       ) : (
-        <div class="hud-panel p-16 rounded-2xl bg-slate-950/10 border border-slate-900/60 text-center select-none space-y-3">
+        <div class="hud-panel p-16 rounded-2xl bg-slate-950/10 border border-slate-900/60 text-center select-none space-y-4">
           <ShieldAlert class="h-12 w-12 text-slate-700 mx-auto" />
           <h3 class="text-sm font-bold uppercase tracking-wider text-slate-500">{textNoResults}</h3>
-          <p class="text-xs text-slate-600 max-w-md mx-auto">
+          <p class="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
             {textNoResultsDesc}
           </p>
+          {(searchQuery || selectedCategory || minPoints > 0) && (
+            <button
+              onClick={() => { setSearchQuery(""); setSelectedCategory(null); setMinPoints(0); }}
+              class="inline-flex items-center gap-1.5 rounded-lg border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10 text-amber-400 text-[9px] font-black uppercase tracking-widest px-4 py-2 transition-all"
+            >
+              <X class="h-3 w-3" />
+              {lang === "en" ? "Clear all filters" : "Netejar filtres"}
+            </button>
+          )}
         </div>
       )}
 

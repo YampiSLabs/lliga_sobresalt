@@ -19,7 +19,7 @@ const [ranking, incidents, seasons] = await Promise.all([
 ---
 
 <BaseLayout lang={lang} activeTab="RANKING">
-  <Hero ranking={ranking} incidents={incidents} lang={lang} />
+  <Hero ranking={ranking} lang={lang} />
   <Dashboard
     initialRanking={ranking}
     initialIncidents={incidents}
