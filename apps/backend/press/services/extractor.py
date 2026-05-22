@@ -172,6 +172,33 @@ def text_matches_keywords(*parts: str | None) -> bool:
     return any(keyword_matches(haystack, keyword) for keyword in KEYWORDS)
 
 
+def text_matches_cities(*parts: str | None) -> bool:
+    """
+    Checks if the provided text parts mention any of the active cities
+    or their aliases in a normalized, case-insensitive way with word boundaries.
+    """
+    from league.models import City
+    
+    haystack = normalize_text(" ".join(part or "" for part in parts))
+    active_cities = City.objects.filter(is_active=True)
+    
+    for city in active_cities:
+        # Check main name
+        normalized_name = normalize_text(city.name)
+        pattern = rf"(?<!\w){re.escape(normalized_name)}(?!\w)"
+        if re.search(pattern, haystack):
+            return True
+            
+        # Check aliases
+        for alias in city.aliases:
+            normalized_alias = normalize_text(alias)
+            pattern_alias = rf"(?<!\w){re.escape(normalized_alias)}(?!\w)"
+            if re.search(pattern_alias, haystack):
+                return True
+                
+    return False
+
+
 def keyword_matches(haystack: str, keyword: str) -> bool:
     normalized_keyword = normalize_text(keyword)
     pattern = rf"(?<!\w){re.escape(normalized_keyword)}(?!\w)"

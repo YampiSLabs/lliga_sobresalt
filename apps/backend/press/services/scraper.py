@@ -24,7 +24,7 @@ from django.utils import timezone
 
 from core.choices import RawArticleStatus
 from press.models import Outlet, RawArticle
-from press.services.extractor import text_matches_keywords
+from press.services.extractor import text_matches_cities, text_matches_keywords
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +79,8 @@ def scrape_outlet(outlet: Outlet) -> int:
         if RawArticle.objects.filter(content_hash=article_hash).exists():
             status = RawArticleStatus.IGNORED
         elif not text_matches_keywords(article.headline, article.excerpt):
+            status = RawArticleStatus.IGNORED
+        elif not text_matches_cities(article.headline, article.excerpt, article.raw_text):
             status = RawArticleStatus.IGNORED
         else:
             status = RawArticleStatus.NEW
