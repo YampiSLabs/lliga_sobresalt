@@ -155,11 +155,11 @@ class CeleryBeatScheduleTests(TestCase):
         schedule = settings.CELERY_BEAT_SCHEDULE
 
         self.assertIn("scrape-press-hourly", schedule)
-        self.assertIn("process-articles-every-30-minutes", schedule)
+        self.assertIn("process-articles-every-3-minutes", schedule)
         self.assertIn("recalculate-rankings-hourly", schedule)
         self.assertEqual(schedule["scrape-press-hourly"]["task"], "scrape_press_task")
-        self.assertEqual(schedule["process-articles-every-30-minutes"]["task"], "process_articles_task")
-        self.assertEqual(schedule["process-articles-every-30-minutes"]["args"], (None,))
+        self.assertEqual(schedule["process-articles-every-3-minutes"]["task"], "process_articles_task")
+        self.assertEqual(schedule["process-articles-every-3-minutes"]["args"], (1,))
         self.assertEqual(schedule["recalculate-rankings-hourly"]["task"], "recalculate_rankings_task")
 
 
