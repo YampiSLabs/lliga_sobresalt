@@ -1,17 +1,18 @@
 import datetime
-from django.core.management.base import BaseCommand
-from django.utils import timezone
-from django.db import transaction
-from django.utils.text import slugify
 
-from league.models import City, ScoringRule, LeagueSeason, LeagueRound
-from press.models import Outlet
-from core.choices import IncidentCategory, RoundStatus
+from django.core.management.base import BaseCommand
+from django.db import transaction
+from django.utils import timezone
+
+from core.choices import RoundStatus
+from league.models import City, LeagueRound, LeagueSeason, ScoringRule
 from league.services.scoring import DEFAULT_BASE_POINTS
+from league.services.shield_cities import load_shield_cities, merge_aliases
+from press.models import Outlet
 
 
 class Command(BaseCommand):
-    help = "Seed the database with the 11 active Catalan cities, scoring rules, and a default season/round."
+    help = "Seed the database with active Catalan cities, scoring rules, and a default season/round."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -32,44 +33,20 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS("Existing data cleared."))
 
         # 1. Seed Active Cities
-        # We seed exactly the 11 cities with image/shield assets in the frontend
-        cities_data = [
-            {"name": "Barcelona", "slug": "barcelona", "province": "Barcelona", "aliases": []},
-            {"name": "Badalona", "slug": "badalona", "province": "Barcelona", "aliases": []},
-            {"name": "Girona", "slug": "girona", "province": "Girona", "aliases": []},
-            {"name": "Reus", "slug": "reus", "province": "Tarragona", "aliases": []},
-            {"name": "Tarragona", "slug": "tarragona", "province": "Tarragona", "aliases": []},
-            {"name": "Terrassa", "slug": "terrassa", "province": "Barcelona", "aliases": []},
-            {"name": "Mataró", "slug": "mataro", "province": "Barcelona", "aliases": []},
-            {
-                "name": "L'Hospitalet de Llobregat",
-                "slug": "lhospitalet",
-                "province": "Barcelona",
-                "aliases": ["l-hospitalet-de-llobregat", "lhospitalet-de-llobregat"],
-            },
-            {
-                "name": "Cornellà de Llobregat",
-                "slug": "cornella-de-llobregat",
-                "province": "Barcelona",
-                "aliases": ["cornella"],
-            },
-            {
-                "name": "Santa Coloma de Gramenet",
-                "slug": "santa-coloma-de-gramenet",
-                "province": "Barcelona",
-                "aliases": ["santa-coloma"],
-            },
-            {"name": "Lleida", "slug": "lleida", "province": "Lleida", "aliases": []},
-        ]
-
         self.stdout.write("Seeding active cities...")
-        for city_item in cities_data:
+        for city_item in load_shield_cities():
+            existing = City.objects.filter(slug=city_item["slug"]).first()
             city, created = City.objects.update_or_create(
                 slug=city_item["slug"],
                 defaults={
                     "name": city_item["name"],
                     "province": city_item["province"],
-                    "aliases": city_item["aliases"],
+                    "aliases": merge_aliases(
+                        existing.aliases if existing else [],
+                        city_item["slug"],
+                        city_item["aliases"],
+                        city_item["slug"],
+                    ),
                     "is_active": True,
                 },
             )
@@ -162,7 +139,7 @@ class Command(BaseCommand):
             },
             {
                 "name": "Jornada 3",
-                "starts_at": now - datetime.timedelta(days=0),
+                "starts_at": now,
                 "ends_at": now + datetime.timedelta(days=6),
                 "status": RoundStatus.OPEN,
             },

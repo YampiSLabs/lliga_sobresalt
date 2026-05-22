@@ -19,7 +19,7 @@
     "@nanostores/preact": "^1.1.0",
     "astro": "^6.3.6",
     "canvas-confetti": "^1.9.4",
-    "catalunya-shields": "github:YampiSLabs/catalunya-shields#v0.0.1",
+    "catalunya-shields": "github:YampiSLabs/catalunya-shields#main",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
