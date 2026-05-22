@@ -77,6 +77,7 @@ def process_article(article: RawArticle, approve: bool = False) -> str:
         RawArticleStatus.CANDIDATE,
         RawArticleStatus.FAILED,
         RawArticleStatus.PROCESSING,
+        RawArticleStatus.FAILED_AI,
     }:
         return "ignored"
     if not text_matches_keywords(article.headline, article.excerpt, article.raw_text):

@@ -754,7 +754,34 @@ class CeleryTaskTests(TestCase):
 
         article.refresh_from_db()
         self.assertEqual(article.status, RawArticleStatus.FAILED)
-        self.assertEqual(article.error_message, "LLM rate limit reached")
+        self.assertEqual(article.error_message, "AI extraction failed, retrying (1/5): LLM rate limit reached")
+
+    @patch("press.tasks.process_article")
+    def test_process_article_task_handles_permanent_failure_by_setting_failed_ai_status(self, process_article_mock):
+        from press.tasks import process_article_task
+        from celery.app.task import Context
+        
+        article = RawArticle.objects.create(
+            outlet=self.outlet,
+            url="https://example.com/fail-art-ai",
+            headline="Pelea Permanente",
+            content_hash="hash-fail-ai",
+            status=RawArticleStatus.PROCESSING,
+        )
+        process_article_mock.side_effect = RuntimeError("LLM exhaustion")
+
+        # Simulate Celery's request context with retries = 5 on the stack
+        context = Context(retries=5)
+        process_article_task.request_stack.push(context)
+        try:
+            with self.assertRaises(RuntimeError):
+                process_article_task(article.pk)
+        finally:
+            process_article_task.request_stack.pop()
+
+        article.refresh_from_db()
+        self.assertEqual(article.status, RawArticleStatus.FAILED_AI)
+        self.assertIn("AI extraction permanently failed after 5 retries: LLM exhaustion", article.error_message)
 
     @patch("satire.tasks.generate_headline_for_incident")
     def test_generate_headline_task_calls_service_for_existing_incident(self, generate_mock):
