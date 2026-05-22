@@ -42,10 +42,30 @@ class KeywordFilterTests(TestCase):
     def test_ignores_unrelated_text(self):
         self.assertFalse(text_matches_keywords("La previsión meteorológica mejora este fin de semana"))
 
-
     def test_ignores_station_words_outside_transport_context(self):
         self.assertFalse(text_matches_keywords("Estacio depuradora d'aigues residuals"))
         self.assertFalse(text_matches_keywords("Sortida reivindicativa per reclamar la reconstruccio"))
+
+    def test_matches_enriched_incivility_keywords(self):
+        self.assertTrue(text_matches_keywords("Denuncian un botellot masivo en el parque"))
+        self.assertTrue(text_matches_keywords("Pintades i vandalisme contra el mobiliari urbà"))
+        self.assertTrue(text_matches_keywords("Quejas por el soroll de las terrazas"))
+        self.assertTrue(text_matches_keywords("Graffiti en la fachada del ayuntamiento"))
+        self.assertTrue(text_matches_keywords("Destrozos en contenedores de basura"))
+
+    def test_matches_in_full_text_parts(self):
+        # Even if headline and excerpt don't match, raw_text does
+        self.assertTrue(text_matches_keywords(
+            "Concierto al aire libre",
+            "La programación artística del festival de verano.",
+            "Al finalizar se reportaron incidentes de vandalismo y quema de contenedores."
+        ))
+
+    def test_word_boundaries_prevent_false_positives(self):
+        # We don't want "bus" to match "búsqueda" or "buscando"
+        self.assertFalse(text_matches_keywords("El hombre está buscando su cartera"))
+        # We don't want "crim" to match "crimen" in a different way or unrelated substrings
+        self.assertFalse(text_matches_keywords("Escribiendo un texto sobre discriminación"))
 
 
 class CityFilterTests(TestCase):
@@ -486,7 +506,7 @@ class ScraperServiceTests(TestCase):
         self.assertEqual(article.status, RawArticleStatus.IGNORED)
 
     @patch("press.services.scraper.scrape_rss")
-    def test_scrape_outlet_does_not_use_raw_text_for_initial_keyword_status(self, scrape_rss_mock):
+    def test_scrape_outlet_uses_raw_text_for_initial_keyword_status(self, scrape_rss_mock):
         scrape_rss_mock.return_value = [
             ScrapedArticle(
                 url="https://example.com/news/related-noise",
@@ -500,7 +520,7 @@ class ScraperServiceTests(TestCase):
 
         self.assertEqual(created, 1)
         article = RawArticle.objects.get(url="https://example.com/news/related-noise")
-        self.assertEqual(article.status, RawArticleStatus.IGNORED)
+        self.assertEqual(article.status, RawArticleStatus.NEW)
 
     @patch("press.services.scraper.scrape_rss")
     def test_scrape_outlet_marks_duplicate_content_as_ignored(self, scrape_rss_mock):
