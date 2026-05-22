@@ -632,6 +632,66 @@ class CeleryTaskTests(TestCase):
 
         process_article_mock.assert_not_called()
 
+    @patch("press.tasks.process_article_task.delay")
+    def test_process_articles_task_enqueues_pending_articles_and_changes_status(self, delay_mock):
+        from press.tasks import process_articles_task
+        
+        art1 = RawArticle.objects.create(
+            outlet=self.outlet,
+            url="https://example.com/art1",
+            headline="Pelea 1",
+            content_hash="hash-1",
+            status=RawArticleStatus.NEW,
+        )
+        art2 = RawArticle.objects.create(
+            outlet=self.outlet,
+            url="https://example.com/art2",
+            headline="Pelea 2",
+            content_hash="hash-2",
+            status=RawArticleStatus.CANDIDATE,
+        )
+        art3 = RawArticle.objects.create(
+            outlet=self.outlet,
+            url="https://example.com/art3",
+            headline="Pelea 3",
+            content_hash="hash-3",
+            status=RawArticleStatus.PROCESSED,
+        )
+
+        process_articles_task(limit=2)
+
+        art1.refresh_from_db()
+        art2.refresh_from_db()
+        art3.refresh_from_db()
+
+        self.assertEqual(art1.status, RawArticleStatus.PROCESSING)
+        self.assertEqual(art2.status, RawArticleStatus.PROCESSING)
+        self.assertEqual(art3.status, RawArticleStatus.PROCESSED)
+
+        self.assertEqual(delay_mock.call_count, 2)
+        delay_mock.assert_any_call(art1.pk)
+        delay_mock.assert_any_call(art2.pk)
+
+    @patch("press.tasks.process_article")
+    def test_process_article_task_handles_failure_by_setting_failed_status(self, process_article_mock):
+        from press.tasks import process_article_task
+        
+        article = RawArticle.objects.create(
+            outlet=self.outlet,
+            url="https://example.com/fail-art",
+            headline="Pelea",
+            content_hash="hash-fail",
+            status=RawArticleStatus.PROCESSING,
+        )
+        process_article_mock.side_effect = RuntimeError("LLM rate limit reached")
+
+        with self.assertRaises(RuntimeError):
+            process_article_task(article.pk)
+
+        article.refresh_from_db()
+        self.assertEqual(article.status, RawArticleStatus.FAILED)
+        self.assertEqual(article.error_message, "LLM rate limit reached")
+
     @patch("satire.tasks.generate_headline_for_incident")
     def test_generate_headline_task_calls_service_for_existing_incident(self, generate_mock):
         from satire.tasks import generate_headline_task

@@ -72,7 +72,12 @@ class Command(BaseCommand):
 
 
 def process_article(article: RawArticle, approve: bool = False) -> str:
-    if article.status not in {RawArticleStatus.NEW, RawArticleStatus.CANDIDATE, RawArticleStatus.FAILED}:
+    if article.status not in {
+        RawArticleStatus.NEW,
+        RawArticleStatus.CANDIDATE,
+        RawArticleStatus.FAILED,
+        RawArticleStatus.PROCESSING,
+    }:
         return "ignored"
     if not text_matches_keywords(article.headline, article.excerpt, article.raw_text):
         article.status = RawArticleStatus.IGNORED
