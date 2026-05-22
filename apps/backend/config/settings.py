@@ -215,10 +215,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "scrape_press_task",
         "schedule": crontab(minute=0),
     },
-    "process-articles-every-30-minutes": {
+    "process-articles-every-3-minutes": {
         "task": "process_articles_task",
-        "schedule": crontab(minute="15,45"),
-        "args": (None,),
+        "schedule": crontab(minute="*/3"),
+        "args": (1,),
     },
     "recalculate-rankings-hourly": {
         "task": "recalculate_rankings_task",
