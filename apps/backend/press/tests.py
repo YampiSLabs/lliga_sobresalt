@@ -17,7 +17,7 @@ from press.management.commands.process_articles import process_article
 from press.management.commands.repair_missing_media import repair_incident_media
 from press.models import Incident, Outlet, RawArticle
 from press.services.dedupe import mark_duplicate_if_needed, title_similarity
-from press.services.extractor import ExtractedIncident, parse_extraction_json, text_matches_keywords
+from press.services.extractor import ExtractedIncident, parse_extraction_json, text_matches_keywords, text_matches_cities
 from press.services.scraper import (
     ScrapedArticle,
     content_hash_for,
@@ -46,6 +46,48 @@ class KeywordFilterTests(TestCase):
     def test_ignores_station_words_outside_transport_context(self):
         self.assertFalse(text_matches_keywords("Estacio depuradora d'aigues residuals"))
         self.assertFalse(text_matches_keywords("Sortida reivindicativa per reclamar la reconstruccio"))
+
+
+class CityFilterTests(TestCase):
+    def setUp(self):
+        City.objects.create(name="Badalona", slug="badalona", is_active=True)
+        City.objects.create(
+            name="Santa Coloma de Gramenet",
+            slug="santa-coloma",
+            aliases=["santa-coloma", "gramenet"],
+            is_active=True,
+        )
+        City.objects.create(name="Valencia", slug="valencia", is_active=False)
+
+    def test_matches_exact_city_name(self):
+        self.assertTrue(text_matches_cities("Robo violento en Badalona esta tarde"))
+        self.assertTrue(text_matches_cities("Baralla a Santa Coloma de Gramenet ahir"))
+
+    def test_matches_city_aliases(self):
+        self.assertTrue(text_matches_cities("Incident amb arma blanca a santa-coloma"))
+        self.assertTrue(text_matches_cities("Peatons espantats a Gramenet"))
+
+    def test_case_insensitive_and_normalized(self):
+        self.assertTrue(text_matches_cities("robo en badalona"))
+        self.assertTrue(text_matches_cities("Pelea a SANTA COLOMA DE GRAMENET"))
+        # Accents normalized: Cornellà -> cornella
+        cornella = City.objects.create(name="Cornellà de Llobregat", slug="cornella", aliases=["cornella"], is_active=True)
+        self.assertTrue(text_matches_cities("Incendi a Cornella de Llobregat"))
+        self.assertTrue(text_matches_cities("Robatori a cornellà"))
+
+    def test_ignores_inactive_cities(self):
+        self.assertFalse(text_matches_cities("Robo violento en Valencia"))
+
+    def test_ignores_unrelated_text_without_cities(self):
+        self.assertFalse(text_matches_cities("Pelea multitudinaria en Madrid"))
+        self.assertFalse(text_matches_cities("Incidente en una ciudad desconocida"))
+
+    def test_word_boundaries_prevent_false_positives(self):
+        # We don't want "Vic" to match "víctima" or "victoria"
+        City.objects.create(name="Vic", slug="vic", is_active=True)
+        self.assertFalse(text_matches_cities("La víctima ha estat atesa a l'hospital"))
+        self.assertFalse(text_matches_cities("Gran victoria del equipo local"))
+        self.assertTrue(text_matches_cities("Detingut a Vic per un atracament"))
 
 
 class ExtractorValidationTests(TestCase):
@@ -378,6 +420,8 @@ class ScrapeCommandTests(TestCase):
 
 class ScraperServiceTests(TestCase):
     def setUp(self):
+        City.objects.create(name="Barcelona", slug="barcelona", is_active=True)
+        City.objects.create(name="Girona", slug="girona", is_active=True)
         self.outlet = Outlet.objects.create(
             name="Diari Test",
             slug="diari-test",
