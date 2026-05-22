@@ -100,7 +100,35 @@ services:
       - /tmp:size=64m,mode=1777
     pids_limit: 256
     environment: *backend_environment
-    command: celery -A config worker -l info
+    command: celery -A config worker -Q celery -l info
+    volumes:
+      - media_data:/app/media
+    networks:
+      - dokploy-network
+    mem_limit: 768m
+    cpus: "1.0"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  celery_worker_llm:
+    build:
+      context: ./apps/backend
+    image: lliga-sobresalt-backend:latest
+    container_name: lliga_sobresalt_celery_worker_llm
+    restart: unless-stopped
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    pids_limit: 256
+    environment: *backend_environment
+    command: celery -A config worker -Q llm -c 1 -l info
     volumes:
       - media_data:/app/media
     networks:

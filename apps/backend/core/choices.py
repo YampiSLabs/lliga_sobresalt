@@ -3,6 +3,7 @@ from django.db import models
 
 class RawArticleStatus(models.TextChoices):
     NEW = "new", "New"
+    PROCESSING = "processing", "Processing"
     IGNORED = "ignored", "Ignored"
     CANDIDATE = "candidate", "Candidate"
     PROCESSED = "processed", "Processed"

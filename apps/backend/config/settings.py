@@ -205,6 +205,10 @@ REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0") if DEBUG else r
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_TASK_IGNORE_RESULT = True
+CELERY_TASK_ROUTES = {
+    "process_article_task": {"queue": "llm"},
+    "generate_headline_task": {"queue": "llm"},
+}
 
 CELERY_BEAT_SCHEDULE = {
     "scrape-press-hourly": {
