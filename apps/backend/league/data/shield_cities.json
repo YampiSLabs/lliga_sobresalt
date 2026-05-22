@@ -1,0 +1,87 @@
+[
+  {
+    "name": "Abella de la Conca",
+    "slug": "abella-de-la-conca",
+    "province": "Lleida",
+    "aliases": []
+  },
+  {
+    "name": "Agramunt",
+    "slug": "agramunt",
+    "province": "Lleida",
+    "aliases": []
+  },
+  {
+    "name": "Agullana",
+    "slug": "agullana",
+    "province": "Girona",
+    "aliases": []
+  },
+  {
+    "name": "Badalona",
+    "slug": "badalona",
+    "province": "Barcelona",
+    "aliases": []
+  },
+  {
+    "name": "Barcelona",
+    "slug": "barcelona",
+    "province": "Barcelona",
+    "aliases": []
+  },
+  {
+    "name": "Cornellà de Llobregat",
+    "slug": "cornella-de-llobregat",
+    "province": "Barcelona",
+    "aliases": [
+      "cornella"
+    ]
+  },
+  {
+    "name": "L'Hospitalet de Llobregat",
+    "slug": "lhospitalet",
+    "province": "Barcelona",
+    "aliases": [
+      "l-hospitalet-de-llobregat",
+      "lhospitalet-de-llobregat"
+    ]
+  },
+  {
+    "name": "Mataró",
+    "slug": "mataro",
+    "province": "Barcelona",
+    "aliases": []
+  },
+  {
+    "name": "Reus",
+    "slug": "reus",
+    "province": "Tarragona",
+    "aliases": []
+  },
+  {
+    "name": "Sabadell",
+    "slug": "sabadell",
+    "province": "Barcelona",
+    "aliases": []
+  },
+  {
+    "name": "Sant Cugat del Vallès",
+    "slug": "sant-cugat-del-valles",
+    "province": "Barcelona",
+    "aliases": []
+  },
+  {
+    "name": "Santa Coloma de Gramenet",
+    "slug": "santa-coloma-de-gramenet",
+    "province": "Barcelona",
+    "aliases": [
+      "santa-coloma"
+    ]
+  },
+  {
+    "name": "Terrassa",
+    "slug": "terrassa",
+    "province": "Barcelona",
+    "aliases": []
+  }
+]

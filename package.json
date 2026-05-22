@@ -6,6 +6,7 @@
     "dev": "pnpm --filter @lliga/web dev",
     "build": "pnpm --filter @lliga/web build",
     "preview": "pnpm --filter @lliga/web preview",
+    "sync:shields": "node scripts/sync-shields.mjs",
     "backend:check": "cd apps/backend && ..\\..\\.venv\\Scripts\\python manage.py check",
     "backend:test": "cd apps/backend && ..\\..\\.venv\\Scripts\\python manage.py test",
     "codegraph:init": "codegraph init -i",

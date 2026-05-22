@@ -66,6 +66,8 @@ for _ in $(seq 1 60); do
   echo "health=${status:-unknown}"
   if [[ "${status}" == "healthy" ]]; then
     ln -sfn "${release_dir}" "${CURRENT_LINK}"
+    docker exec "${HEALTH_CONTAINER}" python manage.py sync_shield_cities --apply
+    docker exec "${HEALTH_CONTAINER}" python manage.py recalculate_rankings
     docker exec "${HEALTH_CONTAINER}" python manage.py check --deploy
     docker exec "${HEALTH_CONTAINER}" python - <<'PY'
 import sys

@@ -9,11 +9,6 @@ overrides:
   yaml-language-server: 1.23.0
   volar-service-yaml: 0.0.71
 
-patchedDependencies:
-  catalunya-shields@0.0.1:
-    hash: 5ce7c9a14c0d2be10a5f6cac8edfc9812c1e9a3b0eb8a59684943db1ec5593cf
-    path: patches/catalunya-shields@0.0.1.patch
-
 importers:
 
   .:
@@ -55,8 +50,8 @@ importers:
         specifier: ^1.9.4
         version: 1.9.4
       catalunya-shields:
-        specifier: github:YampiSLabs/catalunya-shields#v0.0.1
-        version: https://codeload.github.com/YampiSLabs/catalunya-shields/tar.gz/9b4e44ff8245d80166327842ea5301b62c3a299e(patch_hash=5ce7c9a14c0d2be10a5f6cac8edfc9812c1e9a3b0eb8a59684943db1ec5593cf)
+        specifier: github:YampiSLabs/catalunya-shields#main
+        version: https://codeload.github.com/YampiSLabs/catalunya-shields/tar.gz/27d0493dc379227e1f35418b74ea435817c10c8b
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -1464,8 +1459,8 @@ packages:
   canvas-confetti@1.9.4:
     resolution: {integrity: sha512-yxQbJkAVrFXWNbTUjPqjF7G+g6pDotOUHGbkZq2NELZUMDpiJ85rIEazVb8GTaAptNW2miJAXbs1BtioA251Pw==}
 
-  catalunya-shields@https://codeload.github.com/YampiSLabs/catalunya-shields/tar.gz/9b4e44ff8245d80166327842ea5301b62c3a299e:
-    resolution: {tarball: https://codeload.github.com/YampiSLabs/catalunya-shields/tar.gz/9b4e44ff8245d80166327842ea5301b62c3a299e}
+  catalunya-shields@https://codeload.github.com/YampiSLabs/catalunya-shields/tar.gz/27d0493dc379227e1f35418b74ea435817c10c8b:
+    resolution: {tarball: https://codeload.github.com/YampiSLabs/catalunya-shields/tar.gz/27d0493dc379227e1f35418b74ea435817c10c8b}
     version: 0.0.1
 
   ccount@2.0.1:
@@ -4613,7 +4608,7 @@ snapshots:
 
   canvas-confetti@1.9.4: {}
 
-  catalunya-shields@https://codeload.github.com/YampiSLabs/catalunya-shields/tar.gz/9b4e44ff8245d80166327842ea5301b62c3a299e(patch_hash=5ce7c9a14c0d2be10a5f6cac8edfc9812c1e9a3b0eb8a59684943db1ec5593cf): {}
+  catalunya-shields@https://codeload.github.com/YampiSLabs/catalunya-shields/tar.gz/27d0493dc379227e1f35418b74ea435817c10c8b: {}
 
   ccount@2.0.1: {}
 

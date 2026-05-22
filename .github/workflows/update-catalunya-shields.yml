@@ -1,0 +1,76 @@
+name: Update Catalunya Shields
+
+on:
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: update-catalunya-shields
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.30.3
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+          cache-dependency-path: apps/backend/requirements.txt
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Update catalunya-shields from main
+        run: pnpm --filter @lliga/web add github:YampiSLabs/catalunya-shields#main
+
+      - run: pnpm sync:shields
+
+      - name: Install backend dependencies
+        run: python -m pip install -r apps/backend/requirements.txt
+
+      - run: pnpm build
+        env:
+          PUBLIC_SITE_URL: https://beatrizagent.github.io/lliga_sobresalt
+          PUBLIC_BASE_PATH: /lliga_sobresalt
+          PUBLIC_API_BASE_URL: https://sobresalt.yampi.eu
+
+      - name: Check backend
+        working-directory: apps/backend
+        run: python manage.py check
+        env:
+          DEBUG: "True"
+
+      - name: Test backend
+        working-directory: apps/backend
+        run: python manage.py test
+        env:
+          DEBUG: "True"
+
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: codex/update-catalunya-shields
+          delete-branch: true
+          commit-message: "chore: update catalunya shields"
+          committer: "BeatrizAgent <beatrizagent@users.noreply.github.com>"
+          author: "BeatrizAgent <beatrizagent@users.noreply.github.com>"
+          title: "chore: update catalunya shields"
+          body: |
+            Automated update from `YampiSLabs/catalunya-shields@main`.
+
+            This PR refreshes the package lock, generated shield lookup, and backend city manifest when upstream adds new SVG assets.

@@ -1,5 +1,2 @@
 packages:
   - apps/*
-
-patchedDependencies:
-  catalunya-shields@0.0.1: patches/catalunya-shields@0.0.1.patch
