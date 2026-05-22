@@ -8,6 +8,7 @@ class RawArticleStatus(models.TextChoices):
     CANDIDATE = "candidate", "Candidate"
     PROCESSED = "processed", "Processed"
     FAILED = "failed", "Failed"
+    FAILED_AI = "failed_ai", "Failed AI"
 
 
 class IncidentCategory(models.TextChoices):

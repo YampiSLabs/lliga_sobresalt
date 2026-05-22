@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import httpx
 
 from celery import shared_task
 from django.core.management import call_command
@@ -52,8 +53,16 @@ def scrape_outlet_task(outlet_id: int) -> int:
     return created
 
 
-@shared_task(name="process_article_task")
-def process_article_task(article_id: int) -> str:
+@shared_task(
+    bind=True,
+    name="process_article_task",
+    rate_limit="10/m",
+    autoretry_for=(RuntimeError, httpx.HTTPError),
+    retry_backoff=True,
+    retry_backoff_max=300,
+    max_retries=5,
+)
+def process_article_task(self, article_id: int) -> str:
     from core.choices import RawArticleStatus
     
     article = RawArticle.objects.filter(pk=article_id).first()
@@ -66,8 +75,14 @@ def process_article_task(article_id: int) -> str:
         logger.info("process_article_task finished article_id=%s result=%s", article_id, result)
         return result
     except Exception as exc:
-        article.status = RawArticleStatus.FAILED
-        article.error_message = str(exc)
-        article.save(update_fields=["status", "error_message"])
-        logger.exception("process_article_task failed article_id=%s", article_id)
+        if self.request.retries >= self.max_retries:
+            article.status = RawArticleStatus.FAILED_AI
+            article.error_message = f"AI extraction permanently failed after {self.max_retries} retries: {exc}"
+            article.save(update_fields=["status", "error_message"])
+            logger.error("process_article_task permanently failed article_id=%s: %s", article_id, exc, exc_info=True)
+        else:
+            article.status = RawArticleStatus.FAILED
+            article.error_message = f"AI extraction failed, retrying ({self.request.retries + 1}/{self.max_retries}): {exc}"
+            article.save(update_fields=["status", "error_message"])
+            logger.warning("process_article_task failed, retrying (%s/%s) article_id=%s: %s", self.request.retries + 1, self.max_retries, article_id, exc)
         raise exc
