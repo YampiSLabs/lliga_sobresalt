@@ -78,7 +78,7 @@ def scrape_outlet(outlet: Outlet) -> int:
         article_hash = content_hash_for(article.headline, article.excerpt, article.raw_text)
         if RawArticle.objects.filter(content_hash=article_hash).exists():
             status = RawArticleStatus.IGNORED
-        elif not text_matches_keywords(article.headline, article.excerpt):
+        elif not text_matches_keywords(article.headline, article.excerpt, article.raw_text):
             status = RawArticleStatus.IGNORED
         elif not text_matches_cities(article.headline, article.excerpt, article.raw_text):
             status = RawArticleStatus.IGNORED

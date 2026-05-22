@@ -15,37 +15,38 @@ from press.models import RawArticle
 logger = logging.getLogger(__name__)
 
 MAX_RAW_TEXT_CHARS = 6000
-KEYWORDS = [
-    "apunalamiento",
-    "apunyalament",
-    "ganivetada",
-    "arma blanca",
-    "robo con violencia",
-    "robatori violent",
-    "atraco",
-    "atracament",
-    "pelea",
-    "baralla",
-    "reyerta",
-    "agresion",
-    "agressio",
-    "homicidio",
-    "homicidi",
-    "asesinato",
-    "assassinat",
-    "incivismo",
-    "incivisme",
-    "aldarulls",
-    "disturbios",
-    "contenidors cremats",
-    "contenedores quemados",
-    "metro",
-    "tren",
-    "estacion de metro",
-    "estacion de tren",
-    "estacio de metro",
-    "estacio de tren",
-]
+CATEGORY_KEYWORDS = {
+    IncidentCategory.APUNYALAMENT: [
+        "apunalamiento", "apunyalament", "ganivetada"
+    ],
+    IncidentCategory.ARMA_BLANCA: [
+        "arma blanca", "navaja", "cuchillo", "machete", "ganivet", "navalla", "machet"
+    ],
+    IncidentCategory.HOMICIDIO: [
+        "homicidio", "homicidi", "asesinato", "assassinat", "muerto", "mort", "crimen", "crim"
+    ],
+    IncidentCategory.ROBO_VIOLENTO: [
+        "robo con violencia", "robatori violent", "atraco", "atracament", "tiron", "estirada", "intimidacion", "intimidacio"
+    ],
+    IncidentCategory.PELEA: [
+        "pelea", "baralla", "reyerta", "batahola", "agresion multitudinaria", "agressio multitudinaria"
+    ],
+    IncidentCategory.AGRESION: [
+        "agresion", "agressio", "apuñalar", "apunyalar", "herido", "ferit", "paliza", "pallissa", "ataque", "atemptat"
+    ],
+    IncidentCategory.INCIVISMO: [
+        "incivismo", "incivisme", "botellon", "botellot", "vandalismo", "vandalisme", "pintadas", "pintades", "graffiti", "destrozos", "danos", "danys", "orinar", "pipi", "ruido", "soroll", "basura", "escombraries", "molestias", "molesties"
+    ],
+    IncidentCategory.DISTURBIOS: [
+        "aldarulls", "disturbios", "contenidors cremats", "contenedores quemados", "barricada", "quema", "crema", "cargas", "carregues", "policia", "antidisturbios", "mossos"
+    ],
+    IncidentCategory.TRANSPORTE_PUBLICO: [
+        "metro", "tren", "estacion de metro", "estacion de tren", "estacio de metro", "estacio de tren", "autobus", "bus", "renfe", "rodalies", "ferrocarrils", "fgc"
+    ],
+    IncidentCategory.OTRO_SUCESO: [
+        "incidente", "incident", "suceso", "fets", "detencion", "detingut", "detenido", "arrestado", "arrestat"
+    ]
+}
 
 SYSTEM_PROMPT = """
 Eres un clasificador y extractor de noticias para "La Lliga del Sobresalt", una web satirica basada solo en noticias ya publicadas por medios catalanes.
@@ -168,8 +169,18 @@ def extraction_to_dict(extraction: ExtractedIncident) -> dict[str, Any]:
 
 
 def text_matches_keywords(*parts: str | None) -> bool:
+    """
+    Checks if the provided text parts contain any of the keywords
+    from the categorized dictionary (case-insensitive and normalized).
+    """
     haystack = normalize_text(" ".join(part or "" for part in parts))
-    return any(keyword_matches(haystack, keyword) for keyword in KEYWORDS)
+    
+    for keywords in CATEGORY_KEYWORDS.values():
+        for keyword in keywords:
+            if keyword_matches(haystack, keyword):
+                return True
+                
+    return False
 
 
 def text_matches_cities(*parts: str | None) -> bool:
