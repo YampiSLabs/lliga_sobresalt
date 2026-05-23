@@ -64,6 +64,7 @@ jobs:
 
       - uses: peter-evans/create-pull-request@v7
         with:
+          token: ${{ secrets.BEATRIZ_AGENT_PAT }}
           branch: codex/update-catalunya-shields
           delete-branch: true
           commit-message: "chore: update catalunya shields"
