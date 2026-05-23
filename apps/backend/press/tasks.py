@@ -24,6 +24,12 @@ def process_articles_task(limit: int | None = None) -> None:
     from django.db import transaction
     from core.choices import RawArticleStatus
     from press.models import RawArticle
+    from league.services.shield_cities import sync_shield_cities
+
+    try:
+        sync_shield_cities(apply=True)
+    except Exception as exc:
+        logger.warning("Failed to run automatic sync_shield_cities in process_articles_task: %s", exc)
 
     if limit is None:
         limit = getattr(settings, "OPENROUTER_MAX_ARTICLES_PER_BATCH", 5)
