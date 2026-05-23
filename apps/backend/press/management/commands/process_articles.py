@@ -105,7 +105,7 @@ def persist_extracted_article(article: RawArticle, extracted: ExtractedIncident,
     city = get_or_create_city(extracted.city, extracted.province)
     if not city:
         article.status = RawArticleStatus.IGNORED
-        article.error_message = f"Ignored because city '{extracted.city}' is not in the active 11 cities."
+        article.error_message = f"Ignored because city '{extracted.city}' is not in the active Catalan municipalities list."
         article.save(update_fields=["ai_extraction", "ai_extracted_at", "status", "error_message"])
         logger.info("article ignored due to inactive city name=%s article_id=%s", extracted.city, article.pk)
         return "ignored"
@@ -179,6 +179,31 @@ def get_or_create_city(name: str | None, province: str | None) -> City | None:
         aliases = c.aliases or []
         if name.lower() in [a.lower() for a in aliases] or slug in [a.lower() for a in aliases]:
             return c
+
+    # 4. Fallback: Search in the generated shield cities manifest (shield_cities.json)
+    # and if found, automatically create the City in the database as active!
+    from league.services.shield_cities import load_shield_cities, merge_aliases
+    try:
+        for item in load_shield_cities():
+            aliases = item.get("aliases") or []
+            matches = (
+                item["slug"] == slug
+                or item["name"].lower() == name.lower()
+                or slug in [a.lower() for a in aliases]
+                or name.lower() in [a.lower() for a in aliases]
+            )
+            if matches:
+                city = City.objects.create(
+                    name=item["name"],
+                    slug=item["slug"],
+                    province=item.get("province"),
+                    aliases=merge_aliases([], item["slug"], aliases, item["slug"]),
+                    is_active=True,
+                )
+                logger.info("Dynamically created city name=%s slug=%s from manifest", city.name, city.slug)
+                return city
+    except Exception as exc:
+        logger.warning("Failed to search/create city from manifest name=%s: %s", name, exc)
 
     return None
 
