@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getAvailableCityShieldSlugs, getAvailableCityShields, getCityShieldSrc } from "./cityShields";
+import { getAvailableCities, getAvailableCityShieldSlugs, getAvailableCityShields, getCityShieldSrc } from "./cityShields";
 
 describe("city shield lookup", () => {
   it("returns shields generated from catalunya-shields assets", () => {
@@ -10,7 +10,16 @@ describe("city shield lookup", () => {
   it("returns generated municipality names for shield-backed city pages", () => {
     expect(getAvailableCityShields()).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ name: "Aldover", slug: "aldover" }),
+        expect.objectContaining({ name: "Aldover", slug: "aldover", hasShield: true }),
+      ]),
+    );
+  });
+
+  it("returns all catalan municipalities even when a shield has not been downloaded yet", () => {
+    expect(getAvailableCities().length).toBeGreaterThan(900);
+    expect(getAvailableCities()).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: "Abrera", slug: "abrera", hasShield: false }),
       ]),
     );
   });

@@ -76,30 +76,49 @@ const municipalities = readJson(municipalitiesPath).map((item) => ({
   province: item.province ? repairMojibake(item.province) : null,
   slug: createSlug(item.name),
 }));
-const municipalitiesBySlug = new Map(municipalities.map((item) => [item.slug, item]));
 const svgFiles = readdirSync(assetsDir).filter((file) => file.endsWith(".svg")).sort((a, b) => a.localeCompare(b));
+const svgSlugs = new Set(svgFiles.map((file) => basename(file, ".svg")));
 
-const shieldRows = svgFiles.map((file) => {
-  const assetSlug = basename(file, ".svg");
-  const municipality = municipalitiesBySlug.get(assetSlug) ?? {
-    name: titleFromSlug(assetSlug),
-    province: null,
-    slug: assetSlug,
-  };
+const cityRowsByAssetSlug = new Map();
+for (const municipality of municipalities) {
+  const assetSlug = municipality.slug;
   const slug = legacySlugs[assetSlug] ?? municipality.slug;
   const aliases = new Set([...(legacyAliases[assetSlug] ?? [])]);
   if (assetSlug !== slug) aliases.add(assetSlug);
   aliases.delete(slug);
-  return {
+  cityRowsByAssetSlug.set(assetSlug, {
     assetSlug,
-    file,
-    importName: createIdentifier(assetSlug),
+    file: svgSlugs.has(assetSlug) ? `${assetSlug}.svg` : null,
+    importName: svgSlugs.has(assetSlug) ? createIdentifier(assetSlug) : null,
     name: legacyNames[assetSlug] ?? municipality.name,
     slug,
     province: municipality.province,
     aliases: [...aliases].sort((a, b) => a.localeCompare(b)),
-  };
-});
+    hasShield: svgSlugs.has(assetSlug),
+  });
+}
+
+for (const file of svgFiles) {
+  const assetSlug = basename(file, ".svg");
+  if (cityRowsByAssetSlug.has(assetSlug)) continue;
+  const slug = legacySlugs[assetSlug] ?? assetSlug;
+  const aliases = new Set([...(legacyAliases[assetSlug] ?? [])]);
+  if (assetSlug !== slug) aliases.add(assetSlug);
+  aliases.delete(slug);
+  cityRowsByAssetSlug.set(assetSlug, {
+    assetSlug,
+    file,
+    importName: createIdentifier(assetSlug),
+    name: legacyNames[assetSlug] ?? titleFromSlug(assetSlug),
+    province: null,
+    slug,
+    aliases: [...aliases].sort((a, b) => a.localeCompare(b)),
+    hasShield: true,
+  });
+}
+
+const cityRows = [...cityRowsByAssetSlug.values()].sort((a, b) => a.slug.localeCompare(b.slug));
+const shieldRows = cityRows.filter((row) => row.hasShield);
 
 const importLines = shieldRows
   .map((row) => `import ${row.importName} from "catalunya-shields/assets/svg/${row.file}";`)
@@ -114,7 +133,12 @@ for (const row of shieldRows) {
 const slugEntries = shieldRows.map((row) => `  ${quote(row.slug)},`).join("\n");
 const cityEntries = shieldRows
   .map((row) => (
-    `  { name: ${quote(row.name)}, slug: ${quote(row.slug)}, province: ${quote(row.province)}, aliases: ${JSON.stringify(row.aliases)} },`
+    `  { name: ${quote(row.name)}, slug: ${quote(row.slug)}, province: ${quote(row.province)}, aliases: ${JSON.stringify(row.aliases)}, hasShield: ${row.hasShield} },`
+  ))
+  .join("\n");
+const allCityEntries = cityRows
+  .map((row) => (
+    `  { name: ${quote(row.name)}, slug: ${quote(row.slug)}, province: ${quote(row.province)}, aliases: ${JSON.stringify(row.aliases)}, hasShield: ${row.hasShield} },`
   ))
   .join("\n");
 const frontendContent = `${importLines}
@@ -128,6 +152,7 @@ export type GeneratedCityShield = {
   slug: string;
   province: string | null;
   aliases: string[];
+  hasShield: boolean;
 };
 
 export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
@@ -141,9 +166,13 @@ ${slugEntries}
 export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
 ${cityEntries}
 ];
+
+export const GENERATED_CITIES: GeneratedCityShield[] = [
+${allCityEntries}
+];
 `;
 
-const backendManifest = shieldRows
+const backendManifest = cityRows
   .map(({ name, slug, province, aliases }) => ({ name, slug, province, aliases }))
   .sort((a, b) => a.slug.localeCompare(b.slug));
 
@@ -151,6 +180,6 @@ mkdirSync(backendDataDir, { recursive: true });
 writeFileSync(frontendOutputPath, frontendContent, "utf8");
 writeFileSync(backendOutputPath, `${JSON.stringify(backendManifest, null, 2)}\n`, "utf8");
 
-console.log(`Synced ${shieldRows.length} shields.`);
+console.log(`Synced ${cityRows.length} municipalities and ${shieldRows.length} shields.`);
 console.log(`Wrote ${relative(rootDir, frontendOutputPath)}`);
 console.log(`Wrote ${relative(rootDir, backendOutputPath)}`);

@@ -2,7 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getRanking, getIncidents } from "../lib/api";
 import CityDashboard from "../components/CityDashboard.tsx";
-import { getAvailableCityShields, getCityShieldSrc } from "../lib/cityShields";
+import { getAvailableCities, getCityShieldSrc } from "../lib/cityShields";
 import { ArrowLeft } from "lucide-preact";
 import type { LanguageCode } from "../lib/i18n";
 import { useTranslations, localizePath } from "../lib/i18n";
@@ -16,7 +16,7 @@ const { slug, lang } = Astro.props;
 const t = useTranslations(lang);
 
 const ranking = await getRanking(undefined, lang);
-const shieldCity = getAvailableCityShields().find((city) => city.slug === slug || city.aliases.includes(slug));
+const shieldCity = getAvailableCities().find((city) => city.slug === slug || city.aliases.includes(slug));
 const row = ranking.find((r) => r.city.slug === slug) || {
   position: 0,
   points: 0,
