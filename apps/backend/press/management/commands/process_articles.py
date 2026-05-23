@@ -10,6 +10,7 @@ from django.utils.text import slugify
 
 from core.choices import IncidentCategory, IncidentStatus, RawArticleStatus
 from league.models import City
+from league.services.ranking import recalculate_active_round
 from league.services.scoring import recalculate_incident_points
 from press.models import Incident, IncidentSource, RawArticle
 from press.services.dedupe import mark_duplicate_if_needed
@@ -37,7 +38,7 @@ class Command(BaseCommand):
         if limit is None:
             limit = getattr(settings, "OPENROUTER_MAX_ARTICLES_PER_BATCH", 5)
         queryset = RawArticle.objects.filter(
-            status__in=[RawArticleStatus.NEW, RawArticleStatus.CANDIDATE]
+            status__in=[RawArticleStatus.NEW, RawArticleStatus.CANDIDATE, RawArticleStatus.FAILED]
         ).order_by("scraped_at")[:limit]
         processed = ignored = failed = created = 0
         queryset_list = list(queryset)
@@ -152,6 +153,8 @@ def persist_extracted_article(article: RawArticle, extracted: ExtractedIncident,
     article.status = RawArticleStatus.PROCESSED
     article.error_message = None
     article.save(update_fields=["ai_extraction", "ai_extracted_at", "status", "error_message"])
+    if incident.status == IncidentStatus.APPROVED:
+        recalculate_active_round()
     logger.info("article processed article_id=%s incident_id=%s", article.pk, incident.pk)
     return "created"
 

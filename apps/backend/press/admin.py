@@ -1,6 +1,7 @@
 from django.contrib import admin, messages
 
 from core.choices import IncidentStatus, RawArticleStatus
+from league.services.ranking import recalculate_active_round
 from league.services.scoring import recalculate_incident_points
 from press.models import Incident, IncidentSource, Outlet, RawArticle
 from press.tasks import process_article_task, scrape_outlet_task
@@ -77,7 +78,14 @@ class IncidentSourceInline(admin.TabularInline):
 
 @admin.action(description="Approve selected incidents")
 def approve_incidents(modeladmin, request, queryset):
-    queryset.update(status=IncidentStatus.APPROVED)
+    approved = 0
+    for incident in queryset:
+        incident.status = IncidentStatus.APPROVED
+        incident.save(update_fields=["status", "updated_at"])
+        recalculate_incident_points(incident)
+        approved += 1
+    recalculate_active_round()
+    modeladmin.message_user(request, f"Incidents approved: {approved}", level=messages.INFO)
 
 
 @admin.action(description="Reject selected incidents")

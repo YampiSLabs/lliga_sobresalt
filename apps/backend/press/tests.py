@@ -3,12 +3,13 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from core.choices import IncidentCategory, IncidentStatus, RawArticleStatus
 from league.models import City
 from press.admin import (
+    approve_incidents,
     generate_satirical_headlines,
     process_selected_articles_with_ai,
     scrape_selected_outlets_now,
@@ -297,6 +298,23 @@ class ProcessArticleTests(TestCase):
         headline_mock.assert_called_once_with(incident)
 
     @patch("press.management.commands.process_articles.generate_headline_for_incident")
+    @patch("press.management.commands.process_articles.recalculate_active_round")
+    @patch("press.management.commands.process_articles.extract_article")
+    def test_auto_approve_publishes_headline_and_recalculates_ranking(
+        self, extract_mock, recalculate_mock, headline_mock
+    ):
+        article = self.make_article()
+        extract_mock.return_value = self.make_extraction()
+
+        result = process_article(article, approve=True)
+
+        self.assertEqual(result, "created")
+        incident = Incident.objects.get()
+        self.assertEqual(incident.status, IncidentStatus.APPROVED)
+        headline_mock.assert_called_once_with(incident, approve=True)
+        recalculate_mock.assert_called_once()
+
+    @patch("press.management.commands.process_articles.generate_headline_for_incident")
     @patch("press.management.commands.process_articles.extract_article")
     def test_reprocesses_failed_article(self, extract_mock, headline_mock):
         article = self.make_article(status=RawArticleStatus.FAILED, error_message="Previous error")
@@ -347,6 +365,19 @@ class ProcessArticleTests(TestCase):
         self.assertIsNone(article.ai_extraction)
         self.assertIsNone(article.ai_extracted_at)
         logger_exception_mock.assert_called_once()
+
+    @patch("press.management.commands.process_articles.generate_headline_for_incident")
+    @patch("press.management.commands.process_articles.extract_article")
+    def test_command_reprocesses_failed_articles(self, extract_mock, headline_mock):
+        article = self.make_article(status=RawArticleStatus.FAILED, error_message="Previous error")
+        extract_mock.return_value = self.make_extraction()
+
+        call_command("process_articles", limit=1, stdout=StringIO())
+
+        article.refresh_from_db()
+        self.assertEqual(article.status, RawArticleStatus.PROCESSED)
+        self.assertIsNone(article.error_message)
+        headline_mock.assert_called_once()
 
 
 class AdminActionTests(TestCase):
@@ -417,6 +448,19 @@ class AdminActionTests(TestCase):
         generate_satirical_headlines(self.modeladmin, self.request, Incident.objects.filter(pk=incident.pk))
 
         delay_mock.assert_called_once_with(incident.pk)
+        self.modeladmin.message_user.assert_called_once()
+
+    @patch("press.admin.recalculate_active_round")
+    @patch("press.admin.recalculate_incident_points")
+    def test_incident_admin_approve_recalculates_points_and_ranking(self, recalculate_points_mock, recalculate_mock):
+        incident = self.make_incident()
+
+        approve_incidents(self.modeladmin, self.request, Incident.objects.filter(pk=incident.pk))
+
+        incident.refresh_from_db()
+        self.assertEqual(incident.status, IncidentStatus.APPROVED)
+        recalculate_points_mock.assert_called_once_with(incident)
+        recalculate_mock.assert_called_once()
         self.modeladmin.message_user.assert_called_once()
 
 
@@ -686,7 +730,24 @@ class CeleryTaskTests(TestCase):
 
         process_article_task(article.pk)
 
-        process_article_mock.assert_called_once_with(article)
+        process_article_mock.assert_called_once_with(article, approve=False)
+
+    @override_settings(AUTO_APPROVE_EXTRACTED_INCIDENTS=True)
+    @patch("press.tasks.process_article")
+    def test_process_article_task_passes_auto_approve_setting(self, process_article_mock):
+        from press.tasks import process_article_task
+
+        article = RawArticle.objects.create(
+            outlet=self.outlet,
+            url="https://example.com/article-auto",
+            headline="Pelea auto",
+            content_hash="hash-task-auto",
+            status=RawArticleStatus.NEW,
+        )
+
+        process_article_task(article.pk)
+
+        process_article_mock.assert_called_once_with(article, approve=True)
 
     @patch("press.tasks.process_article")
     def test_process_article_task_ignores_missing_article(self, process_article_mock):
@@ -721,20 +782,30 @@ class CeleryTaskTests(TestCase):
             content_hash="hash-3",
             status=RawArticleStatus.PROCESSED,
         )
+        art4 = RawArticle.objects.create(
+            outlet=self.outlet,
+            url="https://example.com/art4",
+            headline="Pelea 4",
+            content_hash="hash-4",
+            status=RawArticleStatus.FAILED,
+        )
 
-        process_articles_task(limit=2)
+        process_articles_task(limit=3)
 
         art1.refresh_from_db()
         art2.refresh_from_db()
         art3.refresh_from_db()
+        art4.refresh_from_db()
 
         self.assertEqual(art1.status, RawArticleStatus.PROCESSING)
         self.assertEqual(art2.status, RawArticleStatus.PROCESSING)
         self.assertEqual(art3.status, RawArticleStatus.PROCESSED)
+        self.assertEqual(art4.status, RawArticleStatus.PROCESSING)
 
-        self.assertEqual(delay_mock.call_count, 2)
+        self.assertEqual(delay_mock.call_count, 3)
         delay_mock.assert_any_call(art1.pk)
         delay_mock.assert_any_call(art2.pk)
+        delay_mock.assert_any_call(art4.pk)
 
     @patch("press.tasks.process_article")
     def test_process_article_task_handles_failure_by_setting_failed_status(self, process_article_mock):
