@@ -1,4 +1,5 @@
 import {
+  GENERATED_CITIES,
   GENERATED_CITY_SHIELDS,
   GENERATED_CITY_SHIELD_CITIES,
   GENERATED_CITY_SHIELD_SLUGS,
@@ -25,6 +26,13 @@ export function getAvailableCityShieldSlugs(): string[] {
 
 export function getAvailableCityShields() {
   return GENERATED_CITY_SHIELD_CITIES.map((city) => ({
+    ...city,
+    aliases: [...city.aliases],
+  }));
+}
+
+export function getAvailableCities() {
+  return GENERATED_CITIES.map((city) => ({
     ...city,
     aliases: [...city.aliases],
   }));
