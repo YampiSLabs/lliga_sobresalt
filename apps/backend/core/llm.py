@@ -35,7 +35,10 @@ def chat_completion_json(
                     response = client.post(config["url"], json=body, headers=config["headers"])
                     response.raise_for_status()
                     data = response.json()
-                    return data["choices"][0]["message"]["content"]
+                    content = data["choices"][0]["message"]["content"]
+                    if not content or not content.strip():
+                        raise ValueError("Received empty or None content from LLM provider")
+                    return content
             except (httpx.HTTPError, KeyError, IndexError, TypeError, ValueError) as exc:
                 last_error = exc
                 logger.warning(
