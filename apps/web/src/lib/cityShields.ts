@@ -37,3 +37,7 @@ export function getAvailableCities() {
     aliases: [...city.aliases],
   }));
 }
+
+export function getAvailableCityPageSlugs(): string[] {
+  return GENERATED_CITIES.map((city) => city.slug);
+}

@@ -24,6 +24,8 @@ const api = ky.create(
       },
 );
 
+const buildFetchCache = new Map<string, Promise<unknown>>();
+
 export function getMediaUrl(url: string | null | undefined): string | null {
   if (!url) return null;
   if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:")) {
@@ -39,20 +41,34 @@ async function fetchValidated<T>(
   schema: z.ZodType<T>,
   fallback: T,
   lang?: "ca" | "es" | "en",
+  cacheDuringBuild = true,
 ): Promise<T> {
-  try {
-    const headers = lang ? { "Accept-Language": lang } : undefined;
-    const data = await api.get(API_BASE_URL ? path.replace(/^\/+/, "") : path, { headers }).json();
-    return schema.parse(data);
-  } catch {
-    console.warn(`API request failed for ${path}; using empty public response.`);
-    return fallback;
+  const cacheKey = `${lang || "default"}:${path}`;
+  if (cacheDuringBuild && import.meta.env.SSR && buildFetchCache.has(cacheKey)) {
+    return buildFetchCache.get(cacheKey) as Promise<T>;
   }
+
+  const request = (async () => {
+    try {
+      const headers = lang ? { "Accept-Language": lang } : undefined;
+      const data = await api.get(API_BASE_URL ? path.replace(/^\/+/, "") : path, { headers }).json();
+      return schema.parse(data);
+    } catch {
+      console.warn(`API request failed for ${path}; using empty public response.`);
+      return fallback;
+    }
+  })();
+
+  if (cacheDuringBuild && import.meta.env.SSR) {
+    buildFetchCache.set(cacheKey, request);
+  }
+
+  return request;
 }
 
 export function getRanking(roundId?: number, lang?: "ca" | "es" | "en"): Promise<CityScore[]> {
   const path = roundId ? `/api/ranking/?round_id=${roundId}` : "/api/ranking/";
-  return fetchValidated(path, RankingResponseSchema, [], lang);
+  return fetchValidated(path, RankingResponseSchema, [], lang, !roundId);
 }
 
 export function getCities(lang?: "ca" | "es" | "en"): Promise<PublicCity[]> {
