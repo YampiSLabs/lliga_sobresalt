@@ -3,6 +3,13 @@ import { z } from "zod";
 export const CitySchema = z.object({
   name: z.string(),
   slug: z.string(),
+  province: z.string().nullable().optional(),
+  aliases: z.array(z.string()).optional(),
+});
+
+export const PublicCitySchema = CitySchema.extend({
+  province: z.string().nullable(),
+  aliases: z.array(z.string()),
 });
 
 export const CityScoreSchema = z.object({
@@ -33,6 +40,7 @@ export const IncidentSchema = z.object({
 });
 
 export const RankingResponseSchema = z.array(CityScoreSchema);
+export const CitiesResponseSchema = z.array(PublicCitySchema);
 export const IncidentsResponseSchema = z.array(IncidentSchema);
 
 export const PodiumItemSchema = z.object({
@@ -64,10 +72,8 @@ export const SeasonSchema = z.object({
 
 export const SeasonsResponseSchema = z.array(SeasonSchema);
 
-export type City = {
-  name: string;
-  slug: string;
-};
+export type City = z.infer<typeof CitySchema>;
+export type PublicCity = z.infer<typeof PublicCitySchema>;
 
 export type CityScore = {
   position: number | null;

@@ -1,10 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { getAvailableCityShieldSlugs, getCityShieldSrc } from "./cityShields";
+import { getAvailableCityShieldSlugs, getAvailableCityShields, getCityShieldSrc } from "./cityShields";
 
 describe("city shield lookup", () => {
   it("returns shields generated from catalunya-shields assets", () => {
     expect(getCityShieldSrc("sabadell")).toBeTruthy();
     expect(getAvailableCityShieldSlugs()).toContain("sabadell");
+  });
+
+  it("returns generated municipality names for shield-backed city pages", () => {
+    expect(getAvailableCityShields()).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: "Aldover", slug: "aldover" }),
+      ]),
+    );
   });
 
   it("keeps legacy alias support for L'Hospitalet", () => {

@@ -1,4 +1,8 @@
-import { GENERATED_CITY_SHIELDS, GENERATED_CITY_SHIELD_SLUGS } from "./cityShields.generated";
+import {
+  GENERATED_CITY_SHIELDS,
+  GENERATED_CITY_SHIELD_CITIES,
+  GENERATED_CITY_SHIELD_SLUGS,
+} from "./cityShields.generated";
 
 export function normalizeCityShieldSlug(slug: string): string {
   return slug
@@ -17,4 +21,11 @@ export function getCityShieldSrc(slug: string): string | null {
 
 export function getAvailableCityShieldSlugs(): string[] {
   return [...GENERATED_CITY_SHIELD_SLUGS];
+}
+
+export function getAvailableCityShields() {
+  return GENERATED_CITY_SHIELD_CITIES.map((city) => ({
+    ...city,
+    aliases: [...city.aliases],
+  }));
 }

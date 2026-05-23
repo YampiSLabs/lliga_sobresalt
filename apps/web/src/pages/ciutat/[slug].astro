@@ -1,11 +1,10 @@
 ---
 import CityDetailPageTemplate from "../../templates/CityDetailPageTemplate.astro";
-import { getRanking } from "../../lib/api";
+import { getAvailableCityShields } from "../../lib/cityShields";
 
 export async function getStaticPaths() {
-  const ranking = await getRanking(undefined, "ca");
-  return ranking.map((row) => ({
-    params: { slug: row.city.slug },
+  return getAvailableCityShields().map((city) => ({
+    params: { slug: city.slug },
   }));
 }
 
