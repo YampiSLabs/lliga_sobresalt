@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { getAvailableCities, getAvailableCityShieldSlugs, getAvailableCityShields, getCityShieldSrc } from "./cityShields";
+import {
+  getAvailableCities,
+  getAvailableCityPageSlugs,
+  getAvailableCityShieldSlugs,
+  getAvailableCityShields,
+  getCityShieldSrc,
+} from "./cityShields";
 
 describe("city shield lookup", () => {
   it("returns shields generated from catalunya-shields assets", () => {
@@ -22,6 +28,11 @@ describe("city shield lookup", () => {
         expect.objectContaining({ name: "Abrera", slug: "abrera", hasShield: false }),
       ]),
     );
+  });
+
+  it("creates static city pages for municipalities without downloaded shields", () => {
+    expect(getAvailableCityPageSlugs()).toContain("abrera");
+    expect(getAvailableCityPageSlugs()).toHaveLength(getAvailableCities().length);
   });
 
   it("keeps legacy alias support for L'Hospitalet", () => {

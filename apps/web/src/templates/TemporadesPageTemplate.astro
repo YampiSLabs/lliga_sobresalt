@@ -138,17 +138,12 @@ function getDefenderDesc() {
               </span>
             </>
           );
-          if (!city.hasShield) {
-            return (
-              <div class="group min-h-20 rounded-lg border border-slate-900/80 bg-slate-950/20 p-3 flex items-center gap-3">
-                {content}
-              </div>
-            );
-          }
           return (
             <a
               href={localizePath(`/ciutat/${city.slug}/`, lang)}
-              class="group min-h-20 rounded-lg border border-slate-900/80 bg-slate-950/30 p-3 flex items-center gap-3 hover:border-amber-500/40 hover:bg-slate-900/40 transition-colors"
+              class={`group min-h-20 rounded-lg border border-slate-900/80 p-3 flex items-center gap-3 hover:border-amber-500/40 hover:bg-slate-900/40 transition-colors ${
+                city.hasShield ? "bg-slate-950/30" : "bg-slate-950/20"
+              }`}
             >
               {content}
             </a>

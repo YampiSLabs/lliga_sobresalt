@@ -1,10 +1,10 @@
 ---
 import CityDetailPageTemplate from "../../templates/CityDetailPageTemplate.astro";
-import { getAvailableCityShields } from "../../lib/cityShields";
+import { getAvailableCityPageSlugs } from "../../lib/cityShields";
 
 export async function getStaticPaths() {
-  return getAvailableCityShields().map((city) => ({
-    params: { slug: city.slug },
+  return getAvailableCityPageSlugs().map((slug) => ({
+    params: { slug },
   }));
 }
 
