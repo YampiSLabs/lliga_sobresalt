@@ -1,7 +1,7 @@
 import ky from "ky";
 import type { z } from "zod";
-import { IncidentsResponseSchema, RankingResponseSchema, SeasonsResponseSchema } from "./schemas";
-import type { CityScore, Incident, Season } from "./schemas";
+import { CitiesResponseSchema, IncidentsResponseSchema, RankingResponseSchema, SeasonsResponseSchema } from "./schemas";
+import type { CityScore, Incident, PublicCity, Season } from "./schemas";
 
 const configuredApiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL?.replace(/\/+$/, "");
 
@@ -53,6 +53,10 @@ async function fetchValidated<T>(
 export function getRanking(roundId?: number, lang?: "ca" | "es" | "en"): Promise<CityScore[]> {
   const path = roundId ? `/api/ranking/?round_id=${roundId}` : "/api/ranking/";
   return fetchValidated(path, RankingResponseSchema, [], lang);
+}
+
+export function getCities(lang?: "ca" | "es" | "en"): Promise<PublicCity[]> {
+  return fetchValidated("/api/cities/", CitiesResponseSchema, [], lang);
 }
 
 export function getIncidents(lang: "ca" | "es" | "en" = "ca"): Promise<Incident[]> {

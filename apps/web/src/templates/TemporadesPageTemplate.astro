@@ -1,10 +1,10 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getCityShieldSrc } from "../lib/cityShields";
+import { getAvailableCityShields, getCityShieldSrc } from "../lib/cityShields";
 import { Calendar, Shield, Trophy } from "lucide-preact";
 import { getSeasons } from "../lib/api";
 import type { LanguageCode } from "../lib/i18n";
-import { useTranslations } from "../lib/i18n";
+import { localizePath, useTranslations } from "../lib/i18n";
 
 interface Props {
   lang: LanguageCode;
@@ -13,6 +13,7 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const seasons = await getSeasons(lang);
+const shieldCities = getAvailableCityShields();
 
 const defender = seasons.find((s) => s.status === "Finalitzada" && s.winner) || seasons[0];
 const lastWinnerShield = defender?.winner ? getCityShieldSrc(defender.winner.slug) : null;
@@ -24,6 +25,8 @@ const text = {
   provisionalLeader: { ca: "LIDER PROVISIONAL", es: "LIDER PROVISIONAL", en: "PROVISIONAL LEADER" }[lang],
   officialWinner: { ca: "GUANYADOR OFICIAL", es: "GANADOR OFICIAL", en: "OFFICIAL WINNER" }[lang],
   editions: { ca: "EDICIONS DE LA LLIGA", es: "EDICIONES DE LA LIGA", en: "LEAGUE EDITIONS" }[lang],
+  monitoredCities: { ca: "MUNICIPIS MONITORITZATS", es: "MUNICIPIOS MONITORIZADOS", en: "MONITORED MUNICIPALITIES" }[lang],
+  monitoredCount: { ca: "ESCUTS ACTIUS", es: "ESCUDOS ACTIVOS", en: "ACTIVE SHIELDS" }[lang],
   activeStatus: { ca: "Activa", es: "Activa", en: "Active" }[lang],
   finishedStatus: { ca: "Finalitzada", es: "Finalizada", en: "Finished" }[lang],
   finalPoints: { ca: "PUNTS FINALS", es: "PUNTOS FINALES", en: "FINAL POINTS" }[lang],
@@ -111,6 +114,36 @@ function getDefenderDesc() {
         </div>
       </div>
     )}
+
+    <section class="space-y-4">
+      <div class="flex items-end justify-between gap-4 border-b border-slate-900 pb-3">
+        <h2 class="text-xs font-black font-mono tracking-widest text-slate-400 uppercase">{text.monitoredCities}</h2>
+        <span class="font-mono text-[9px] font-black text-amber-500 uppercase">{shieldCities.length} {text.monitoredCount}</span>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        {shieldCities.map((city) => {
+          const shield = getCityShieldSrc(city.slug);
+          return (
+            <a
+              href={localizePath(`/ciutat/${city.slug}/`, lang)}
+              class="group min-h-20 rounded-lg border border-slate-900/80 bg-slate-950/30 p-3 flex items-center gap-3 hover:border-amber-500/40 hover:bg-slate-900/40 transition-colors"
+            >
+              {shield ? (
+                <img src={shield} alt="" class="h-10 w-10 object-contain shrink-0" loading="lazy" />
+              ) : (
+                <div class="h-10 w-10 rounded bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0">
+                  <Shield class="h-5 w-5 text-slate-600" />
+                </div>
+              )}
+              <span class="min-w-0">
+                <span class="block text-[11px] font-black text-slate-200 uppercase leading-tight group-hover:text-white">{city.name}</span>
+                <span class="block text-[9px] font-mono text-slate-500 uppercase mt-1">{city.province || "Catalunya"}</span>
+              </span>
+            </a>
+          );
+        })}
+      </div>
+    </section>
 
     <div class="space-y-4">
       <h3 class="text-xs font-black font-mono tracking-widest text-slate-400 uppercase">{text.editions}</h3>

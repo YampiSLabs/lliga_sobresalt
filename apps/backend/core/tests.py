@@ -77,6 +77,29 @@ class PublicApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "raw_text")
 
+    def test_cities_api_lists_active_municipalities_for_frontend_and_scraper(self):
+        City.objects.create(
+            name="Aldover",
+            slug="aldover",
+            province="Tarragona",
+            aliases=["aldover-alt"],
+            is_active=True,
+        )
+        City.objects.create(name="Hidden", slug="hidden", province="Barcelona", is_active=False)
+
+        response = self.client.get(reverse("core:api_cities"))
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload, [
+            {
+                "name": "Aldover",
+                "slug": "aldover",
+                "province": "Tarragona",
+                "aliases": ["aldover-alt"],
+            }
+        ])
+
     def test_incidents_api_filters_by_city_and_category(self):
         self.make_incident(
             city_slug="barcelona",

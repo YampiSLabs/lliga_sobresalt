@@ -67,15 +67,16 @@ for _ in $(seq 1 60); do
   if [[ "${status}" == "healthy" ]]; then
     ln -sfn "${release_dir}" "${CURRENT_LINK}"
     docker exec "${HEALTH_CONTAINER}" python manage.py sync_shield_cities --apply
+    docker exec "${HEALTH_CONTAINER}" python manage.py shell -c 'from league.models import City; from league.services.shield_cities import load_shield_cities; wanted = {item["slug"] for item in load_shield_cities()}; active = set(City.objects.filter(is_active=True).values_list("slug", flat=True)); missing = sorted(wanted - active); print(f"active_cities={len(active)} shield_manifest={len(wanted)} missing_shield_cities={missing}"); raise SystemExit(1 if missing else 0)'
     docker exec "${HEALTH_CONTAINER}" python manage.py recalculate_rankings
     docker exec "${HEALTH_CONTAINER}" python manage.py check --deploy
-    docker exec "${HEALTH_CONTAINER}" python - <<'PY'
+    docker exec -i "${HEALTH_CONTAINER}" python - <<'PY'
 import sys
 import urllib.request
 import urllib.error
 
 failed = False
-for path in ("/api/ranking/", "/api/incidents/", "/api/seasons/"):
+for path in ("/api/ranking/", "/api/cities/", "/api/incidents/", "/api/seasons/"):
     req = urllib.request.Request(
         "http://127.0.0.1:8000" + path,
         headers={"Host": "sobresalt.yampi.eu", "X-Forwarded-Proto": "https"},

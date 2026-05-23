@@ -114,6 +114,23 @@ def api_ranking(request):
 
 
 @require_GET
+def api_cities(request):
+    cities = City.objects.filter(is_active=True).order_by("name", "slug")
+    return JsonResponse(
+        [
+            {
+                "name": city.name,
+                "slug": city.slug,
+                "province": city.province,
+                "aliases": city.aliases,
+            }
+            for city in cities
+        ],
+        safe=False,
+    )
+
+
+@require_GET
 def api_incidents(request):
     incidents = public_incidents().prefetch_related("sources__article__outlet")
     city = request.GET.get("city")

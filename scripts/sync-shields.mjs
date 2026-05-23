@@ -112,10 +112,22 @@ for (const row of shieldRows) {
   }
 }
 const slugEntries = shieldRows.map((row) => `  ${quote(row.slug)},`).join("\n");
+const cityEntries = shieldRows
+  .map((row) => (
+    `  { name: ${quote(row.name)}, slug: ${quote(row.slug)}, province: ${quote(row.province)}, aliases: ${JSON.stringify(row.aliases)} },`
+  ))
+  .join("\n");
 const frontendContent = `${importLines}
 
 type ShieldAsset = {
   src: string;
+};
+
+export type GeneratedCityShield = {
+  name: string;
+  slug: string;
+  province: string | null;
+  aliases: string[];
 };
 
 export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
@@ -125,6 +137,10 @@ ${mapEntries.sort().join("\n")}
 export const GENERATED_CITY_SHIELD_SLUGS = [
 ${slugEntries}
 ] as const;
+
+export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
+${cityEntries}
+];
 `;
 
 const backendManifest = shieldRows
