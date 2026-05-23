@@ -45,6 +45,7 @@ services:
       OPENCODE_BASE_URL: ${OPENCODE_BASE_URL:-https://opencode.ai/zen/v1}
       OPENCODE_MODEL: ${OPENCODE_MODEL:-big-pickle}
       OPENCODE_TIMEOUT_SECONDS: ${OPENCODE_TIMEOUT_SECONDS:-60}
+      AUTO_APPROVE_EXTRACTED_INCIDENTS: ${AUTO_APPROVE_EXTRACTED_INCIDENTS:-True}
     command: >
       sh -c "python manage.py migrate &&
              python manage.py sync_shield_cities --apply &&

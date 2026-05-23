@@ -30,9 +30,9 @@ def process_articles_task(limit: int | None = None) -> None:
 
     with transaction.atomic():
         queryset = RawArticle.objects.select_for_update().filter(
-            status__in=[RawArticleStatus.NEW, RawArticleStatus.CANDIDATE]
+            status__in=[RawArticleStatus.NEW, RawArticleStatus.CANDIDATE, RawArticleStatus.FAILED]
         ).order_by("scraped_at")[:limit]
-        
+
         articles_to_enqueue = list(queryset)
         for article in articles_to_enqueue:
             article.status = RawArticleStatus.PROCESSING
@@ -63,15 +63,19 @@ def scrape_outlet_task(outlet_id: int) -> int:
     max_retries=5,
 )
 def process_article_task(self, article_id: int) -> str:
+    from django.conf import settings
     from core.choices import RawArticleStatus
-    
+
     article = RawArticle.objects.filter(pk=article_id).first()
     if not article:
         logger.info("process_article_task skipped missing article_id=%s", article_id)
         return "missing"
-    
+
     try:
-        result = process_article(article)
+        result = process_article(
+            article,
+            approve=getattr(settings, "AUTO_APPROVE_EXTRACTED_INCIDENTS", False),
+        )
         logger.info("process_article_task finished article_id=%s result=%s", article_id, result)
         return result
     except Exception as exc:

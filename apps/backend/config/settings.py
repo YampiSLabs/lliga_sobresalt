@@ -240,6 +240,7 @@ OPENCODE_API_KEY = env("OPENCODE_API_KEY", default="")
 OPENCODE_BASE_URL = env("OPENCODE_BASE_URL", default="https://opencode.ai/zen/v1")
 OPENCODE_MODEL = env("OPENCODE_MODEL", default="big-pickle")
 OPENCODE_TIMEOUT_SECONDS = env.int("OPENCODE_TIMEOUT_SECONDS", default=60)
+AUTO_APPROVE_EXTRACTED_INCIDENTS = env.bool("AUTO_APPROVE_EXTRACTED_INCIDENTS", default=False)
 SCRAPER_MAX_IMAGE_BYTES = env.int("SCRAPER_MAX_IMAGE_BYTES", default=5 * 1024 * 1024)
 
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[] if not DEBUG else ["http://localhost:8000"])
