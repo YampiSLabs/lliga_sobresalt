@@ -88,11 +88,22 @@ def process_article(article: RawArticle, approve: bool = False) -> str:
         return "ignored"
 
     extracted = extract_article(article)
-    return persist_extracted_article(article, extracted, approve=approve)
+    result, incident = persist_extracted_article(article, extracted, approve=approve)
+    
+    if incident:
+        try:
+            if approve:
+                generate_headline_for_incident(incident, approve=True)
+            else:
+                generate_headline_for_incident(incident)
+        except Exception:
+            logger.warning("satirical headline generation failed incident_id=%s", incident.pk, exc_info=True)
+            
+    return result
 
 
 @transaction.atomic
-def persist_extracted_article(article: RawArticle, extracted: ExtractedIncident, approve: bool = False) -> str:
+def persist_extracted_article(article: RawArticle, extracted: ExtractedIncident, approve: bool = False) -> tuple[str, Incident | None]:
     article.ai_extraction = extraction_to_dict(extracted)
     article.ai_extracted_at = timezone.now()
     if not extracted.is_relevant or extracted.category == IncidentCategory.NO_RELEVANTE:
@@ -100,7 +111,7 @@ def persist_extracted_article(article: RawArticle, extracted: ExtractedIncident,
         article.error_message = None
         article.save(update_fields=["ai_extraction", "ai_extracted_at", "status", "error_message"])
         logger.info("article ignored by extractor article_id=%s", article.pk)
-        return "ignored"
+        return "ignored", None
 
     city = get_or_create_city(extracted.city, extracted.province)
     if not city:
@@ -108,7 +119,7 @@ def persist_extracted_article(article: RawArticle, extracted: ExtractedIncident,
         article.error_message = f"Ignored because city '{extracted.city}' is not in the active Catalan municipalities list."
         article.save(update_fields=["ai_extraction", "ai_extracted_at", "status", "error_message"])
         logger.info("article ignored due to inactive city name=%s article_id=%s", extracted.city, article.pk)
-        return "ignored"
+        return "ignored", None
 
     incident_status = IncidentStatus.APPROVED if approve else IncidentStatus.PENDING_REVIEW
 
@@ -142,13 +153,6 @@ def persist_extracted_article(article: RawArticle, extracted: ExtractedIncident,
     IncidentSource.objects.create(incident=incident, article=article, is_primary=True)
     recalculate_incident_points(incident)
     mark_duplicate_if_needed(incident, is_llm_duplicate=extracted.is_duplicate_or_update)
-    try:
-        if approve:
-            generate_headline_for_incident(incident, approve=True)
-        else:
-            generate_headline_for_incident(incident)
-    except Exception:
-        logger.warning("satirical headline generation failed incident_id=%s", incident.pk, exc_info=True)
 
     article.status = RawArticleStatus.PROCESSED
     article.error_message = None
@@ -156,7 +160,7 @@ def persist_extracted_article(article: RawArticle, extracted: ExtractedIncident,
     if incident.status == IncidentStatus.APPROVED:
         recalculate_active_round()
     logger.info("article processed article_id=%s incident_id=%s", article.pk, incident.pk)
-    return "created"
+    return "created", incident
 
 
 def get_or_create_city(name: str | None, province: str | None) -> City | None:
