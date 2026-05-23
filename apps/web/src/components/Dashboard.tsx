@@ -1,4 +1,4 @@
-import { useState, useMemo } from "preact/hooks";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import {
   Search,
   MapPin,
@@ -23,6 +23,7 @@ import RankingTable from "./RankingTable";
 import CityDashboard from "./CityDashboard";
 import ScoreChart from "./ScoreChart";
 import { getRanking, getMediaUrl } from "../lib/api";
+import { shouldRefreshInitialRanking } from "../lib/rankingRefresh";
 import type { CityScore, Incident, Season, RoundBrief } from "../lib/schemas";
 import { type LanguageCode } from "../lib/i18n";
 
@@ -79,6 +80,31 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showHowToScore, setShowHowToScore] = useState(false);
+
+  useEffect(() => {
+    if (!shouldRefreshInitialRanking(initialRanking)) return;
+
+    let isCancelled = false;
+    setIsLoadingRanking(true);
+    getRanking(undefined, lang)
+      .then((data) => {
+        if (!isCancelled) {
+          setRanking(data);
+        }
+      })
+      .catch((err) => {
+        console.error("Error refreshing initial ranking:", err);
+      })
+      .finally(() => {
+        if (!isCancelled) {
+          setIsLoadingRanking(false);
+        }
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [initialRanking, lang]);
 
   // --- DERIVED DATA ---
 
