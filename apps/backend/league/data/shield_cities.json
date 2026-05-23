@@ -18,6 +18,90 @@
     "aliases": []
   },
   {
+    "name": "Aiguafreda",
+    "slug": "aiguafreda",
+    "province": "Barcelona",
+    "aliases": []
+  },
+  {
+    "name": "Aiguaviva",
+    "slug": "aiguaviva",
+    "province": "Girona",
+    "aliases": []
+  },
+  {
+    "name": "Aitona",
+    "slug": "aitona",
+    "province": "Lleida",
+    "aliases": []
+  },
+  {
+    "name": "Albanyà",
+    "slug": "albanya",
+    "province": "Girona",
+    "aliases": []
+  },
+  {
+    "name": "Albatàrrec",
+    "slug": "albatarrec",
+    "province": "Lleida",
+    "aliases": []
+  },
+  {
+    "name": "Albesa",
+    "slug": "albesa",
+    "province": "Lleida",
+    "aliases": []
+  },
+  {
+    "name": "Albinyana",
+    "slug": "albinyana",
+    "province": "Tarragona",
+    "aliases": []
+  },
+  {
+    "name": "Albons",
+    "slug": "albons",
+    "province": "Girona",
+    "aliases": []
+  },
+  {
+    "name": "Alcanar",
+    "slug": "alcanar",
+    "province": "Tarragona",
+    "aliases": []
+  },
+  {
+    "name": "Alcanó",
+    "slug": "alcano",
+    "province": "Lleida",
+    "aliases": []
+  },
+  {
+    "name": "Alcarràs",
+    "slug": "alcarras",
+    "province": "Lleida",
+    "aliases": []
+  },
+  {
+    "name": "Alcoletge",
+    "slug": "alcoletge",
+    "province": "Lleida",
+    "aliases": []
+  },
+  {
+    "name": "Alcover",
+    "slug": "alcover",
+    "province": "Tarragona",
+    "aliases": []
+  },
+  {
+    "name": "Aldover",
+    "slug": "aldover",
+    "province": "Tarragona",
+    "aliases": []
+  },
+  {
     "name": "Badalona",
     "slug": "badalona",
     "province": "Barcelona",

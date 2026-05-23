@@ -1,6 +1,20 @@
 import AbellaDeLaConcaShield from "catalunya-shields/assets/svg/abella-de-la-conca.svg";
 import AgramuntShield from "catalunya-shields/assets/svg/agramunt.svg";
 import AgullanaShield from "catalunya-shields/assets/svg/agullana.svg";
+import AiguafredaShield from "catalunya-shields/assets/svg/aiguafreda.svg";
+import AiguavivaShield from "catalunya-shields/assets/svg/aiguaviva.svg";
+import AitonaShield from "catalunya-shields/assets/svg/aitona.svg";
+import AlbanyaShield from "catalunya-shields/assets/svg/albanya.svg";
+import AlbatarrecShield from "catalunya-shields/assets/svg/albatarrec.svg";
+import AlbesaShield from "catalunya-shields/assets/svg/albesa.svg";
+import AlbinyanaShield from "catalunya-shields/assets/svg/albinyana.svg";
+import AlbonsShield from "catalunya-shields/assets/svg/albons.svg";
+import AlcanarShield from "catalunya-shields/assets/svg/alcanar.svg";
+import AlcanoShield from "catalunya-shields/assets/svg/alcano.svg";
+import AlcarrasShield from "catalunya-shields/assets/svg/alcarras.svg";
+import AlcoletgeShield from "catalunya-shields/assets/svg/alcoletge.svg";
+import AlcoverShield from "catalunya-shields/assets/svg/alcover.svg";
+import AldoverShield from "catalunya-shields/assets/svg/aldover.svg";
 import BadalonaShield from "catalunya-shields/assets/svg/badalona.svg";
 import BarcelonaShield from "catalunya-shields/assets/svg/barcelona.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
@@ -20,6 +34,20 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "abella-de-la-conca": AbellaDeLaConcaShield,
   "agramunt": AgramuntShield,
   "agullana": AgullanaShield,
+  "aiguafreda": AiguafredaShield,
+  "aiguaviva": AiguavivaShield,
+  "aitona": AitonaShield,
+  "albanya": AlbanyaShield,
+  "albatarrec": AlbatarrecShield,
+  "albesa": AlbesaShield,
+  "albinyana": AlbinyanaShield,
+  "albons": AlbonsShield,
+  "alcanar": AlcanarShield,
+  "alcano": AlcanoShield,
+  "alcarras": AlcarrasShield,
+  "alcoletge": AlcoletgeShield,
+  "alcover": AlcoverShield,
+  "aldover": AldoverShield,
   "badalona": BadalonaShield,
   "barcelona": BarcelonaShield,
   "cornella": CornellaDeLlobregatShield,
@@ -40,6 +68,20 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "abella-de-la-conca",
   "agramunt",
   "agullana",
+  "aiguafreda",
+  "aiguaviva",
+  "aitona",
+  "albanya",
+  "albatarrec",
+  "albesa",
+  "albinyana",
+  "albons",
+  "alcanar",
+  "alcano",
+  "alcarras",
+  "alcoletge",
+  "alcover",
+  "aldover",
   "badalona",
   "barcelona",
   "cornella-de-llobregat",
