@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import ipaddress
 import io
+import json
 import logging
 import os
 import re
@@ -31,6 +32,7 @@ logger = logging.getLogger(__name__)
 USER_AGENT = "LaLligaDelSobresaltBot/0.1 (+local MVP; respects paywalls)"
 REQUEST_TIMEOUT = 15
 ARTICLE_PATH_RE = re.compile(r"/(?:\d{4}/\d{2}/\d{2}/[^/]+|ca/[^/]+/[^/]+_\d+(?:_\d+)?)\.html$")
+URL_DATE_RE = re.compile(r"/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/")
 
 
 @dataclass(frozen=True)
@@ -73,6 +75,9 @@ def scrape_outlet(outlet: Outlet) -> int:
     seen_urls: set[str] = set()
     for article in articles:
         if article.url in seen_urls or RawArticle.objects.filter(url=article.url).exists():
+            continue
+        if not is_same_local_day(article.published_at):
+            logger.info("skipped article without same-day published_at url=%s", article.url)
             continue
         seen_urls.add(article.url)
         article_hash = content_hash_for(article.headline, article.excerpt, article.raw_text)
@@ -121,12 +126,15 @@ def scrape_rss(rss_url: str) -> list[ScrapedArticle]:
             logger.warning("rss entry url rejected url=%s", url)
             continue
         excerpt = getattr(entry, "summary", None)
+        published_at = parse_feed_date(getattr(entry, "published", None))
+        if not is_same_local_day(published_at):
+            logger.info("rss entry skipped because published_at is not today url=%s", url)
+            continue
 
         if RawArticle.objects.filter(url=url).exists():
             continue
 
         if not text_matches_keywords(title, excerpt):
-            published_at = parse_feed_date(getattr(entry, "published", None))
             articles.append(
                 ScrapedArticle(
                     url=url,
@@ -140,7 +148,6 @@ def scrape_rss(rss_url: str) -> list[ScrapedArticle]:
             continue
 
         raw_text, image_url = extract_text_and_image_from_url(url)
-        published_at = parse_feed_date(getattr(entry, "published", None))
         articles.append(
             ScrapedArticle(
                 url=url,
@@ -162,6 +169,8 @@ def scrape_section(outlet: Outlet) -> list[ScrapedArticle]:
         return []
     urls = extract_internal_links(html, outlet.section_url, outlet.domain)
     urls = [url for url in urls if is_probable_article_url(url)]
+    today = timezone.localdate()
+    urls = [url for url in urls if article_url_date(url) in {None, today}]
 
     # Pre-filter to avoid scraping URLs we already have in the database
     new_urls = []
@@ -171,7 +180,11 @@ def scrape_section(outlet: Outlet) -> list[ScrapedArticle]:
             if len(new_urls) >= 30:
                 break
 
-    return [article for article in (scrape_article_url(url) for url in new_urls) if article]
+    return [
+        article
+        for article in (scrape_article_url(url) for url in new_urls)
+        if article and is_same_local_day(article.published_at)
+    ]
 
 
 def scrape_article_url(url: str) -> ScrapedArticle | None:
@@ -185,8 +198,16 @@ def scrape_article_url(url: str) -> ScrapedArticle | None:
     excerpt_node = soup.find("meta", attrs={"name": "description"})
     excerpt = excerpt_node.get("content") if excerpt_node else None
     image_url = extract_og_image(soup)
+    published_at = extract_published_at(soup)
     raw_text = trafilatura.extract(html, include_comments=False, include_tables=False)
-    return ScrapedArticle(url=url, headline=headline, excerpt=excerpt, raw_text=raw_text, image_url=image_url)
+    return ScrapedArticle(
+        url=url,
+        headline=headline,
+        excerpt=excerpt,
+        raw_text=raw_text,
+        published_at=published_at,
+        image_url=image_url,
+    )
 
 
 def fetch_html(url: str) -> str | None:
@@ -229,6 +250,60 @@ def extract_og_image(soup: BeautifulSoup) -> str | None:
     meta = soup.find("meta", property="og:image") or soup.find("meta", attrs={"name": "og:image"})
     if meta and meta.get("content"):
         return meta.get("content").strip()
+    return None
+
+
+def extract_published_at(soup: BeautifulSoup) -> datetime | None:
+    meta_selectors = [
+        {"property": "article:published_time"},
+        {"name": "article:published_time"},
+        {"property": "og:published_time"},
+        {"name": "pubdate"},
+        {"name": "date"},
+        {"itemprop": "datePublished"},
+    ]
+    for attrs in meta_selectors:
+        meta = soup.find("meta", attrs=attrs)
+        if meta and meta.get("content"):
+            parsed = parse_feed_date(meta.get("content"))
+            if parsed:
+                return parsed
+
+    time_node = soup.find("time", attrs={"datetime": True})
+    if time_node and time_node.get("datetime"):
+        parsed = parse_feed_date(time_node.get("datetime"))
+        if parsed:
+            return parsed
+
+    for script in soup.find_all("script", attrs={"type": "application/ld+json"}):
+        try:
+            payload = json.loads(script.string or "")
+        except (TypeError, json.JSONDecodeError):
+            continue
+        parsed = extract_json_ld_date(payload)
+        if parsed:
+            return parsed
+    return None
+
+
+def extract_json_ld_date(payload) -> datetime | None:
+    if isinstance(payload, list):
+        for item in payload:
+            parsed = extract_json_ld_date(item)
+            if parsed:
+                return parsed
+        return None
+    if not isinstance(payload, dict):
+        return None
+    for key in ("datePublished", "dateCreated", "dateModified"):
+        value = payload.get(key)
+        if isinstance(value, str):
+            parsed = parse_feed_date(value)
+            if parsed:
+                return parsed
+    graph = payload.get("@graph")
+    if graph:
+        return extract_json_ld_date(graph)
     return None
 
 
@@ -387,11 +462,41 @@ def is_probable_article_url(url: str) -> bool:
     return bool(ARTICLE_PATH_RE.search(path))
 
 
+def article_url_date(url: str):
+    match = URL_DATE_RE.search(urlparse(url).path)
+    if not match:
+        return None
+    try:
+        return datetime(
+            int(match.group("year")),
+            int(match.group("month")),
+            int(match.group("day")),
+        ).date()
+    except ValueError:
+        return None
+
+
+def is_same_local_day(value: datetime | None) -> bool:
+    if not value:
+        return False
+    if timezone.is_naive(value):
+        value = timezone.make_aware(value)
+    return timezone.localtime(value).date() == timezone.localdate()
+
+
 def parse_feed_date(value: str | None) -> datetime | None:
     if not value:
         return None
     try:
         parsed = parsedate_to_datetime(value)
+        if timezone.is_naive(parsed):
+            parsed = timezone.make_aware(parsed)
+        return parsed
+    except (TypeError, ValueError):
+        pass
+    try:
+        normalized = value.strip().replace("Z", "+00:00")
+        parsed = datetime.fromisoformat(normalized)
         if timezone.is_naive(parsed):
             parsed = timezone.make_aware(parsed)
         return parsed

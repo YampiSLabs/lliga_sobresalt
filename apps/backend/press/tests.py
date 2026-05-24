@@ -1,4 +1,6 @@
 from io import StringIO
+from datetime import timedelta
+from email.utils import format_datetime
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
@@ -7,6 +9,7 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from core.choices import IncidentCategory, IncidentStatus, RawArticleStatus
+from core.llm import OpenRouterQuotaExceeded
 from league.models import City
 from press.admin import (
     approve_incidents,
@@ -28,6 +31,7 @@ from press.services.scraper import (
     is_probable_article_url,
     is_safe_public_url,
     parse_feed_date,
+    scrape_article_url,
     scrape_outlet,
     scrape_rss,
     scrape_section,
@@ -540,6 +544,7 @@ class ScraperServiceTests(TestCase):
                 headline="Concert a Girona",
                 excerpt="Agenda cultural del cap de setmana",
                 raw_text="La programacio cultural suma nous concerts.",
+                published_at=timezone.now(),
             )
         ]
 
@@ -557,6 +562,7 @@ class ScraperServiceTests(TestCase):
                 headline="Concert a Girona",
                 excerpt="Agenda cultural del cap de setmana",
                 raw_text="Noticia cultural. Enlaces relacionados: pelea, apunalamiento, robo.",
+                published_at=timezone.now(),
             )
         ]
 
@@ -584,6 +590,7 @@ class ScraperServiceTests(TestCase):
                 headline="Same headline",
                 excerpt="Same excerpt",
                 raw_text="Same text",
+                published_at=timezone.now(),
             )
         ]
 
@@ -602,7 +609,7 @@ class ScraperServiceTests(TestCase):
                     link="https://example.com/news/1",
                     title="Pelea en Barcelona",
                     summary="Resumen",
-                    published="Tue, 19 May 2026 10:30:00 +0200",
+                    published=format_datetime(timezone.now()),
                 ),
                 SimpleNamespace(link="", title="Missing URL"),
                 SimpleNamespace(link="https://example.com/news/2", title=""),
@@ -618,6 +625,67 @@ class ScraperServiceTests(TestCase):
         self.assertEqual(articles[0].image_url, "https://example.com/image.jpg")
         self.assertIsNotNone(articles[0].published_at)
         extract_mock.assert_called_once_with("https://example.com/news/1")
+
+    @patch("press.services.scraper.extract_text_and_image_from_url")
+    @patch("press.services.scraper.feedparser.parse")
+    def test_scrape_rss_skips_old_articles_before_fetching_body(self, parse_mock, extract_mock):
+        parse_mock.return_value = SimpleNamespace(
+            entries=[
+                SimpleNamespace(
+                    link="https://example.com/news/old",
+                    title="Pelea en Barcelona",
+                    summary="Resumen",
+                    published=format_datetime(timezone.now() - timedelta(days=1)),
+                )
+            ]
+        )
+
+        articles = scrape_rss("https://example.com/rss")
+
+        self.assertEqual(articles, [])
+        extract_mock.assert_not_called()
+
+    @patch("press.services.scraper.extract_text_and_image_from_url")
+    @patch("press.services.scraper.feedparser.parse")
+    def test_scrape_rss_skips_articles_without_published_date(self, parse_mock, extract_mock):
+        parse_mock.return_value = SimpleNamespace(
+            entries=[
+                SimpleNamespace(
+                    link="https://example.com/news/no-date",
+                    title="Pelea en Barcelona",
+                    summary="Resumen",
+                )
+            ]
+        )
+
+        articles = scrape_rss("https://example.com/rss")
+
+        self.assertEqual(articles, [])
+        extract_mock.assert_not_called()
+
+    @patch("press.services.scraper.scrape_rss")
+    def test_scrape_outlet_skips_articles_without_reliable_same_day_date(self, scrape_rss_mock):
+        scrape_rss_mock.return_value = [
+            ScrapedArticle(
+                url="https://example.com/news/no-date",
+                headline="Pelea en Barcelona",
+                excerpt="Resumen",
+                raw_text="Texto",
+                published_at=None,
+            ),
+            ScrapedArticle(
+                url="https://example.com/news/old",
+                headline="Pelea en Girona",
+                excerpt="Resumen",
+                raw_text="Texto",
+                published_at=timezone.now() - timedelta(days=1),
+            ),
+        ]
+
+        created = scrape_outlet(self.outlet)
+
+        self.assertEqual(created, 0)
+        self.assertEqual(RawArticle.objects.count(), 0)
 
     def test_extract_internal_links_keeps_same_domain_and_removes_fragments(self):
         html = """
@@ -641,23 +709,74 @@ class ScraperServiceTests(TestCase):
     @patch("press.services.scraper.fetch_html")
     def test_scrape_section_only_scrapes_probable_article_links(self, fetch_html_mock, scrape_article_url_mock):
         self.outlet.section_url = "https://example.com/tags/sucesos/"
+        today = timezone.localdate()
         fetch_html_mock.return_value = """
-        <a href="/successos/2026/05/19/article-bo-123.html">Article</a>
+        <a href="/successos/%s/article-bo-123.html">Article</a>
         <a href="/tags/sucesos/">Tag</a>
         <a href="/municipis.html">Municipis</a>
         <a href="/girona/girona-ciutat/">City page</a>
-        """
+        """ % today.strftime("%Y/%m/%d")
         scrape_article_url_mock.return_value = ScrapedArticle(
-            url="https://example.com/successos/2026/05/19/article-bo-123.html",
+            url=f"https://example.com/successos/{today:%Y/%m/%d}/article-bo-123.html",
             headline="Article bo",
+            published_at=timezone.now(),
         )
 
         articles = scrape_section(self.outlet)
 
         self.assertEqual(len(articles), 1)
         scrape_article_url_mock.assert_called_once_with(
-            "https://example.com/successos/2026/05/19/article-bo-123.html"
+            f"https://example.com/successos/{today:%Y/%m/%d}/article-bo-123.html"
         )
+
+    @patch("press.services.scraper.scrape_article_url")
+    @patch("press.services.scraper.fetch_html")
+    def test_scrape_section_skips_old_date_urls_before_fetching_article(self, fetch_html_mock, scrape_article_url_mock):
+        self.outlet.section_url = "https://example.com/tags/sucesos/"
+        old_day = timezone.localdate() - timedelta(days=1)
+        fetch_html_mock.return_value = f"""
+        <a href="/successos/{old_day:%Y/%m/%d}/article-vell-123.html">Article vell</a>
+        """
+
+        articles = scrape_section(self.outlet)
+
+        self.assertEqual(articles, [])
+        scrape_article_url_mock.assert_not_called()
+
+    @patch("press.services.scraper.fetch_html")
+    def test_scrape_section_accepts_no_date_url_when_article_metadata_is_today(self, fetch_html_mock):
+        self.outlet.section_url = "https://example.com/tags/sucesos/"
+        published_at = timezone.now()
+        fetch_html_mock.side_effect = [
+            '<a href="/ca/successos/article-bo_123.html">Article</a>',
+            f"""
+            <html>
+              <head>
+                <meta property="article:published_time" content="{published_at.isoformat()}">
+                <meta name="description" content="Resumen">
+              </head>
+              <body><h1>Pelea en Barcelona</h1><p>Texto</p></body>
+            </html>
+            """,
+        ]
+
+        articles = scrape_section(self.outlet)
+
+        self.assertEqual(len(articles), 1)
+        self.assertEqual(articles[0].url, "https://example.com/ca/successos/article-bo_123.html")
+        self.assertEqual(timezone.localtime(articles[0].published_at).date(), timezone.localdate())
+
+    @patch("press.services.scraper.fetch_html")
+    def test_scrape_section_skips_no_date_url_without_article_metadata(self, fetch_html_mock):
+        self.outlet.section_url = "https://example.com/tags/sucesos/"
+        fetch_html_mock.side_effect = [
+            '<a href="/ca/successos/article-sense-data_123.html">Article</a>',
+            "<html><body><h1>Pelea en Barcelona</h1><p>Texto</p></body></html>",
+        ]
+
+        articles = scrape_section(self.outlet)
+
+        self.assertEqual(articles, [])
 
     def test_parse_feed_date_returns_none_for_invalid_values(self):
         self.assertIsNone(parse_feed_date(None))
@@ -807,6 +926,64 @@ class CeleryTaskTests(TestCase):
         delay_mock.assert_any_call(art2.pk)
         delay_mock.assert_any_call(art4.pk)
 
+    @override_settings(OPENROUTER_MAX_ARTICLES_PER_BATCH=5, OPENROUTER_ESTIMATED_CALLS_PER_ARTICLE=2)
+    @patch("press.tasks.openrouter_dispatch_capacity", return_value=1)
+    @patch("press.tasks.process_article_task.delay")
+    def test_process_articles_task_uses_openrouter_paced_capacity_when_limit_is_default(
+        self,
+        delay_mock,
+        capacity_mock,
+    ):
+        from press.tasks import process_articles_task
+
+        art1 = RawArticle.objects.create(
+            outlet=self.outlet,
+            url="https://example.com/paced-1",
+            headline="Pelea 1",
+            content_hash="hash-paced-1",
+            status=RawArticleStatus.NEW,
+        )
+        art2 = RawArticle.objects.create(
+            outlet=self.outlet,
+            url="https://example.com/paced-2",
+            headline="Pelea 2",
+            content_hash="hash-paced-2",
+            status=RawArticleStatus.NEW,
+        )
+
+        process_articles_task()
+
+        art1.refresh_from_db()
+        art2.refresh_from_db()
+        self.assertEqual(art1.status, RawArticleStatus.PROCESSING)
+        self.assertEqual(art2.status, RawArticleStatus.NEW)
+        delay_mock.assert_called_once_with(art1.pk)
+        capacity_mock.assert_called_once()
+
+    @patch("press.tasks.openrouter_dispatch_capacity", return_value=0)
+    @patch("press.tasks.process_article_task.delay")
+    def test_process_articles_task_skips_enqueue_when_openrouter_pacing_has_no_capacity(
+        self,
+        delay_mock,
+        capacity_mock,
+    ):
+        from press.tasks import process_articles_task
+
+        article = RawArticle.objects.create(
+            outlet=self.outlet,
+            url="https://example.com/no-capacity",
+            headline="Pelea",
+            content_hash="hash-no-capacity",
+            status=RawArticleStatus.NEW,
+        )
+
+        process_articles_task()
+
+        article.refresh_from_db()
+        self.assertEqual(article.status, RawArticleStatus.NEW)
+        delay_mock.assert_not_called()
+        capacity_mock.assert_called_once()
+
     @patch("press.tasks.process_article")
     def test_process_article_task_handles_failure_by_setting_failed_status(self, process_article_mock):
         from press.tasks import process_article_task
@@ -826,6 +1003,26 @@ class CeleryTaskTests(TestCase):
         article.refresh_from_db()
         self.assertEqual(article.status, RawArticleStatus.FAILED)
         self.assertEqual(article.error_message, "AI extraction failed, retrying (1/5): LLM rate limit reached")
+
+    @patch("press.tasks.process_article")
+    def test_process_article_task_defers_article_when_openrouter_quota_is_exhausted(self, process_article_mock):
+        from press.tasks import process_article_task
+
+        article = RawArticle.objects.create(
+            outlet=self.outlet,
+            url="https://example.com/quota-art",
+            headline="Pelea",
+            content_hash="hash-quota",
+            status=RawArticleStatus.PROCESSING,
+        )
+        process_article_mock.side_effect = OpenRouterQuotaExceeded("OpenRouter daily call limit reached")
+
+        result = process_article_task(article.pk)
+
+        article.refresh_from_db()
+        self.assertEqual(result, "deferred")
+        self.assertEqual(article.status, RawArticleStatus.FAILED)
+        self.assertIn("OpenRouter quota exhausted", article.error_message)
 
     @patch("press.tasks.process_article")
     def test_process_article_task_handles_permanent_failure_by_setting_failed_ai_status(self, process_article_mock):
@@ -936,7 +1133,7 @@ class OptimizedScraperTests(TestCase):
                     link="https://example.com/news/already-exists",
                     title="Headline",
                     summary="Excerpt",
-                    published="Tue, 19 May 2026 10:30:00 +0200",
+                    published=format_datetime(timezone.now()),
                 )
             ]
         )
@@ -954,7 +1151,7 @@ class OptimizedScraperTests(TestCase):
                     link="https://example.com/news/unrelated",
                     title="Concierto de música clásica en Barcelona",
                     summary="No hay palabras clave aquí.",
-                    published="Tue, 19 May 2026 10:30:00 +0200",
+                    published=format_datetime(timezone.now()),
                 )
             ]
         )
@@ -973,7 +1170,7 @@ class OptimizedScraperTests(TestCase):
                     link="https://example.com/news/relevant",
                     title="Apuñalamiento grave en una estación de tren",
                     summary="Un suceso violento en la estación.",
-                    published="Tue, 19 May 2026 10:30:00 +0200",
+                    published=format_datetime(timezone.now()),
                 )
             ]
         )

@@ -6,6 +6,7 @@ import httpx
 from celery import shared_task
 from django.core.management import call_command
 
+from core.llm import OpenRouterQuotaExceeded, openrouter_dispatch_capacity
 from press.models import Outlet, RawArticle
 from press.management.commands.process_articles import process_article
 from press.services.scraper import scrape_outlet
@@ -32,7 +33,12 @@ def process_articles_task(limit: int | None = None) -> None:
         logger.warning("Failed to run automatic sync_shield_cities in process_articles_task: %s", exc)
 
     if limit is None:
-        limit = getattr(settings, "OPENROUTER_MAX_ARTICLES_PER_BATCH", 5)
+        limit = openrouter_dispatch_capacity(
+            max_articles=getattr(settings, "OPENROUTER_MAX_ARTICLES_PER_BATCH", 5)
+        )
+    if limit <= 0:
+        logger.info("process_articles_task skipped because OpenRouter pacing has no capacity")
+        return
 
     with transaction.atomic():
         queryset = RawArticle.objects.select_for_update().filter(
@@ -62,7 +68,7 @@ def scrape_outlet_task(outlet_id: int) -> int:
 @shared_task(
     bind=True,
     name="process_article_task",
-    rate_limit="10/m",
+    rate_limit="18/m",
     autoretry_for=(RuntimeError, httpx.HTTPError),
     retry_backoff=True,
     retry_backoff_max=300,
@@ -84,6 +90,12 @@ def process_article_task(self, article_id: int) -> str:
         )
         logger.info("process_article_task finished article_id=%s result=%s", article_id, result)
         return result
+    except OpenRouterQuotaExceeded as exc:
+        article.status = RawArticleStatus.FAILED
+        article.error_message = f"OpenRouter quota exhausted; deferred for later retry: {exc}"
+        article.save(update_fields=["status", "error_message"])
+        logger.info("process_article_task deferred article_id=%s: %s", article_id, exc)
+        return "deferred"
     except Exception as exc:
         if self.request.retries >= self.max_retries:
             article.status = RawArticleStatus.FAILED_AI
