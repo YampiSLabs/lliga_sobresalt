@@ -1,6 +1,8 @@
+from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 
 import httpx
+from django.apps import apps
 from django.core.cache import cache
 from django.test import override_settings
 from django.test import TestCase
@@ -10,7 +12,7 @@ from django.conf import settings
 from django.urls import URLPattern
 
 from core.choices import IncidentCategory, IncidentStatus
-from core.llm import chat_completion_json, get_llm_config, get_llm_configs
+from core.llm import OpenRouterQuotaExceeded, chat_completion_json, get_llm_config, get_llm_configs
 from league.models import City
 from press.models import Incident
 
@@ -182,7 +184,7 @@ class CeleryBeatScheduleTests(TestCase):
         self.assertIn("recalculate-rankings-hourly", schedule)
         self.assertEqual(schedule["scrape-press-hourly"]["task"], "scrape_press_task")
         self.assertEqual(schedule["process-articles-every-3-minutes"]["task"], "process_articles_task")
-        self.assertEqual(schedule["process-articles-every-3-minutes"]["args"], (1,))
+        self.assertNotIn("args", schedule["process-articles-every-3-minutes"])
         self.assertEqual(schedule["recalculate-rankings-hourly"]["task"], "recalculate_rankings_task")
 
 
@@ -308,6 +310,158 @@ class LlmConfigTests(TestCase):
         _, opencode_kwargs = client.post.call_args
         self.assertEqual(opencode_kwargs["json"]["model"], "big-pickle")
         self.assertEqual(opencode_kwargs["headers"]["Authorization"], "Bearer test-opencode-key")
+
+    @override_settings(
+        OPENROUTER_API_KEY="test-key",
+        OPENROUTER_BASE_URL="https://openrouter.ai/api/v1",
+        OPENROUTER_MODEL="openrouter/free",
+        OPENROUTER_TIMEOUT_SECONDS=60,
+        OPENROUTER_SITE_URL="",
+        OPENROUTER_APP_NAME="La Lliga del Sobresalt",
+        OPENROUTER_DAILY_CALL_LIMIT=1,
+        OPENROUTER_RATE_LIMIT_PER_MINUTE=18,
+        OPENCODE_API_KEY="",
+    )
+    @patch("core.llm.httpx.Client")
+    def test_openrouter_daily_limit_blocks_extra_http_calls(self, client_class):
+        response = MagicMock()
+        response.json.return_value = {"choices": [{"message": {"content": '{"ok":true}'}}]}
+        client = client_class.return_value.__enter__.return_value
+        client.post.return_value = response
+
+        result = chat_completion_json(
+            [{"role": "user", "content": "Devuelve JSON"}],
+            temperature=0,
+            purpose="test extraction",
+            retries=0,
+        )
+        with self.assertRaises(OpenRouterQuotaExceeded) as exc:
+            chat_completion_json(
+                [{"role": "user", "content": "Devuelve JSON"}],
+                temperature=0,
+                purpose="headline generation",
+                retries=0,
+            )
+
+        self.assertEqual(result, '{"ok":true}')
+        self.assertIn("OpenRouter daily call limit reached", str(exc.exception))
+        client.post.assert_called_once()
+        usage_model = apps.get_model("core", "LlmProviderUsage")
+        usage = usage_model.objects.get(provider="openrouter", window_kind="day")
+        self.assertEqual(usage.attempts, 1)
+
+    @override_settings(
+        OPENROUTER_API_KEY="test-key",
+        OPENROUTER_BASE_URL="https://openrouter.ai/api/v1",
+        OPENROUTER_MODEL="openrouter/free",
+        OPENROUTER_TIMEOUT_SECONDS=60,
+        OPENROUTER_SITE_URL="",
+        OPENROUTER_APP_NAME="La Lliga del Sobresalt",
+        OPENROUTER_DAILY_CALL_LIMIT=300,
+        OPENROUTER_RATE_LIMIT_PER_MINUTE=1,
+        OPENCODE_API_KEY="",
+    )
+    @patch("core.llm.httpx.Client")
+    def test_openrouter_minute_limit_blocks_bursts(self, client_class):
+        response = MagicMock()
+        response.json.return_value = {"choices": [{"message": {"content": '{"ok":true}'}}]}
+        client = client_class.return_value.__enter__.return_value
+        client.post.return_value = response
+
+        chat_completion_json(
+            [{"role": "user", "content": "Devuelve JSON"}],
+            temperature=0,
+            purpose="test",
+            retries=0,
+        )
+        with self.assertRaises(OpenRouterQuotaExceeded) as exc:
+            chat_completion_json(
+                [{"role": "user", "content": "Devuelve JSON"}],
+                temperature=0,
+                purpose="test",
+                retries=0,
+            )
+
+        self.assertIn("OpenRouter per-minute rate limit reached", str(exc.exception))
+        client.post.assert_called_once()
+
+    @override_settings(
+        OPENROUTER_API_KEY="test-key",
+        OPENROUTER_BASE_URL="https://openrouter.ai/api/v1",
+        OPENROUTER_MODEL="openrouter/free",
+        OPENROUTER_TIMEOUT_SECONDS=60,
+        OPENROUTER_SITE_URL="",
+        OPENROUTER_APP_NAME="La Lliga del Sobresalt",
+        OPENROUTER_DAILY_CALL_LIMIT=1,
+        OPENROUTER_RATE_LIMIT_PER_MINUTE=18,
+        OPENCODE_API_KEY="",
+    )
+    @patch("core.llm.httpx.Client")
+    def test_openrouter_daily_limit_resets_on_local_day_boundary(self, client_class):
+        response = MagicMock()
+        response.json.return_value = {"choices": [{"message": {"content": '{"ok":true}'}}]}
+        client = client_class.return_value.__enter__.return_value
+        client.post.return_value = response
+        local_tz = timezone.get_current_timezone()
+        first_day = datetime(2026, 5, 24, 23, 59, tzinfo=local_tz)
+        second_day = first_day + timedelta(minutes=2)
+
+        with patch("core.llm.timezone.now", side_effect=[first_day, second_day]):
+            chat_completion_json(
+                [{"role": "user", "content": "Devuelve JSON"}],
+                temperature=0,
+                purpose="test extraction",
+                retries=0,
+            )
+            chat_completion_json(
+                [{"role": "user", "content": "Devuelve JSON"}],
+                temperature=0,
+                purpose="headline generation",
+                retries=0,
+            )
+
+        self.assertEqual(client.post.call_count, 2)
+        usage_model = apps.get_model("core", "LlmProviderUsage")
+        self.assertEqual(usage_model.objects.filter(provider="openrouter", window_kind="day").count(), 2)
+
+    @override_settings(
+        OPENROUTER_API_KEY="test-openrouter-key",
+        OPENROUTER_BASE_URL="https://openrouter.ai/api/v1",
+        OPENROUTER_MODEL="openrouter/free",
+        OPENROUTER_TIMEOUT_SECONDS=60,
+        OPENROUTER_SITE_URL="",
+        OPENROUTER_APP_NAME="La Lliga del Sobresalt",
+        OPENROUTER_DAILY_CALL_LIMIT=300,
+        OPENROUTER_RATE_LIMIT_PER_MINUTE=18,
+        OPENCODE_API_KEY="test-opencode-key",
+        OPENCODE_BASE_URL="https://opencode.ai/zen/v1",
+        OPENCODE_MODEL="big-pickle",
+        OPENCODE_TIMEOUT_SECONDS=60,
+    )
+    @patch("core.llm.httpx.Client")
+    def test_openrouter_failed_attempt_counts_before_provider_fallback(self, client_class):
+        openrouter_response = MagicMock()
+        openrouter_response.raise_for_status.side_effect = httpx.HTTPStatusError(
+            "provider failed",
+            request=httpx.Request("POST", "https://openrouter.ai/api/v1/chat/completions"),
+            response=httpx.Response(500),
+        )
+        opencode_response = MagicMock()
+        opencode_response.json.return_value = {"choices": [{"message": {"content": '{"ok":true}'}}]}
+        client = client_class.return_value.__enter__.return_value
+        client.post.side_effect = [openrouter_response, opencode_response]
+
+        result = chat_completion_json(
+            [{"role": "user", "content": "Devuelve JSON"}],
+            temperature=0,
+            purpose="test",
+            retries=0,
+        )
+
+        self.assertEqual(result, '{"ok":true}')
+        usage_model = apps.get_model("core", "LlmProviderUsage")
+        usage = usage_model.objects.get(provider="openrouter", window_kind="day")
+        self.assertEqual(usage.attempts, 1)
 
 
 class SeasonsApiTests(TestCase):

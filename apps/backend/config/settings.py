@@ -218,7 +218,6 @@ CELERY_BEAT_SCHEDULE = {
     "process-articles-every-3-minutes": {
         "task": "process_articles_task",
         "schedule": crontab(minute="*/3"),
-        "args": (1,),
     },
     "recalculate-rankings-hourly": {
         "task": "recalculate_rankings_task",
@@ -234,6 +233,9 @@ OPENROUTER_BASE_URL = env("OPENROUTER_BASE_URL", default="https://openrouter.ai/
 OPENROUTER_MODEL = env("OPENROUTER_MODEL", default="openrouter/free")
 OPENROUTER_TIMEOUT_SECONDS = env.int("OPENROUTER_TIMEOUT_SECONDS", default=60)
 OPENROUTER_MAX_ARTICLES_PER_BATCH = env.int("OPENROUTER_MAX_ARTICLES_PER_BATCH", default=5)
+OPENROUTER_DAILY_CALL_LIMIT = env.int("OPENROUTER_DAILY_CALL_LIMIT", default=300)
+OPENROUTER_RATE_LIMIT_PER_MINUTE = env.int("OPENROUTER_RATE_LIMIT_PER_MINUTE", default=18)
+OPENROUTER_ESTIMATED_CALLS_PER_ARTICLE = env.int("OPENROUTER_ESTIMATED_CALLS_PER_ARTICLE", default=2)
 OPENROUTER_SITE_URL = env("OPENROUTER_SITE_URL", default="")
 OPENROUTER_APP_NAME = env("OPENROUTER_APP_NAME", default="La Lliga del Sobresalt")
 OPENCODE_API_KEY = env("OPENCODE_API_KEY", default="")
