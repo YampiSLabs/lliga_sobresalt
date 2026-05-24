@@ -2,10 +2,12 @@ from io import StringIO
 
 from django.core.management import call_command
 from django.test import TestCase
+from django.utils import timezone
 
-from core.choices import IncidentCategory, IncidentStatus
+from core.choices import IncidentCategory, IncidentStatus, RoundStatus
 from press.models import Incident
-from league.models import City
+from league.models import City, CityScore, LeagueRound, LeagueSeason
+from league.services.ranking import recalculate_all_rounds
 from league.services.scoring import calculate_points
 
 
@@ -82,3 +84,48 @@ class SyncShieldCitiesCommandTests(TestCase):
         call_command("seed_league", "--clear")
 
         self.assertTrue(City.objects.filter(slug="sabadell", is_active=True).exists())
+
+
+class RankingRecalculationTests(TestCase):
+    def setUp(self):
+        self.city_bcn = City.objects.create(name="Barcelona", slug="barcelona", province="Barcelona")
+        self.city_girona = City.objects.create(name="Girona", slug="girona", province="Girona")
+        self.season = LeagueSeason.objects.create(name="Temporada 2026", is_active=True)
+        now = timezone.now()
+        self.closed_round = LeagueRound.objects.create(
+            season=self.season,
+            name="Jornada 1",
+            starts_at=now - timezone.timedelta(days=14),
+            ends_at=now - timezone.timedelta(days=7),
+            status=RoundStatus.CLOSED,
+        )
+        self.open_round = LeagueRound.objects.create(
+            season=self.season,
+            name="Jornada 2",
+            starts_at=now - timezone.timedelta(days=1),
+            ends_at=now + timezone.timedelta(days=6),
+            status=RoundStatus.OPEN,
+        )
+        Incident.objects.create(
+            canonical_title="Incident aprovat a jornada tancada",
+            city=self.city_girona,
+            category=IncidentCategory.PELEA,
+            points=8,
+            status=IncidentStatus.APPROVED,
+            happened_at=now - timezone.timedelta(days=10),
+        )
+        Incident.objects.create(
+            canonical_title="Incident aprovat a jornada oberta",
+            city=self.city_bcn,
+            category=IncidentCategory.APUNYALAMENT,
+            points=12,
+            status=IncidentStatus.APPROVED,
+            happened_at=now,
+        )
+
+    def test_recalculate_all_rounds_populates_closed_and_open_round_rankings(self):
+        created = recalculate_all_rounds()
+
+        self.assertEqual(created, 2)
+        self.assertTrue(CityScore.objects.filter(round=self.closed_round, city=self.city_girona).exists())
+        self.assertTrue(CityScore.objects.filter(round=self.open_round, city=self.city_bcn).exists())
