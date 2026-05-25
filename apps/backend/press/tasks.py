@@ -23,6 +23,7 @@ def scrape_press_task() -> None:
 def process_articles_task(limit: int | None = None) -> None:
     from django.conf import settings
     from django.db import transaction
+    from django.utils import timezone
     from core.choices import RawArticleStatus
     from press.models import RawArticle
     from league.services.shield_cities import sync_shield_cities
@@ -36,9 +37,22 @@ def process_articles_task(limit: int | None = None) -> None:
         limit = openrouter_dispatch_capacity(
             max_articles=getattr(settings, "OPENROUTER_MAX_ARTICLES_PER_BATCH", 5)
         )
+        if limit <= 0 and getattr(settings, "OPENCODE_API_KEY", ""):
+            limit = getattr(settings, "OPENROUTER_MAX_ARTICLES_PER_BATCH", 5)
     if limit <= 0:
         logger.info("process_articles_task skipped because OpenRouter pacing has no capacity")
         return
+
+    stale_cutoff = timezone.now() - timezone.timedelta(hours=1)
+    stale_count = RawArticle.objects.filter(
+        status=RawArticleStatus.PROCESSING,
+        scraped_at__lt=stale_cutoff,
+    ).update(
+        status=RawArticleStatus.FAILED,
+        error_message="Requeued after stale processing timeout.",
+    )
+    if stale_count:
+        logger.warning("Requeued stale processing articles count=%s", stale_count)
 
     with transaction.atomic():
         queryset = RawArticle.objects.select_for_update().filter(

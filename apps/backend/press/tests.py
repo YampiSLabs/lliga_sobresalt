@@ -984,6 +984,51 @@ class CeleryTaskTests(TestCase):
         delay_mock.assert_not_called()
         capacity_mock.assert_called_once()
 
+    @override_settings(OPENCODE_API_KEY="test-opencode-key", OPENROUTER_MAX_ARTICLES_PER_BATCH=5)
+    @patch("press.tasks.openrouter_dispatch_capacity", return_value=0)
+    @patch("press.tasks.process_article_task.delay")
+    def test_process_articles_task_uses_fallback_provider_when_openrouter_has_no_capacity(
+        self,
+        delay_mock,
+        capacity_mock,
+    ):
+        from press.tasks import process_articles_task
+
+        article = RawArticle.objects.create(
+            outlet=self.outlet,
+            url="https://example.com/fallback-capacity",
+            headline="Pelea",
+            content_hash="hash-fallback-capacity",
+            status=RawArticleStatus.NEW,
+        )
+
+        process_articles_task()
+
+        article.refresh_from_db()
+        self.assertEqual(article.status, RawArticleStatus.PROCESSING)
+        delay_mock.assert_called_once_with(article.pk)
+        capacity_mock.assert_called_once()
+
+    @patch("press.tasks.process_article_task.delay")
+    def test_process_articles_task_requeues_stale_processing_articles(self, delay_mock):
+        from django.utils import timezone
+        from press.tasks import process_articles_task
+
+        article = RawArticle.objects.create(
+            outlet=self.outlet,
+            url="https://example.com/stale-processing",
+            headline="Pelea",
+            content_hash="hash-stale-processing",
+            scraped_at=timezone.now() - timezone.timedelta(hours=2),
+            status=RawArticleStatus.PROCESSING,
+        )
+
+        process_articles_task(limit=1)
+
+        article.refresh_from_db()
+        self.assertEqual(article.status, RawArticleStatus.PROCESSING)
+        delay_mock.assert_called_once_with(article.pk)
+
     @patch("press.tasks.process_article")
     def test_process_article_task_handles_failure_by_setting_failed_status(self, process_article_mock):
         from press.tasks import process_article_task
