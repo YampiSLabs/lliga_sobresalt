@@ -21,6 +21,11 @@ import AlfesShield from "catalunya-shields/assets/svg/alfes.svg";
 import AlforjaShield from "catalunya-shields/assets/svg/alforja.svg";
 import AlgerriShield from "catalunya-shields/assets/svg/algerri.svg";
 import AlguaireShield from "catalunya-shields/assets/svg/alguaire.svg";
+import AlinsShield from "catalunya-shields/assets/svg/alins.svg";
+import AlioShield from "catalunya-shields/assets/svg/alio.svg";
+import AlmacellesShield from "catalunya-shields/assets/svg/almacelles.svg";
+import AlmatretShield from "catalunya-shields/assets/svg/almatret.svg";
+import AlmosterShield from "catalunya-shields/assets/svg/almoster.svg";
 import BadalonaShield from "catalunya-shields/assets/svg/badalona.svg";
 import BarcelonaShield from "catalunya-shields/assets/svg/barcelona.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
@@ -68,6 +73,11 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "alforja": AlforjaShield,
   "algerri": AlgerriShield,
   "alguaire": AlguaireShield,
+  "alins": AlinsShield,
+  "alio": AlioShield,
+  "almacelles": AlmacellesShield,
+  "almatret": AlmatretShield,
+  "almoster": AlmosterShield,
   "badalona": BadalonaShield,
   "barcelona": BarcelonaShield,
   "cornella": CornellaDeLlobregatShield,
@@ -108,6 +118,11 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "alforja",
   "algerri",
   "alguaire",
+  "alins",
+  "alio",
+  "almacelles",
+  "almatret",
+  "almoster",
   "badalona",
   "barcelona",
   "cornella-de-llobregat",
@@ -144,6 +159,11 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Alforja", slug: "alforja", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Algerri", slug: "algerri", province: "Lleida", aliases: [], hasShield: true },
   { name: "Alguaire", slug: "alguaire", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Alins", slug: "alins", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Alió", slug: "alio", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Almacelles", slug: "almacelles", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Almatret", slug: "almatret", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Almoster", slug: "almoster", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Badalona", slug: "badalona", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Barcelona", slug: "barcelona", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
@@ -186,12 +206,12 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Alforja", slug: "alforja", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Algerri", slug: "algerri", province: "Lleida", aliases: [], hasShield: true },
   { name: "Alguaire", slug: "alguaire", province: "Lleida", aliases: [], hasShield: true },
-  { name: "Alins", slug: "alins", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Alió", slug: "alio", province: "Tarragona", aliases: [], hasShield: false },
-  { name: "Almacelles", slug: "almacelles", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Almatret", slug: "almatret", province: "Lleida", aliases: [], hasShield: false },
+  { name: "Alins", slug: "alins", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Alió", slug: "alio", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Almacelles", slug: "almacelles", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Almatret", slug: "almatret", province: "Lleida", aliases: [], hasShield: true },
   { name: "Almenar", slug: "almenar", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Almoster", slug: "almoster", province: "Tarragona", aliases: [], hasShield: false },
+  { name: "Almoster", slug: "almoster", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Alòs de Balaguer", slug: "alos-de-balaguer", province: "Lleida", aliases: [], hasShield: false },
   { name: "Alp", slug: "alp", province: "Girona", aliases: [], hasShield: false },
   { name: "Alpens", slug: "alpens", province: "Barcelona", aliases: [], hasShield: false },
