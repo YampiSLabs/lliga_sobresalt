@@ -12,7 +12,7 @@ from django.conf import settings
 from django.urls import URLPattern
 
 from core.choices import IncidentCategory, IncidentStatus
-from core.llm import OpenRouterQuotaExceeded, chat_completion_json, get_llm_config, get_llm_configs
+from core.llm import chat_completion_json, get_llm_config, get_llm_configs
 from league.models import City
 from press.models import Incident
 
@@ -323,7 +323,7 @@ class LlmConfigTests(TestCase):
         OPENCODE_API_KEY="",
     )
     @patch("core.llm.httpx.Client")
-    def test_openrouter_daily_limit_blocks_extra_http_calls(self, client_class):
+    def test_openrouter_daily_limit_skips_extra_openrouter_http_calls(self, client_class):
         response = MagicMock()
         response.json.return_value = {"choices": [{"message": {"content": '{"ok":true}'}}]}
         client = client_class.return_value.__enter__.return_value
@@ -335,17 +335,19 @@ class LlmConfigTests(TestCase):
             purpose="test extraction",
             retries=0,
         )
-        with self.assertRaises(OpenRouterQuotaExceeded) as exc:
-            chat_completion_json(
-                [{"role": "user", "content": "Devuelve JSON"}],
-                temperature=0,
-                purpose="headline generation",
-                retries=0,
-            )
+        fallback = chat_completion_json(
+            [{"role": "user", "content": "Devuelve JSON"}],
+            temperature=0,
+            purpose="headline generation",
+            retries=0,
+        )
 
         self.assertEqual(result, '{"ok":true}')
-        self.assertIn("OpenRouter daily call limit reached", str(exc.exception))
-        client.post.assert_called_once()
+        self.assertEqual(fallback, '{"ok":true}')
+        self.assertEqual(client.post.call_count, 2)
+        first_call, fallback_call = client.post.call_args_list
+        self.assertIn("openrouter.ai", first_call.args[0])
+        self.assertIn(":11434", fallback_call.args[0])
         usage_model = apps.get_model("core", "LlmProviderUsage")
         usage = usage_model.objects.get(provider="openrouter", window_kind="day")
         self.assertEqual(usage.attempts, 1)
@@ -362,7 +364,7 @@ class LlmConfigTests(TestCase):
         OPENCODE_API_KEY="",
     )
     @patch("core.llm.httpx.Client")
-    def test_openrouter_minute_limit_blocks_bursts(self, client_class):
+    def test_openrouter_minute_limit_skips_burst_http_calls(self, client_class):
         response = MagicMock()
         response.json.return_value = {"choices": [{"message": {"content": '{"ok":true}'}}]}
         client = client_class.return_value.__enter__.return_value
@@ -374,16 +376,18 @@ class LlmConfigTests(TestCase):
             purpose="test",
             retries=0,
         )
-        with self.assertRaises(OpenRouterQuotaExceeded) as exc:
-            chat_completion_json(
-                [{"role": "user", "content": "Devuelve JSON"}],
-                temperature=0,
-                purpose="test",
-                retries=0,
-            )
+        fallback = chat_completion_json(
+            [{"role": "user", "content": "Devuelve JSON"}],
+            temperature=0,
+            purpose="test",
+            retries=0,
+        )
 
-        self.assertIn("OpenRouter per-minute rate limit reached", str(exc.exception))
-        client.post.assert_called_once()
+        self.assertEqual(fallback, '{"ok":true}')
+        self.assertEqual(client.post.call_count, 2)
+        first_call, fallback_call = client.post.call_args_list
+        self.assertIn("openrouter.ai", first_call.args[0])
+        self.assertIn(":11434", fallback_call.args[0])
 
     @override_settings(
         OPENROUTER_API_KEY="test-key",
@@ -462,6 +466,48 @@ class LlmConfigTests(TestCase):
         usage_model = apps.get_model("core", "LlmProviderUsage")
         usage = usage_model.objects.get(provider="openrouter", window_kind="day")
         self.assertEqual(usage.attempts, 1)
+
+    @override_settings(
+        OPENROUTER_API_KEY="test-openrouter-key",
+        OPENROUTER_BASE_URL="https://openrouter.ai/api/v1",
+        OPENROUTER_MODEL="openrouter/free",
+        OPENROUTER_TIMEOUT_SECONDS=60,
+        OPENROUTER_SITE_URL="",
+        OPENROUTER_APP_NAME="La Lliga del Sobresalt",
+        OPENROUTER_DAILY_CALL_LIMIT=1,
+        OPENROUTER_RATE_LIMIT_PER_MINUTE=18,
+        OPENCODE_API_KEY="test-opencode-key",
+        OPENCODE_BASE_URL="https://opencode.ai/zen/v1",
+        OPENCODE_MODEL="big-pickle",
+        OPENCODE_TIMEOUT_SECONDS=60,
+    )
+    @patch("core.llm.httpx.Client")
+    def test_openrouter_quota_limit_falls_back_to_opencode(self, client_class):
+        openrouter_response = MagicMock()
+        openrouter_response.json.return_value = {"choices": [{"message": {"content": '{"via":"openrouter"}'}}]}
+        opencode_response = MagicMock()
+        opencode_response.json.return_value = {"choices": [{"message": {"content": '{"via":"opencode"}'}}]}
+        client = client_class.return_value.__enter__.return_value
+        client.post.side_effect = [openrouter_response, opencode_response]
+
+        first = chat_completion_json(
+            [{"role": "user", "content": "Devuelve JSON"}],
+            temperature=0,
+            purpose="test extraction",
+            retries=0,
+        )
+        second = chat_completion_json(
+            [{"role": "user", "content": "Devuelve JSON"}],
+            temperature=0,
+            purpose="headline generation",
+            retries=0,
+        )
+
+        self.assertEqual(first, '{"via":"openrouter"}')
+        self.assertEqual(second, '{"via":"opencode"}')
+        self.assertEqual(client.post.call_count, 2)
+        _, opencode_kwargs = client.post.call_args
+        self.assertEqual(opencode_kwargs["json"]["model"], "big-pickle")
 
 
 class SeasonsApiTests(TestCase):

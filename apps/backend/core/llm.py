@@ -47,8 +47,15 @@ def chat_completion_json(
                     if not content or not content.strip():
                         raise ValueError("Received empty or None content from LLM provider")
                     return content
-            except OpenRouterQuotaExceeded:
-                raise
+            except OpenRouterQuotaExceeded as exc:
+                last_error = exc
+                logger.info(
+                    "%s provider skipped provider=%s: %s",
+                    purpose,
+                    config["provider"],
+                    exc,
+                )
+                break
             except (httpx.HTTPError, KeyError, IndexError, TypeError, ValueError) as exc:
                 last_error = exc
                 logger.warning(
