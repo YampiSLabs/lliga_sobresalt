@@ -35,6 +35,8 @@ import AmpostaShield from "catalunya-shields/assets/svg/amposta.svg";
 import AnglesShield from "catalunya-shields/assets/svg/angles.svg";
 import AnglesolaShield from "catalunya-shields/assets/svg/anglesola.svg";
 import ArbecaShield from "catalunya-shields/assets/svg/arbeca.svg";
+import ArbuciesShield from "catalunya-shields/assets/svg/arbucies.svg";
+import ArenysDeMarShield from "catalunya-shields/assets/svg/arenys-de-mar.svg";
 import BadalonaShield from "catalunya-shields/assets/svg/badalona.svg";
 import BarcelonaShield from "catalunya-shields/assets/svg/barcelona.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
@@ -96,6 +98,8 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "angles": AnglesShield,
   "anglesola": AnglesolaShield,
   "arbeca": ArbecaShield,
+  "arbucies": ArbuciesShield,
+  "arenys-de-mar": ArenysDeMarShield,
   "badalona": BadalonaShield,
   "barcelona": BarcelonaShield,
   "cornella": CornellaDeLlobregatShield,
@@ -150,6 +154,8 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "angles",
   "anglesola",
   "arbeca",
+  "arbucies",
+  "arenys-de-mar",
   "badalona",
   "barcelona",
   "cornella-de-llobregat",
@@ -200,6 +206,8 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Anglès", slug: "angles", province: "Girona", aliases: [], hasShield: true },
   { name: "Anglesola", slug: "anglesola", province: "Lleida", aliases: [], hasShield: true },
   { name: "Arbeca", slug: "arbeca", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Arbúcies", slug: "arbucies", province: "Girona", aliases: [], hasShield: true },
+  { name: "Arenys de Mar", slug: "arenys-de-mar", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Badalona", slug: "badalona", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Barcelona", slug: "barcelona", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
@@ -260,8 +268,8 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Anglesola", slug: "anglesola", province: "Lleida", aliases: [], hasShield: true },
   { name: "Arbeca", slug: "arbeca", province: "Lleida", aliases: [], hasShield: true },
   { name: "Arbolí", slug: "arboli", province: "Tarragona", aliases: [], hasShield: false },
-  { name: "Arbúcies", slug: "arbucies", province: "Girona", aliases: [], hasShield: false },
-  { name: "Arenys de Mar", slug: "arenys-de-mar", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Arbúcies", slug: "arbucies", province: "Girona", aliases: [], hasShield: true },
+  { name: "Arenys de Mar", slug: "arenys-de-mar", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Arenys de Munt", slug: "arenys-de-munt", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Argelaguer", slug: "argelaguer", province: "Girona", aliases: [], hasShield: false },
   { name: "Argençola", slug: "argencola", province: "Barcelona", aliases: [], hasShield: false },
