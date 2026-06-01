@@ -37,6 +37,7 @@ import AnglesolaShield from "catalunya-shields/assets/svg/anglesola.svg";
 import ArbecaShield from "catalunya-shields/assets/svg/arbeca.svg";
 import ArbuciesShield from "catalunya-shields/assets/svg/arbucies.svg";
 import ArenysDeMarShield from "catalunya-shields/assets/svg/arenys-de-mar.svg";
+import ArenysDeMuntShield from "catalunya-shields/assets/svg/arenys-de-munt.svg";
 import BadalonaShield from "catalunya-shields/assets/svg/badalona.svg";
 import BarcelonaShield from "catalunya-shields/assets/svg/barcelona.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
@@ -100,6 +101,7 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "arbeca": ArbecaShield,
   "arbucies": ArbuciesShield,
   "arenys-de-mar": ArenysDeMarShield,
+  "arenys-de-munt": ArenysDeMuntShield,
   "badalona": BadalonaShield,
   "barcelona": BarcelonaShield,
   "cornella": CornellaDeLlobregatShield,
@@ -156,6 +158,7 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "arbeca",
   "arbucies",
   "arenys-de-mar",
+  "arenys-de-munt",
   "badalona",
   "barcelona",
   "cornella-de-llobregat",
@@ -208,6 +211,7 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Arbeca", slug: "arbeca", province: "Lleida", aliases: [], hasShield: true },
   { name: "Arbúcies", slug: "arbucies", province: "Girona", aliases: [], hasShield: true },
   { name: "Arenys de Mar", slug: "arenys-de-mar", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Arenys de Munt", slug: "arenys-de-munt", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Badalona", slug: "badalona", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Barcelona", slug: "barcelona", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
@@ -270,7 +274,7 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Arbolí", slug: "arboli", province: "Tarragona", aliases: [], hasShield: false },
   { name: "Arbúcies", slug: "arbucies", province: "Girona", aliases: [], hasShield: true },
   { name: "Arenys de Mar", slug: "arenys-de-mar", province: "Barcelona", aliases: [], hasShield: true },
-  { name: "Arenys de Munt", slug: "arenys-de-munt", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Arenys de Munt", slug: "arenys-de-munt", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Argelaguer", slug: "argelaguer", province: "Girona", aliases: [], hasShield: false },
   { name: "Argençola", slug: "argencola", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Argentona", slug: "argentona", province: "Barcelona", aliases: [], hasShield: false },
