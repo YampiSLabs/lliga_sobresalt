@@ -44,6 +44,7 @@ import ArgentonaShield from "catalunya-shields/assets/svg/argentona.svg";
 import ArnesShield from "catalunya-shields/assets/svg/arnes.svg";
 import ArresShield from "catalunya-shields/assets/svg/arres.svg";
 import ArseguelShield from "catalunya-shields/assets/svg/arseguel.svg";
+import ArtesaDeLleidaShield from "catalunya-shields/assets/svg/artesa-de-lleida.svg";
 import BadalonaShield from "catalunya-shields/assets/svg/badalona.svg";
 import BarcelonaShield from "catalunya-shields/assets/svg/barcelona.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
@@ -114,6 +115,7 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "arnes": ArnesShield,
   "arres": ArresShield,
   "arseguel": ArseguelShield,
+  "artesa-de-lleida": ArtesaDeLleidaShield,
   "badalona": BadalonaShield,
   "barcelona": BarcelonaShield,
   "cornella": CornellaDeLlobregatShield,
@@ -177,6 +179,7 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "arnes",
   "arres",
   "arseguel",
+  "artesa-de-lleida",
   "badalona",
   "barcelona",
   "cornella-de-llobregat",
@@ -236,6 +239,7 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Arnes", slug: "arnes", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Arres", slug: "arres", province: "Lleida", aliases: [], hasShield: true },
   { name: "Arsèguel", slug: "arseguel", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Artesa de Lleida", slug: "artesa-de-lleida", province: "Lleida", aliases: [], hasShield: true },
   { name: "Badalona", slug: "badalona", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Barcelona", slug: "barcelona", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
@@ -306,7 +310,7 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Arres", slug: "arres", province: "Lleida", aliases: [], hasShield: true },
   { name: "Arsèguel", slug: "arseguel", province: "Lleida", aliases: [], hasShield: true },
   { name: "Artés", slug: "artes", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Artesa de Lleida", slug: "artesa-de-lleida", province: "Lleida", aliases: [], hasShield: false },
+  { name: "Artesa de Lleida", slug: "artesa-de-lleida", province: "Lleida", aliases: [], hasShield: true },
   { name: "Artesa de Segre", slug: "artesa-de-segre", province: "Lleida", aliases: [], hasShield: false },
   { name: "Ascó", slug: "asco", province: "Tarragona", aliases: [], hasShield: false },
   { name: "Aspa", slug: "aspa", province: "Lleida", aliases: [], hasShield: false },
