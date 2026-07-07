@@ -75,8 +75,15 @@ export function getCities(lang?: "ca" | "es" | "en"): Promise<PublicCity[]> {
   return fetchValidated("/api/cities/", CitiesResponseSchema, [], lang);
 }
 
-export function getIncidents(lang: "ca" | "es" | "en" = "ca"): Promise<Incident[]> {
-  return fetchValidated("/api/incidents/", IncidentsResponseSchema, [], lang);
+export function getIncidents(
+  lang: "ca" | "es" | "en" = "ca",
+  options: { city?: string; limit?: number } = {},
+): Promise<Incident[]> {
+  const query = new URLSearchParams();
+  if (options.city) query.set("city", options.city);
+  if (options.limit) query.set("limit", String(options.limit));
+  const suffix = query.toString() ? `?${query.toString()}` : "";
+  return fetchValidated(`/api/incidents/${suffix}`, IncidentsResponseSchema, [], lang);
 }
 
 export function getSeasons(lang?: "ca" | "es" | "en"): Promise<Season[]> {

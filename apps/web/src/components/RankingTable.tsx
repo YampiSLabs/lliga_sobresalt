@@ -225,12 +225,12 @@ export default function RankingTable({
 
                 {/* Points (Amber maximalist) */}
                 <div className="col-span-2 text-right font-mono font-black text-amber-500 text-sm tracking-tight sobresalt-ranking-cell-points">
-                  {row.points}
+                  {row.points} <span className="text-[9px] text-amber-500/70">pts</span>
                 </div>
 
                 {/* Incident count */}
                 <div className="hidden sm:block col-span-2 text-center font-mono text-xs font-bold text-slate-400 sobresalt-ranking-cell-incidents">
-                  {row.incidentsCount}
+                  {row.incidentsCount} <span className="text-[9px] text-slate-500">inc.</span>
                 </div>
 
                 {/* Racha flames */}

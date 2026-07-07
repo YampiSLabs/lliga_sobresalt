@@ -46,7 +46,7 @@ jobs:
 
       - run: pnpm build
         env:
-          PUBLIC_SITE_URL: https://beatrizagent.github.io/lliga_sobresalt
+          PUBLIC_SITE_URL: https://yampislabs.github.io/lliga_sobresalt
           PUBLIC_BASE_PATH: /lliga_sobresalt
           PUBLIC_API_BASE_URL: https://sobresalt.yampi.eu
 
@@ -63,6 +63,7 @@ jobs:
           DEBUG: "True"
 
       - uses: peter-evans/create-pull-request@v7
+        id: cpr
         with:
           token: ${{ secrets.BEATRIZ_AGENT_PAT }}
           branch: codex/update-catalunya-shields
@@ -75,3 +76,11 @@ jobs:
             Automated update from `YampiSLabs/catalunya-shields@main`.
 
             This PR refreshes the package lock, generated shield lookup, and backend city manifest when upstream adds new SVG assets.
+
+      - name: Enable automerge for generated shield update
+        if: steps.cpr.outputs.pull-request-number
+        env:
+          GH_TOKEN: ${{ secrets.BEATRIZ_AGENT_PAT }}
+          PR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
+          PR_HEAD_SHA: ${{ steps.cpr.outputs.pull-request-head-sha }}
+        run: gh pr merge "$PR_NUMBER" --auto --squash --delete-branch --match-head-commit "$PR_HEAD_SHA"
