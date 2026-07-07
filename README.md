@@ -10,7 +10,8 @@
 
 <p align="center">
   <strong>El portal e-sports satírico definitivo de Cataluña.</strong><br />
-  Análisis semántico-factual de incidentes reales traducidos en tiempo real a una liga competitiva y dramática de videojuegos.
+  Análisis semántico-factual de incidentes reales traducidos en tiempo real a una liga competitiva y dramática de videojuegos.<br />
+  Proyecto operativo para el despliegue público de La Lliga del Sobresalt.
 </p>
 
 </div>
