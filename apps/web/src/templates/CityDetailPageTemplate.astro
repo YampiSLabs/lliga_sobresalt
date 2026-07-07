@@ -24,8 +24,8 @@ const row = ranking.find((r) => r.city.slug === slug) || {
   city: { name: shieldCity?.name || slug.toUpperCase(), slug },
 };
 
-const incidents = await getIncidents(lang);
-const cityIncidents = incidents.filter((i) => i.city?.slug === slug);
+const allCityIncidents = row.incidents_count > 0 ? await getIncidents(lang, { city: row.city.slug, limit: 100 }) : [];
+const cityIncidents = allCityIncidents.slice(0, row.incidents_count);
 const shieldSrc = getCityShieldSrc(slug);
 
 // Localized Texts
