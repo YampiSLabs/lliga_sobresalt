@@ -1,30 +1,20 @@
 import type { Incident } from "../lib/schemas";
+import { useCategory } from "../lib/i18n";
 
 type Props = {
   incident: Incident;
+  lang?: "ca" | "es" | "en";
 };
 
-const categoryLabels: Record<string, string> = {
-  apunyalament: "Apunyalament",
-  arma_blanca: "Arma blanca",
-  homicidio: "Homicidio",
-  robo_violento: "Robo violento",
-  pelea: "Pelea",
-  agresion: "Agresión",
-  incivismo: "Incivismo",
-  disturbios: "Disturbios",
-  transporte_publico: "Transporte público",
-  otro_suceso: "Otro suceso",
-  no_relevante: "No relevante",
-};
+export default function IncidentCard({ incident, lang = "ca" }: Props) {
+  const catStyle = useCategory(incident.category, lang);
 
-export default function IncidentCard({ incident }: Props) {
   return (
     <article className="rounded-lg border border-slate-800 bg-slate-900/60 p-4 transition-colors hover:border-slate-700 sobresalt-incident-card">
       <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide text-slate-400 sobresalt-incident-metadata">
         <span>{incident.city?.name ?? "Sin ciudad"}</span>
         <span className="text-slate-600">·</span>
-        <span>{categoryLabels[incident.category] ?? incident.category}</span>
+        <span className={catStyle.color}>{catStyle.label}</span>
         <span className="text-slate-600">·</span>
         <span className="font-semibold text-amber-400">{incident.points} pts</span>
       </div>

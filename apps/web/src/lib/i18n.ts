@@ -6,6 +6,65 @@ export const LANGUAGES = {
 
 export type LanguageCode = keyof typeof LANGUAGES;
 
+export type CategoryKey = "apunyalament" | "pelea" | "robo_violento" | "incivismo";
+
+export const CATEGORIES: Record<CategoryKey, {
+  label: Record<LanguageCode, string>;
+  color: string;
+  bg: string;
+  border: string;
+  badge: Record<LanguageCode, string>;
+}> = {
+  apunyalament: {
+    label: { ca: "Navalles", es: "Navajas", en: "Knives" },
+    color: "text-red-400",
+    bg: "bg-red-500/10",
+    border: "border-red-500/20",
+    badge: { ca: "Ganivets d'Or", es: "Cuchillos de Oro", en: "Golden Knives" },
+  },
+  pelea: {
+    label: { ca: "Baralles", es: "Peleas", en: "Fights" },
+    color: "text-rose-400",
+    bg: "bg-rose-500/10",
+    border: "border-rose-500/20",
+    badge: { ca: "Combat Urbà", es: "Combate Urbano", en: "Urban Combat" },
+  },
+  robo_violento: {
+    label: { ca: "Robatoris", es: "Robos", en: "Robberies" },
+    color: "text-amber-400",
+    bg: "bg-amber-500/10",
+    border: "border-amber-500/20",
+    badge: { ca: "Saqueig VIP", es: "Saqueo VIP", en: "VIP Looting" },
+  },
+  incivismo: {
+    label: { ca: "Incivisme", es: "Incivismo", en: "Vandalism" },
+    color: "text-blue-400",
+    bg: "bg-blue-500/10",
+    border: "border-blue-500/20",
+    badge: { ca: "Mala Vida", es: "Mala Vida", en: "Trashy Life" },
+  },
+};
+
+export function useCategory(category: string, lang: LanguageCode = "ca") {
+  const cat = CATEGORIES[category as CategoryKey];
+  if (cat) {
+    return {
+      label: cat.label[lang],
+      color: cat.color,
+      bg: cat.bg,
+      border: cat.border,
+      badge: cat.badge[lang],
+    };
+  }
+  return {
+    label: category,
+    color: "text-slate-400",
+    bg: "bg-slate-500/10",
+    border: "border-slate-500/20",
+    badge: "Altres",
+  };
+}
+
 const DICTIONARY = {
   ca: {
     "nav.ranking": "RANKING",
@@ -19,16 +78,17 @@ const DICTIONARY = {
     "disclaimer": "La Lliga del Sobresalt és un projecte satíric basat únicament en notícies publicades per mitjans de premsa. No és estadística oficial ni mesura la criminalitat real.",
 
     // Categorias
-    "cat.apunyalament": "Ganivetada",
+    "cat.apunyalament": "Navalles",
     "cat.arma_blanca": "Arma Blanca",
     "cat.homicidio": "Homicidi",
-    "cat.robo_violento": "Robatori Violent",
-    "cat.pelea": "Baralla",
+    "cat.robo_violento": "Robatoris",
+    "cat.pelea": "Baralles",
     "cat.agresion": "Agressió",
     "cat.incivismo": "Incivisme",
     "cat.disturbios": "Aldarulls",
     "cat.transporte_publico": "Transport Públic",
     "cat.otro_suceso": "Altres Successos",
+    "cat.no_relevante": "No Relevant",
 
     // UI Labels
     "label.points": "Punts",
@@ -80,16 +140,17 @@ const DICTIONARY = {
     "disclaimer": "La Lliga del Sobresalt es un proyecto satírico basado únicamente en noticias publicadas por medios de prensa. No es estadística oficial ni mide la criminalidad real.",
 
     // Categorias
-    "cat.apunyalament": "Apuñalamiento",
+    "cat.apunyalament": "Navajas",
     "cat.arma_blanca": "Arma Blanca",
     "cat.homicidio": "Homicidio",
-    "cat.robo_violento": "Robo con Violencia",
-    "cat.pelea": "Pelea",
+    "cat.robo_violento": "Robos",
+    "cat.pelea": "Peleas",
     "cat.agresion": "Agresión",
     "cat.incivismo": "Incivismo",
     "cat.disturbios": "Disturbios",
     "cat.transporte_publico": "Transporte Público",
     "cat.otro_suceso": "Otros Sucesos",
+    "cat.no_relevante": "No Relevante",
 
     // UI Labels
     "label.points": "Puntos",
@@ -141,16 +202,17 @@ const DICTIONARY = {
     "disclaimer": "La Lliga del Sobresalt is a satirical project based solely on news reports published by media outlets. It is not official statistics and does not measure actual crime rates.",
 
     // Categorias
-    "cat.apunyalament": "Stabbing",
+    "cat.apunyalament": "Knives",
     "cat.arma_blanca": "Knife Presence",
     "cat.homicidio": "Homicide",
-    "cat.robo_violento": "Violent Robbery",
-    "cat.pelea": "Fight",
+    "cat.robo_violento": "Robberies",
+    "cat.pelea": "Fights",
     "cat.agresion": "Assault",
     "cat.incivismo": "Vandalism",
     "cat.disturbios": "Rioting",
     "cat.transporte_publico": "Public Transit",
     "cat.otro_suceso": "Other Incidents",
+    "cat.no_relevante": "Not Relevant",
 
     // UI Labels
     "label.points": "Points",
@@ -243,7 +305,7 @@ export function formatRelativeTime(dateStr: string | Date, lang: LanguageCode = 
   if (isNaN(date.getTime())) return "";
 
   const now = new Date();
-  const diffInMs = date.getTime() - now.getTime();
+  const diffInMs = now.getTime() - date.getTime();
   const diffInHours = Math.round(diffInMs / (1000 * 60 * 60));
   const diffInDays = Math.round(diffInMs / (1000 * 60 * 60 * 24));
 
@@ -251,7 +313,7 @@ export function formatRelativeTime(dateStr: string | Date, lang: LanguageCode = 
   const rtf = new Intl.RelativeTimeFormat(localeMap[lang], { numeric: "auto" });
 
   if (Math.abs(diffInHours) < 24) {
-    return rtf.format(diffInHours, "hour");
+    return rtf.format(-diffInHours, "hour");
   }
-  return rtf.format(diffInDays, "day");
+  return rtf.format(-diffInDays, "day");
 }

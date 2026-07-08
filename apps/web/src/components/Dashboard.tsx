@@ -25,7 +25,7 @@ import ScoreChart from "./ScoreChart";
 import { getRanking, getMediaUrl } from "../lib/api";
 import { shouldRefreshInitialRanking } from "../lib/rankingRefresh";
 import type { CityScore, Incident, Season, RoundBrief } from "../lib/schemas";
-import { type LanguageCode } from "../lib/i18n";
+import { type LanguageCode, useCategory, formatRelativeTime } from "../lib/i18n";
 
 interface Props {
   initialRanking: CityScore[];
@@ -37,38 +37,11 @@ interface Props {
 
 export default function Dashboard({ initialRanking, initialIncidents, initialSeasons = [], fullRankingView = false, lang = "ca" }: Props) {
 
-
-
-  // Dynamic Category Mapping per language
-  const CATEGORY_MAP: Record<string, any> = {
-    apunyalament: {
-      label: { ca: "Navalles", es: "Navajas", en: "Knives" }[lang],
-      color: "text-red-400",
-      bg: "bg-red-500/10",
-      border: "border-red-500/20",
-      badge: { ca: "Ganivets d'Or", es: "Cuchillos de Oro", en: "Golden Knives" }[lang]
-    },
-    pelea: {
-      label: { ca: "Baralles", es: "Peleas", en: "Fights" }[lang],
-      color: "text-rose-400",
-      bg: "bg-rose-500/10",
-      border: "border-rose-500/20",
-      badge: { ca: "Combat Urbà", es: "Combate Urbano", en: "Urban Combat" }[lang]
-    },
-    robo_violento: {
-      label: { ca: "Robatoris", es: "Robos", en: "Robberies" }[lang],
-      color: "text-amber-400",
-      bg: "bg-amber-500/10",
-      border: "border-amber-500/20",
-      badge: { ca: "Saqueig VIP", es: "Saqueo VIP", en: "VIP Looting" }[lang]
-    },
-    incivismo: {
-      label: { ca: "Incivisme", es: "Incivismo", en: "Vandalism" }[lang],
-      color: "text-blue-400",
-      bg: "bg-blue-500/10",
-      border: "border-blue-500/20",
-      badge: { ca: "Mala Vida", es: "Mala Vida", en: "Trashy Life" }[lang]
-    },
+  const CATEGORY_STYLES: Record<string, { color: string; bg: string; border: string }> = {
+    apunyalament: { color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20" },
+    pelea: { color: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20" },
+    robo_violento: { color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
+    incivismo: { color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
   };
   // --- STATE ---
   const [ranking, setRanking] = useState<CityScore[]>(initialRanking);
@@ -182,8 +155,8 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
       .map(([key, points]) => ({
         key,
         points,
-        label: CATEGORY_MAP[key]?.label || key,
-        barBg: CATEGORY_MAP[key]?.bg.replace("/10", "/40") || "bg-slate-700"
+        style: CATEGORY_STYLES[key] || { color: "text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/20" },
+        barBg: (CATEGORY_STYLES[key]?.bg.replace("/10", "/40") || "bg-slate-700")
       }))
       .sort((a, b) => b.points - a.points);
   }, [filteredIncidents]);
@@ -602,8 +575,7 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
             {{ ca: "Tots", es: "Todos", en: "All" }[lang]}
           </button>
           {["apunyalament", "pelea", "robo_violento", "incivismo"].map((catKey) => {
-            const mapped = CATEGORY_MAP[catKey];
-            if (!mapped) return null;
+            const mapped = useCategory(catKey, lang);
             const isActive = selectedCategory === catKey;
             return (
               <button
@@ -736,7 +708,7 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
 
               <div class="rounded-xl border border-slate-900 bg-slate-950/20 p-4 space-y-3 shadow-md">
                 {topCategories.slice(0, 5).map((item, idx) => {
-                  // Calculate percentage relative to top category score
+                  const catStyle = useCategory(item.key, lang);
                   const topScore = topCategories[0]?.points || 100;
                   const pct = Math.max(12, Math.min(100, (item.points / topScore) * 100));
 
@@ -745,7 +717,7 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
                       <div class="flex items-center justify-between text-slate-300">
                         <span class="flex items-center gap-1">
                           <span class="text-xs"><Diamond class="h-3.5 w-3.5 text-amber-500" /></span>
-                          <span>{item.label}</span>
+                          <span>{catStyle.label}</span>
                         </span>
                         <span class="font-mono text-slate-100">{item.points} pts</span>
                       </div>
@@ -799,7 +771,7 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
           {/* Cards Grid */}
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             {filteredIncidents.slice(0, 4).map((incident, index) => {
-              const mappedCat = CATEGORY_MAP[incident.category] || { label: incident.category, color: "text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/20", badge: { ca: "Sobresalt", es: "Sobresalto", en: "Shocking" }[lang] };
+              const mappedCat = useCategory(incident.category, lang);
 
               return (
                 <article
@@ -845,7 +817,7 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
                     <span>
                       {{ ca: "FONT:", es: "FUENTE:", en: "SOURCE:" }[lang]} <strong class="text-slate-400">{incident.sources?.[0]?.outlet_name || { ca: "Premsa", es: "Prensa", en: "Press" }[lang]}</strong>
                     </span>
-                    <span>{{ ca: `Fa ${2 + index}h`, es: `Hace ${2 + index}h`, en: `${2 + index}h ago` }[lang]}</span>
+                    <span>{incident.happened_at ? formatRelativeTime(incident.happened_at, lang) : ""}</span>
                   </div>
                 </article>
               );
@@ -854,20 +826,13 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
 
           {/* More headlines trigger */}
           <div class="flex justify-center pt-2">
-            <button
-              onClick={() => {
-                const msg = {
-                  ca: "Filtratge activat. Fes servir la barra de cerca de dalt per examinar l'historial complet!",
-                  es: "Filtrado activado. ¡Usa la barra de búsqueda de arriba para examinar el historial completo!",
-                  en: "Filtering activated. Use the search bar above to examine the full history!"
-                }[lang];
-                alert(msg);
-              }}
+            <a
+              href={lang === "en" ? "/en/incidents/" : lang === "es" ? "/es/incidents/" : "/incidents/"}
               class="flex items-center justify-center gap-1.5 border border-slate-900 bg-slate-950/20 hover:bg-slate-900/30 hover:border-slate-800 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-white px-5 py-3 rounded-xl transition-all"
             >
               {{ ca: "VEURE MÉS TITULARS", es: "VER MÁS TITULARES", en: "VIEW MORE HEADLINES" }[lang]}
               <ArrowRight class="h-3.5 w-3.5" />
-            </button>
+            </a>
           </div>
         </div>
 
@@ -883,8 +848,11 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
 
           {/* Timeline Feed Container */}
           <div class="rounded-xl border border-slate-900 bg-slate-950/20 p-4 space-y-4 shadow-md max-h-[294px] overflow-y-auto pr-1 select-none">
-            {filteredIncidents.slice(0, 5).map((incident, idx) => {
-              const hourStr = `${Math.floor((21 - idx * 1.5 + 24) % 24)}:${String(Math.floor((30 - idx * 12 + 60) % 60)).padStart(2, "0")}`;
+            {filteredIncidents.slice(0, 5).map((incident) => {
+              const happenedDate = incident.happened_at ? new Date(incident.happened_at) : null;
+              const hourStr = happenedDate
+                ? happenedDate.toLocaleTimeString(lang === "en" ? "en-US" : lang === "es" ? "es-ES" : "ca-ES", { hour: "2-digit", minute: "2-digit" })
+                : "--:--";
 
               return (
                 <div
@@ -911,20 +879,13 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
           </div>
 
           {/* View all button */}
-          <button
-            onClick={() => {
-              const msg = {
-                ca: "Mostrant successos de la jornada 12. Escriu dalt al cercador per buscar de forma interactiva!",
-                es: "Mostrando sucesos de la jornada 12. ¡Escribe arriba en el buscador para buscar de forma interactiva!",
-                en: "Showing round 12 events. Write in the search bar above to search interactively!"
-              }[lang];
-              alert(msg);
-            }}
+          <a
+            href={lang === "en" ? "/en/incidents/" : lang === "es" ? "/es/incidents/" : "/incidents/"}
             class="w-full flex items-center justify-center gap-1.5 border border-slate-900 bg-slate-950/20 hover:bg-slate-900/30 hover:border-slate-800 text-[9px] font-black uppercase tracking-widest text-red-400 py-3 rounded-xl transition-all"
           >
             {{ ca: "VEURE TOTS ELS INCIDENTS", es: "VER TODOS LOS INCIDENTES", en: "VIEW ALL INCIDENTS" }[lang]}
             <ArrowRight class="h-3 w-3" />
-          </button>
+          </a>
         </div>
 
       </div>
@@ -1052,15 +1013,14 @@ export default function Dashboard({ initialRanking, initialIncidents, initialSea
                   </div>
                 )}
                 <div class="flex items-center gap-2">
-                  <span class={`px-2.5 py-1 rounded text-[10px] font-bold uppercase border ${
-                    CATEGORY_MAP[selectedIncidentData.category]?.color || "text-slate-400"
-                  } ${
-                    CATEGORY_MAP[selectedIncidentData.category]?.bg || "bg-slate-500/10"
-                  } ${
-                    CATEGORY_MAP[selectedIncidentData.category]?.border || "border-slate-500/20"
-                  }`}>
-                    {CATEGORY_MAP[selectedIncidentData.category]?.label || selectedIncidentData.category}
-                  </span>
+                  {(() => {
+                    const catStyle = useCategory(selectedIncidentData.category, lang);
+                    return (
+                      <span class={`px-2.5 py-1 rounded text-[10px] font-bold uppercase border ${catStyle.color} ${catStyle.bg} ${catStyle.border}`}>
+                        {catStyle.label}
+                      </span>
+                    );
+                  })()}
                   <span class="rounded-lg bg-red-500/25 border border-red-500/35 text-red-400 px-2 py-0.5 text-xs font-black">
                     +{selectedIncidentData.points} pts
                   </span>

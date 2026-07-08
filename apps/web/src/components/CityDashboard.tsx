@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "preact/hooks";
 import type { Incident } from "../lib/schemas";
 import { getCityShieldSrc } from "../lib/cityShields";
-import { useTranslations } from "../lib/i18n";
+import { useTranslations, formatDate } from "../lib/i18n";
 import uPlot from "uplot";
 import { getMediaUrl } from "../lib/api";
 
@@ -342,15 +342,9 @@ export default function CityDashboard({
         <div className="max-h-[290px] overflow-y-auto pr-1 space-y-2 mt-2 scrollbar-thin">
           {latestIncidents.length ? (
             latestIncidents.map((incident) => {
-              const localeStr = lang === "en" ? "en-US" : lang === "es" ? "es-ES" : "ca-ES";
               const formattedDate = incident.happened_at
-                ? new Date(incident.happened_at).toLocaleDateString(localeStr, {
-                    day: "2-digit",
-                    month: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })
-                : (lang === "en" ? "Round 12" : "Jornada 12");
+                ? formatDate(incident.happened_at, lang)
+                : (lang === "en" ? "Unknown date" : "Data desconeguda");
 
               const fallback = getCategoryFallbackGradient(incident.category);
               const resolvedImg = getMediaUrl(incident.thumbnail_url || incident.image_url);
