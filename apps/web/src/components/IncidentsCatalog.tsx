@@ -12,6 +12,7 @@ import {
 } from "lucide-preact";
 import type { Incident } from "../lib/schemas";
 import { getMediaUrl } from "../lib/api";
+import { useCategory, formatDate } from "../lib/i18n";
 
 interface Props {
   initialIncidents: Incident[];
@@ -26,40 +27,6 @@ export default function IncidentsCatalog({ initialIncidents, lang = "ca" }: Prop
   const [minPoints, setMinPoints] = useState<number>(0);
   const [sortBy, setSortBy] = useState<SortOption>("date_desc");
   const [selectedIncidentId, setSelectedIncidentId] = useState<number | null>(null);
-
-
-
-  // Dynamic Category Mapping per language
-  const CATEGORY_MAP: Record<string, any> = {
-    apunyalament: {
-      label: { ca: "Navalles", es: "Navajas", en: "Knives" }[lang],
-      color: "text-red-400",
-      bg: "bg-red-500/10",
-      border: "border-red-500/20",
-      badge: { ca: "Ganivets d'Or", es: "Cuchillos de Oro", en: "Golden Knives" }[lang]
-    },
-    pelea: {
-      label: { ca: "Baralles", es: "Peleas", en: "Fights" }[lang],
-      color: "text-rose-400",
-      bg: "bg-rose-500/10",
-      border: "border-rose-500/20",
-      badge: { ca: "Combat Urbà", es: "Combate Urbano", en: "Urban Combat" }[lang]
-    },
-    robo_violento: {
-      label: { ca: "Robatoris", es: "Robos", en: "Robberies" }[lang],
-      color: "text-amber-400",
-      bg: "bg-amber-500/10",
-      border: "border-amber-500/20",
-      badge: { ca: "Saqueig VIP", es: "Saqueo VIP", en: "VIP Looting" }[lang]
-    },
-    incivismo: {
-      label: { ca: "Incivisme", es: "Incivismo", en: "Vandalism" }[lang],
-      color: "text-blue-400",
-      bg: "bg-blue-500/10",
-      border: "border-blue-500/20",
-      badge: { ca: "Mala Vida", es: "Mala Vida", en: "Trashy Life" }[lang]
-    },
-  };
 
   // Filter & Sort Logic
   const filteredAndSorted = useMemo(() => {
@@ -323,8 +290,7 @@ export default function IncidentsCatalog({ initialIncidents, lang = "ca" }: Prop
             {textAllIncidents}
           </button>
           {["apunyalament", "pelea", "robo_violento", "incivismo"].map((catKey) => {
-            const mapped = CATEGORY_MAP[catKey];
-            if (!mapped) return null;
+            const mapped = useCategory(catKey, lang);
             const isActive = selectedCategory === catKey;
             return (
               <button
@@ -348,7 +314,7 @@ export default function IncidentsCatalog({ initialIncidents, lang = "ca" }: Prop
       {filteredAndSorted.length > 0 ? (
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 sobresalt-catalog-grid">
           {filteredAndSorted.map((incident, idx) => {
-            const mappedCat = CATEGORY_MAP[incident.category] || { label: incident.category, color: "text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/20", badge: "Altres" };
+            const mappedCat = useCategory(incident.category, lang);
             const isFeatured = idx === 0 && filteredAndSorted.length > 1;
             const colSpan = isFeatured ? "sm:col-span-2 md:col-span-2" : "";
             const minHeight = isFeatured ? "min-h-[320px]" : (idx % 3 === 2 ? "min-h-[300px]" : "min-h-[260px]");
@@ -395,7 +361,7 @@ export default function IncidentsCatalog({ initialIncidents, lang = "ca" }: Prop
                     <span class="font-bold text-slate-400">{incident.city?.name || "Catalunya"}</span>
                   </div>
                   <span>
-                    {incident.happened_at ? new Date(incident.happened_at).toLocaleDateString(lang === "en" ? "en-US" : lang === "es" ? "es-ES" : "ca-ES", { day: "numeric", month: "short" }) : (lang === "en" ? "Round 12" : "Jornada 12")}
+                    {incident.happened_at ? formatDate(incident.happened_at, lang) : (lang === "en" ? "Unknown date" : "Data desconeguda")}
                   </span>
                 </div>
               </article>
@@ -481,15 +447,14 @@ export default function IncidentsCatalog({ initialIncidents, lang = "ca" }: Prop
                   </div>
                 )}
                 <div class="flex items-center gap-2">
-                  <span class={`px-2.5 py-1 rounded text-[10px] font-bold uppercase border ${
-                    CATEGORY_MAP[selectedIncidentData.category]?.color || "text-slate-400"
-                  } ${
-                    CATEGORY_MAP[selectedIncidentData.category]?.bg || "bg-slate-500/10"
-                  } ${
-                    CATEGORY_MAP[selectedIncidentData.category]?.border || "border-slate-500/20"
-                  }`}>
-                    {CATEGORY_MAP[selectedIncidentData.category]?.label || selectedIncidentData.category}
-                  </span>
+                  {(() => {
+                    const catStyle = useCategory(selectedIncidentData.category, lang);
+                    return (
+                      <span class={`px-2.5 py-1 rounded text-[10px] font-bold uppercase border ${catStyle.color} ${catStyle.bg} ${catStyle.border}`}>
+                        {catStyle.label}
+                      </span>
+                    );
+                  })()}
                   <span class="rounded-lg bg-red-500/25 border border-red-500/35 text-red-400 px-2 py-0.5 text-xs font-black">
                     +{selectedIncidentData.points} pts
                   </span>

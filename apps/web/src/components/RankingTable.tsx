@@ -21,8 +21,6 @@ type CityRow = {
   points: number;
   incidentsCount: number;
   streak: number;
-  trend: "up" | "down" | "stable";
-  delta: number;
 };
 
 export default function RankingTable({
@@ -41,26 +39,7 @@ export default function RankingTable({
         const slug = row.city.slug;
         const position = row.position || (index + 1);
 
-        // Dynamic calculations based on real database scores
-        // Streak: higher points -> higher streak (min 1, max 4)
         const streak = Math.max(1, Math.min(4, Math.floor(row.points / 10) + 1));
-
-        // Trend and delta: based on position and points
-        let trend: "up" | "down" | "stable" = "stable";
-        let delta = 0;
-
-        if (row.points > 0) {
-          if (position <= 2) {
-            trend = "up";
-            delta = row.points;
-          } else if (position >= 5) {
-            trend = "down";
-            delta = -Math.round(row.points * 0.1 * 10) / 10 || -1;
-          } else {
-            trend = "stable";
-            delta = 0;
-          }
-        }
 
         return {
           position: position,
@@ -69,8 +48,6 @@ export default function RankingTable({
           points: row.points,
           incidentsCount: row.incidents_count,
           streak: streak,
-          trend: trend,
-          delta: delta,
         };
       });
 
@@ -87,12 +64,6 @@ export default function RankingTable({
     en: "STREAK",
   }[lang] || "RATXA";
 
-  const textTendencia = {
-    ca: "TENDÈNCIA",
-    es: "TENDENCIA",
-    en: "TREND",
-  }[lang] || "TENDÈNCIA";
-
   const textNoMatch = {
     ca: "Cap municipi coincideix.",
     es: "Ningún municipio coincide.",
@@ -106,10 +77,10 @@ export default function RankingTable({
   }[lang] || "CLASSIFICACIÓ DE LA TEMPORADA";
 
   const textRoundLabel = {
-    ca: "JORNADA 12",
-    es: "JORNADA 12",
-    en: "ROUND 12",
-  }[lang] || "JORNADA 12";
+    ca: "CLASSIFICACIÓ",
+    es: "CLASIFICACIÓN",
+    en: "RANKING",
+  }[lang] || "CLASSIFICACIÓ";
 
   return (
     <div className="w-full rounded-2xl border border-slate-900 bg-slate-950/40 p-5 shadow-lg select-none sobresalt-ranking-table">
@@ -133,8 +104,7 @@ export default function RankingTable({
         <div className="col-span-5 sm:col-span-4">{textMunicipis}</div>
         <div className="col-span-2 text-right">{t("label.points").toUpperCase()}</div>
         <div className="hidden sm:block col-span-2 text-center">{t("label.incidents").toUpperCase()}</div>
-        <div className="hidden sm:block col-span-1 text-center">{textRacha}</div>
-        <div className="hidden sm:block col-span-2 text-right">{textTendencia}</div>
+        <div className="hidden sm:block col-span-3 text-center">{textRacha}</div>
       </div>
 
       {/* Rows list with Auto-Animate parent */}
@@ -177,7 +147,7 @@ export default function RankingTable({
                     setLocalActiveRow(null);
                   }
                 }}
-                className={`grid grid-cols-10 sm:grid-cols-12 gap-1 sm:gap-2 items-center py-2.5 sm:py-3 px-2 sm:px-4 rounded-lg bg-slate-950/40 border transition-all duration-300 ease-out cursor-pointer relative overflow-hidden group sobresalt-ranking-row sobresalt-ranking-row-${row.slug} ${
+                className={`grid grid-cols-10 sm:grid-cols-11 gap-1 sm:gap-2 items-center py-2.5 sm:py-3 px-2 sm:px-4 rounded-lg bg-slate-950/40 border transition-all duration-300 ease-out cursor-pointer relative overflow-hidden group sobresalt-ranking-row sobresalt-ranking-row-${row.slug} ${
                   isHovered
                     ? "border-amber-500/80 bg-slate-900/40 scale-[1.01] shadow-[0_0_15px_rgba(245,158,11,0.15)]"
                     : "border-slate-900/80 hover:border-slate-800 hover:bg-slate-900/25"
@@ -234,21 +204,10 @@ export default function RankingTable({
                 </div>
 
                 {/* Racha flames */}
-                <div className="hidden sm:flex col-span-1 items-center justify-center gap-0.5 sobresalt-ranking-cell-streak">
+                <div className="hidden sm:flex col-span-3 items-center justify-center gap-1 sobresalt-ranking-cell-streak">
                   {Array.from({ length: row.streak }).map((_, i) => (
                     <Flame key={i} class="h-3 w-3 text-orange-500 fill-orange-500" />
                   ))}
-                </div>
-
-                {/* Trend Badge */}
-                <div className="hidden sm:block col-span-2 text-right font-mono text-[9px] font-black sobresalt-ranking-cell-trend">
-                  {row.trend === "up" ? (
-                    <span className="text-green-400">▲ +{row.delta}</span>
-                  ) : row.trend === "down" ? (
-                    <span className="text-red-400">▼ {row.delta}</span>
-                  ) : (
-                    <span className="text-slate-500">—</span>
-                  )}
                 </div>
               </div>
             );
