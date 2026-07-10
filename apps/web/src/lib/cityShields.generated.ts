@@ -44,7 +44,12 @@ import ArgentonaShield from "catalunya-shields/assets/svg/argentona.svg";
 import ArnesShield from "catalunya-shields/assets/svg/arnes.svg";
 import ArresShield from "catalunya-shields/assets/svg/arres.svg";
 import ArseguelShield from "catalunya-shields/assets/svg/arseguel.svg";
+import ArtesShield from "catalunya-shields/assets/svg/artes.svg";
 import ArtesaDeLleidaShield from "catalunya-shields/assets/svg/artesa-de-lleida.svg";
+import AscoShield from "catalunya-shields/assets/svg/asco.svg";
+import AspaShield from "catalunya-shields/assets/svg/aspa.svg";
+import AvinyonetDePuigventosShield from "catalunya-shields/assets/svg/avinyonet-de-puigventos.svg";
+import AvinyonetDelPenedesShield from "catalunya-shields/assets/svg/avinyonet-del-penedes.svg";
 import BadalonaShield from "catalunya-shields/assets/svg/badalona.svg";
 import BarcelonaShield from "catalunya-shields/assets/svg/barcelona.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
@@ -115,7 +120,12 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "arnes": ArnesShield,
   "arres": ArresShield,
   "arseguel": ArseguelShield,
+  "artes": ArtesShield,
   "artesa-de-lleida": ArtesaDeLleidaShield,
+  "asco": AscoShield,
+  "aspa": AspaShield,
+  "avinyonet-de-puigventos": AvinyonetDePuigventosShield,
+  "avinyonet-del-penedes": AvinyonetDelPenedesShield,
   "badalona": BadalonaShield,
   "barcelona": BarcelonaShield,
   "cornella": CornellaDeLlobregatShield,
@@ -179,7 +189,12 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "arnes",
   "arres",
   "arseguel",
+  "artes",
   "artesa-de-lleida",
+  "asco",
+  "aspa",
+  "avinyonet-de-puigventos",
+  "avinyonet-del-penedes",
   "badalona",
   "barcelona",
   "cornella-de-llobregat",
@@ -239,7 +254,12 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Arnes", slug: "arnes", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Arres", slug: "arres", province: "Lleida", aliases: [], hasShield: true },
   { name: "Arsèguel", slug: "arseguel", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Artés", slug: "artes", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Artesa de Lleida", slug: "artesa-de-lleida", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Ascó", slug: "asco", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Aspa", slug: "aspa", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Avinyonet de Puigventós", slug: "avinyonet-de-puigventos", province: "Girona", aliases: [], hasShield: true },
+  { name: "Avinyonet del Penedès", slug: "avinyonet-del-penedes", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Badalona", slug: "badalona", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Barcelona", slug: "barcelona", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
@@ -309,15 +329,15 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Arnes", slug: "arnes", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Arres", slug: "arres", province: "Lleida", aliases: [], hasShield: true },
   { name: "Arsèguel", slug: "arseguel", province: "Lleida", aliases: [], hasShield: true },
-  { name: "Artés", slug: "artes", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Artés", slug: "artes", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Artesa de Lleida", slug: "artesa-de-lleida", province: "Lleida", aliases: [], hasShield: true },
   { name: "Artesa de Segre", slug: "artesa-de-segre", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Ascó", slug: "asco", province: "Tarragona", aliases: [], hasShield: false },
-  { name: "Aspa", slug: "aspa", province: "Lleida", aliases: [], hasShield: false },
+  { name: "Ascó", slug: "asco", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Aspa", slug: "aspa", province: "Lleida", aliases: [], hasShield: true },
   { name: "Avià", slug: "avia", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Avinyó", slug: "avinyo", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Avinyonet de Puigventós", slug: "avinyonet-de-puigventos", province: "Girona", aliases: [], hasShield: false },
-  { name: "Avinyonet del Penedès", slug: "avinyonet-del-penedes", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Avinyonet de Puigventós", slug: "avinyonet-de-puigventos", province: "Girona", aliases: [], hasShield: true },
+  { name: "Avinyonet del Penedès", slug: "avinyonet-del-penedes", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Badalona", slug: "badalona", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Badia del Vallès", slug: "badia-del-valles", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Bagà", slug: "baga", province: "Barcelona", aliases: [], hasShield: false },
