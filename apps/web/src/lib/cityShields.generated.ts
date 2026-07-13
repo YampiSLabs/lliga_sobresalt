@@ -61,7 +61,12 @@ import BalenyaShield from "catalunya-shields/assets/svg/balenya.svg";
 import BalsarenyShield from "catalunya-shields/assets/svg/balsareny.svg";
 import BanyeresDelPenedesShield from "catalunya-shields/assets/svg/banyeres-del-penedes.svg";
 import BanyolesShield from "catalunya-shields/assets/svg/banyoles.svg";
+import BarbensShield from "catalunya-shields/assets/svg/barbens.svg";
+import BarberaDeLaConcaShield from "catalunya-shields/assets/svg/barbera-de-la-conca.svg";
+import BarberaDelVallesShield from "catalunya-shields/assets/svg/barbera-del-valles.svg";
 import BarcelonaShield from "catalunya-shields/assets/svg/barcelona.svg";
+import BassellaShield from "catalunya-shields/assets/svg/bassella.svg";
+import BateaShield from "catalunya-shields/assets/svg/batea.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -147,7 +152,12 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "balsareny": BalsarenyShield,
   "banyeres-del-penedes": BanyeresDelPenedesShield,
   "banyoles": BanyolesShield,
+  "barbens": BarbensShield,
+  "barbera-de-la-conca": BarberaDeLaConcaShield,
+  "barbera-del-valles": BarberaDelVallesShield,
   "barcelona": BarcelonaShield,
+  "bassella": BassellaShield,
+  "batea": BateaShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -226,7 +236,12 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "balsareny",
   "banyeres-del-penedes",
   "banyoles",
+  "barbens",
+  "barbera-de-la-conca",
+  "barbera-del-valles",
   "barcelona",
+  "bassella",
+  "batea",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -301,7 +316,12 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Balsareny", slug: "balsareny", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Banyeres del Penedès", slug: "banyeres-del-penedes", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Banyoles", slug: "banyoles", province: "Girona", aliases: [], hasShield: true },
+  { name: "Barbens", slug: "barbens", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Barberà de la Conca", slug: "barbera-de-la-conca", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Barberà del Vallès", slug: "barbera-del-valles", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Barcelona", slug: "barcelona", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Bassella", slug: "bassella", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Batea", slug: "batea", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -387,13 +407,13 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Balsareny", slug: "balsareny", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Banyeres del Penedès", slug: "banyeres-del-penedes", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Banyoles", slug: "banyoles", province: "Girona", aliases: [], hasShield: true },
-  { name: "Barbens", slug: "barbens", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Barberà de la Conca", slug: "barbera-de-la-conca", province: "Tarragona", aliases: [], hasShield: false },
-  { name: "Barberà del Vallès", slug: "barbera-del-valles", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Barbens", slug: "barbens", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Barberà de la Conca", slug: "barbera-de-la-conca", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Barberà del Vallès", slug: "barbera-del-valles", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Barcelona", slug: "barcelona", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Bàscara", slug: "bascara", province: "Girona", aliases: [], hasShield: false },
-  { name: "Bassella", slug: "bassella", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Batea", slug: "batea", province: "Tarragona", aliases: [], hasShield: false },
+  { name: "Bassella", slug: "bassella", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Batea", slug: "batea", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Bausen", slug: "bausen", province: "Lleida", aliases: [], hasShield: false },
   { name: "Begues", slug: "begues", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Begur", slug: "begur", province: "Girona", aliases: [], hasShield: false },
