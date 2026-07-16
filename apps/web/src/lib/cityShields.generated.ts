@@ -77,6 +77,11 @@ import BellcaireDempordaShield from "catalunya-shields/assets/svg/bellcaire-demp
 import BellmuntDurgellShield from "catalunya-shields/assets/svg/bellmunt-durgell.svg";
 import BellpratShield from "catalunya-shields/assets/svg/bellprat.svg";
 import BellpuigShield from "catalunya-shields/assets/svg/bellpuig.svg";
+import BellveiShield from "catalunya-shields/assets/svg/bellvei.svg";
+import BellverDeCerdanyaShield from "catalunya-shields/assets/svg/bellver-de-cerdanya.svg";
+import BellvisShield from "catalunya-shields/assets/svg/bellvis.svg";
+import BenaventDeSegriaShield from "catalunya-shields/assets/svg/benavent-de-segria.svg";
+import BenifalletShield from "catalunya-shields/assets/svg/benifallet.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -178,6 +183,11 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "bellmunt-durgell": BellmuntDurgellShield,
   "bellprat": BellpratShield,
   "bellpuig": BellpuigShield,
+  "bellvei": BellveiShield,
+  "bellver-de-cerdanya": BellverDeCerdanyaShield,
+  "bellvis": BellvisShield,
+  "benavent-de-segria": BenaventDeSegriaShield,
+  "benifallet": BenifalletShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -272,6 +282,11 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "bellmunt-durgell",
   "bellprat",
   "bellpuig",
+  "bellvei",
+  "bellver-de-cerdanya",
+  "bellvis",
+  "benavent-de-segria",
+  "benifallet",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -362,6 +377,11 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Bellmunt d'Urgell", slug: "bellmunt-durgell", province: "Lleida", aliases: [], hasShield: true },
   { name: "Bellprat", slug: "bellprat", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Bellpuig", slug: "bellpuig", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Bellvei", slug: "bellvei", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Bellver de Cerdanya", slug: "bellver-de-cerdanya", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Bellvís", slug: "bellvis", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Benavent de Segrià", slug: "benavent-de-segria", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Benifallet", slug: "benifallet", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -466,11 +486,11 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Bellmunt d'Urgell", slug: "bellmunt-durgell", province: "Lleida", aliases: [], hasShield: true },
   { name: "Bellprat", slug: "bellprat", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Bellpuig", slug: "bellpuig", province: "Lleida", aliases: [], hasShield: true },
-  { name: "Bellvei", slug: "bellvei", province: "Tarragona", aliases: [], hasShield: false },
-  { name: "Bellver de Cerdanya", slug: "bellver-de-cerdanya", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Bellvís", slug: "bellvis", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Benavent de Segrià", slug: "benavent-de-segria", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Benifallet", slug: "benifallet", province: "Tarragona", aliases: [], hasShield: false },
+  { name: "Bellvei", slug: "bellvei", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Bellver de Cerdanya", slug: "bellver-de-cerdanya", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Bellvís", slug: "bellvis", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Benavent de Segrià", slug: "benavent-de-segria", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Benifallet", slug: "benifallet", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Benissanet", slug: "benissanet", province: "Tarragona", aliases: [], hasShield: false },
   { name: "Berga", slug: "berga", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Besalú", slug: "besalu", province: "Girona", aliases: [], hasShield: false },
