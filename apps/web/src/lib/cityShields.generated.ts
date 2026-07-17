@@ -82,6 +82,11 @@ import BellverDeCerdanyaShield from "catalunya-shields/assets/svg/bellver-de-cer
 import BellvisShield from "catalunya-shields/assets/svg/bellvis.svg";
 import BenaventDeSegriaShield from "catalunya-shields/assets/svg/benavent-de-segria.svg";
 import BenifalletShield from "catalunya-shields/assets/svg/benifallet.svg";
+import BergaShield from "catalunya-shields/assets/svg/berga.svg";
+import BesaluShield from "catalunya-shields/assets/svg/besalu.svg";
+import BescanoShield from "catalunya-shields/assets/svg/bescano.svg";
+import BeudaShield from "catalunya-shields/assets/svg/beuda.svg";
+import BioscaShield from "catalunya-shields/assets/svg/biosca.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -188,6 +193,11 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "bellvis": BellvisShield,
   "benavent-de-segria": BenaventDeSegriaShield,
   "benifallet": BenifalletShield,
+  "berga": BergaShield,
+  "besalu": BesaluShield,
+  "bescano": BescanoShield,
+  "beuda": BeudaShield,
+  "biosca": BioscaShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -287,6 +297,11 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "bellvis",
   "benavent-de-segria",
   "benifallet",
+  "berga",
+  "besalu",
+  "bescano",
+  "beuda",
+  "biosca",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -382,6 +397,11 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Bellvís", slug: "bellvis", province: "Lleida", aliases: [], hasShield: true },
   { name: "Benavent de Segrià", slug: "benavent-de-segria", province: "Lleida", aliases: [], hasShield: true },
   { name: "Benifallet", slug: "benifallet", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Berga", slug: "berga", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Besalú", slug: "besalu", province: "Girona", aliases: [], hasShield: true },
+  { name: "Bescanó", slug: "bescano", province: "Girona", aliases: [], hasShield: true },
+  { name: "Beuda", slug: "beuda", province: "Girona", aliases: [], hasShield: true },
+  { name: "Biosca", slug: "biosca", province: "Lleida", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -492,12 +512,12 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Benavent de Segrià", slug: "benavent-de-segria", province: "Lleida", aliases: [], hasShield: true },
   { name: "Benifallet", slug: "benifallet", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Benissanet", slug: "benissanet", province: "Tarragona", aliases: [], hasShield: false },
-  { name: "Berga", slug: "berga", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Besalú", slug: "besalu", province: "Girona", aliases: [], hasShield: false },
-  { name: "Bescanó", slug: "bescano", province: "Girona", aliases: [], hasShield: false },
-  { name: "Beuda", slug: "beuda", province: "Girona", aliases: [], hasShield: false },
+  { name: "Berga", slug: "berga", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Besalú", slug: "besalu", province: "Girona", aliases: [], hasShield: true },
+  { name: "Bescanó", slug: "bescano", province: "Girona", aliases: [], hasShield: true },
+  { name: "Beuda", slug: "beuda", province: "Girona", aliases: [], hasShield: true },
   { name: "Bigues i Riells del Fai", slug: "bigues-i-riells-del-fai", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Biosca", slug: "biosca", province: "Lleida", aliases: [], hasShield: false },
+  { name: "Biosca", slug: "biosca", province: "Lleida", aliases: [], hasShield: true },
   { name: "Biure", slug: "biure", province: "Girona", aliases: [], hasShield: false },
   { name: "Blancafort", slug: "blancafort", province: "Tarragona", aliases: [], hasShield: false },
   { name: "Blanes", slug: "blanes", province: "Girona", aliases: [], hasShield: false },
