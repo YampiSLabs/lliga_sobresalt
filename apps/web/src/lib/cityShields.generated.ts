@@ -87,6 +87,11 @@ import BesaluShield from "catalunya-shields/assets/svg/besalu.svg";
 import BescanoShield from "catalunya-shields/assets/svg/bescano.svg";
 import BeudaShield from "catalunya-shields/assets/svg/beuda.svg";
 import BioscaShield from "catalunya-shields/assets/svg/biosca.svg";
+import BiureShield from "catalunya-shields/assets/svg/biure.svg";
+import BlancafortShield from "catalunya-shields/assets/svg/blancafort.svg";
+import BlanesShield from "catalunya-shields/assets/svg/blanes.svg";
+import BolvirShield from "catalunya-shields/assets/svg/bolvir.svg";
+import BonastreShield from "catalunya-shields/assets/svg/bonastre.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -198,6 +203,11 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "bescano": BescanoShield,
   "beuda": BeudaShield,
   "biosca": BioscaShield,
+  "biure": BiureShield,
+  "blancafort": BlancafortShield,
+  "blanes": BlanesShield,
+  "bolvir": BolvirShield,
+  "bonastre": BonastreShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -302,6 +312,11 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "bescano",
   "beuda",
   "biosca",
+  "biure",
+  "blancafort",
+  "blanes",
+  "bolvir",
+  "bonastre",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -402,6 +417,11 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Bescanó", slug: "bescano", province: "Girona", aliases: [], hasShield: true },
   { name: "Beuda", slug: "beuda", province: "Girona", aliases: [], hasShield: true },
   { name: "Biosca", slug: "biosca", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Biure", slug: "biure", province: "Girona", aliases: [], hasShield: true },
+  { name: "Blancafort", slug: "blancafort", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Blanes", slug: "blanes", province: "Girona", aliases: [], hasShield: true },
+  { name: "Bolvir", slug: "bolvir", province: "Girona", aliases: [], hasShield: true },
+  { name: "Bonastre", slug: "bonastre", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -518,12 +538,12 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Beuda", slug: "beuda", province: "Girona", aliases: [], hasShield: true },
   { name: "Bigues i Riells del Fai", slug: "bigues-i-riells-del-fai", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Biosca", slug: "biosca", province: "Lleida", aliases: [], hasShield: true },
-  { name: "Biure", slug: "biure", province: "Girona", aliases: [], hasShield: false },
-  { name: "Blancafort", slug: "blancafort", province: "Tarragona", aliases: [], hasShield: false },
-  { name: "Blanes", slug: "blanes", province: "Girona", aliases: [], hasShield: false },
+  { name: "Biure", slug: "biure", province: "Girona", aliases: [], hasShield: true },
+  { name: "Blancafort", slug: "blancafort", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Blanes", slug: "blanes", province: "Girona", aliases: [], hasShield: true },
   { name: "Boadella i les Escaules", slug: "boadella-i-les-escaules", province: "Girona", aliases: [], hasShield: false },
-  { name: "Bolvir", slug: "bolvir", province: "Girona", aliases: [], hasShield: false },
-  { name: "Bonastre", slug: "bonastre", province: "Tarragona", aliases: [], hasShield: false },
+  { name: "Bolvir", slug: "bolvir", province: "Girona", aliases: [], hasShield: true },
+  { name: "Bonastre", slug: "bonastre", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Bordils", slug: "bordils", province: "Girona", aliases: [], hasShield: false },
   { name: "Borrassà", slug: "borrassa", province: "Girona", aliases: [], hasShield: false },
   { name: "Borredà", slug: "borreda", province: "Barcelona", aliases: [], hasShield: false },
