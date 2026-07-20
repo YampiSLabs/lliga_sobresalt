@@ -65,6 +65,7 @@ import BarbensShield from "catalunya-shields/assets/svg/barbens.svg";
 import BarberaDeLaConcaShield from "catalunya-shields/assets/svg/barbera-de-la-conca.svg";
 import BarberaDelVallesShield from "catalunya-shields/assets/svg/barbera-del-valles.svg";
 import BarcelonaShield from "catalunya-shields/assets/svg/barcelona.svg";
+import BascaraShield from "catalunya-shields/assets/svg/bascara.svg";
 import BassellaShield from "catalunya-shields/assets/svg/bassella.svg";
 import BateaShield from "catalunya-shields/assets/svg/batea.svg";
 import BausenShield from "catalunya-shields/assets/svg/bausen.svg";
@@ -97,6 +98,10 @@ import BorrassaShield from "catalunya-shields/assets/svg/borrassa.svg";
 import BorredaShield from "catalunya-shields/assets/svg/borreda.svg";
 import BossostShield from "catalunya-shields/assets/svg/bossost.svg";
 import BotarellShield from "catalunya-shields/assets/svg/botarell.svg";
+import BoveraShield from "catalunya-shields/assets/svg/bovera.svg";
+import BrafimShield from "catalunya-shields/assets/svg/brafim.svg";
+import BredaShield from "catalunya-shields/assets/svg/breda.svg";
+import CabanabonaShield from "catalunya-shields/assets/svg/cabanabona.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -186,6 +191,7 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "barbera-de-la-conca": BarberaDeLaConcaShield,
   "barbera-del-valles": BarberaDelVallesShield,
   "barcelona": BarcelonaShield,
+  "bascara": BascaraShield,
   "bassella": BassellaShield,
   "batea": BateaShield,
   "bausen": BausenShield,
@@ -218,6 +224,10 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "borreda": BorredaShield,
   "bossost": BossostShield,
   "botarell": BotarellShield,
+  "bovera": BoveraShield,
+  "brafim": BrafimShield,
+  "breda": BredaShield,
+  "cabanabona": CabanabonaShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -300,6 +310,7 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "barbera-de-la-conca",
   "barbera-del-valles",
   "barcelona",
+  "bascara",
   "bassella",
   "batea",
   "bausen",
@@ -332,6 +343,10 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "borreda",
   "bossost",
   "botarell",
+  "bovera",
+  "brafim",
+  "breda",
+  "cabanabona",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -410,6 +425,7 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Barberà de la Conca", slug: "barbera-de-la-conca", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Barberà del Vallès", slug: "barbera-del-valles", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Barcelona", slug: "barcelona", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Bàscara", slug: "bascara", province: "Girona", aliases: [], hasShield: true },
   { name: "Bassella", slug: "bassella", province: "Lleida", aliases: [], hasShield: true },
   { name: "Batea", slug: "batea", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Bausen", slug: "bausen", province: "Lleida", aliases: [], hasShield: true },
@@ -442,6 +458,10 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Borredà", slug: "borreda", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Bossòst", slug: "bossost", province: "Lleida", aliases: [], hasShield: true },
   { name: "Botarell", slug: "botarell", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Bovera", slug: "bovera", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Bràfim", slug: "brafim", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Breda", slug: "breda", province: "Girona", aliases: [], hasShield: true },
+  { name: "Cabanabona", slug: "cabanabona", province: "Lleida", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -531,7 +551,7 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Barberà de la Conca", slug: "barbera-de-la-conca", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Barberà del Vallès", slug: "barbera-del-valles", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Barcelona", slug: "barcelona", province: "Barcelona", aliases: [], hasShield: true },
-  { name: "Bàscara", slug: "bascara", province: "Girona", aliases: [], hasShield: false },
+  { name: "Bàscara", slug: "bascara", province: "Girona", aliases: [], hasShield: true },
   { name: "Bassella", slug: "bassella", province: "Lleida", aliases: [], hasShield: true },
   { name: "Batea", slug: "batea", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Bausen", slug: "bausen", province: "Lleida", aliases: [], hasShield: true },
@@ -570,11 +590,11 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Bossòst", slug: "bossost", province: "Lleida", aliases: [], hasShield: true },
   { name: "Bot", slug: "bot", province: "Tarragona", aliases: [], hasShield: false },
   { name: "Botarell", slug: "botarell", province: "Tarragona", aliases: [], hasShield: true },
-  { name: "Bovera", slug: "bovera", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Bràfim", slug: "brafim", province: "Tarragona", aliases: [], hasShield: false },
-  { name: "Breda", slug: "breda", province: "Girona", aliases: [], hasShield: false },
+  { name: "Bovera", slug: "bovera", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Bràfim", slug: "brafim", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Breda", slug: "breda", province: "Girona", aliases: [], hasShield: true },
   { name: "Brunyola i Sant Martí Sapresa", slug: "brunyola-i-sant-marti-sapresa", province: "Girona", aliases: [], hasShield: false },
-  { name: "Cabanabona", slug: "cabanabona", province: "Lleida", aliases: [], hasShield: false },
+  { name: "Cabanabona", slug: "cabanabona", province: "Lleida", aliases: [], hasShield: true },
   { name: "Cabanelles", slug: "cabanelles", province: "Girona", aliases: [], hasShield: false },
   { name: "Cabanes", slug: "cabanes", province: "Girona", aliases: [], hasShield: false },
   { name: "Cabassers", slug: "cabassers", province: "Tarragona", aliases: [], hasShield: false },
