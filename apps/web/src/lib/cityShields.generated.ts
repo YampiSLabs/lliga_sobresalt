@@ -102,6 +102,11 @@ import BoveraShield from "catalunya-shields/assets/svg/bovera.svg";
 import BrafimShield from "catalunya-shields/assets/svg/brafim.svg";
 import BredaShield from "catalunya-shields/assets/svg/breda.svg";
 import CabanabonaShield from "catalunya-shields/assets/svg/cabanabona.svg";
+import CabanellesShield from "catalunya-shields/assets/svg/cabanelles.svg";
+import CabanesShield from "catalunya-shields/assets/svg/cabanes.svg";
+import CabraDelCampShield from "catalunya-shields/assets/svg/cabra-del-camp.svg";
+import CabreraDeMarShield from "catalunya-shields/assets/svg/cabrera-de-mar.svg";
+import CabrilsShield from "catalunya-shields/assets/svg/cabrils.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -228,6 +233,11 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "brafim": BrafimShield,
   "breda": BredaShield,
   "cabanabona": CabanabonaShield,
+  "cabanelles": CabanellesShield,
+  "cabanes": CabanesShield,
+  "cabra-del-camp": CabraDelCampShield,
+  "cabrera-de-mar": CabreraDeMarShield,
+  "cabrils": CabrilsShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -347,6 +357,11 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "brafim",
   "breda",
   "cabanabona",
+  "cabanelles",
+  "cabanes",
+  "cabra-del-camp",
+  "cabrera-de-mar",
+  "cabrils",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -462,6 +477,11 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Bràfim", slug: "brafim", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Breda", slug: "breda", province: "Girona", aliases: [], hasShield: true },
   { name: "Cabanabona", slug: "cabanabona", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Cabanelles", slug: "cabanelles", province: "Girona", aliases: [], hasShield: true },
+  { name: "Cabanes", slug: "cabanes", province: "Girona", aliases: [], hasShield: true },
+  { name: "Cabra del Camp", slug: "cabra-del-camp", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Cabrera de Mar", slug: "cabrera-de-mar", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Cabrils", slug: "cabrils", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -595,14 +615,14 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Breda", slug: "breda", province: "Girona", aliases: [], hasShield: true },
   { name: "Brunyola i Sant Martí Sapresa", slug: "brunyola-i-sant-marti-sapresa", province: "Girona", aliases: [], hasShield: false },
   { name: "Cabanabona", slug: "cabanabona", province: "Lleida", aliases: [], hasShield: true },
-  { name: "Cabanelles", slug: "cabanelles", province: "Girona", aliases: [], hasShield: false },
-  { name: "Cabanes", slug: "cabanes", province: "Girona", aliases: [], hasShield: false },
+  { name: "Cabanelles", slug: "cabanelles", province: "Girona", aliases: [], hasShield: true },
+  { name: "Cabanes", slug: "cabanes", province: "Girona", aliases: [], hasShield: true },
   { name: "Cabassers", slug: "cabassers", province: "Tarragona", aliases: [], hasShield: false },
   { name: "Cabó", slug: "cabo", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Cabra del Camp", slug: "cabra-del-camp", province: "Tarragona", aliases: [], hasShield: false },
+  { name: "Cabra del Camp", slug: "cabra-del-camp", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Cabrera d'Anoia", slug: "cabrera-danoia", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Cabrera de Mar", slug: "cabrera-de-mar", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Cabrils", slug: "cabrils", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Cabrera de Mar", slug: "cabrera-de-mar", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Cabrils", slug: "cabrils", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cadaqués", slug: "cadaques", province: "Girona", aliases: [], hasShield: false },
   { name: "Calaf", slug: "calaf", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Calafell", slug: "calafell", province: "Tarragona", aliases: [], hasShield: false },
