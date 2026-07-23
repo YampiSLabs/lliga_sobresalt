@@ -112,6 +112,11 @@ import CadaquesShield from "catalunya-shields/assets/svg/cadaques.svg";
 import CalafShield from "catalunya-shields/assets/svg/calaf.svg";
 import CalafellShield from "catalunya-shields/assets/svg/calafell.svg";
 import CaldersShield from "catalunya-shields/assets/svg/calders.svg";
+import CaldesDeMalavellaShield from "catalunya-shields/assets/svg/caldes-de-malavella.svg";
+import CaldesDeMontbuiShield from "catalunya-shields/assets/svg/caldes-de-montbui.svg";
+import CaldesDestracShield from "catalunya-shields/assets/svg/caldes-destrac.svg";
+import CalellaShield from "catalunya-shields/assets/svg/calella.svg";
+import CalldetenesShield from "catalunya-shields/assets/svg/calldetenes.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -248,6 +253,11 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "calaf": CalafShield,
   "calafell": CalafellShield,
   "calders": CaldersShield,
+  "caldes-de-malavella": CaldesDeMalavellaShield,
+  "caldes-de-montbui": CaldesDeMontbuiShield,
+  "caldes-destrac": CaldesDestracShield,
+  "calella": CalellaShield,
+  "calldetenes": CalldetenesShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -377,6 +387,11 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "calaf",
   "calafell",
   "calders",
+  "caldes-de-malavella",
+  "caldes-de-montbui",
+  "caldes-destrac",
+  "calella",
+  "calldetenes",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -502,6 +517,11 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Calaf", slug: "calaf", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Calafell", slug: "calafell", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Calders", slug: "calders", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Caldes de Malavella", slug: "caldes-de-malavella", province: "Girona", aliases: [], hasShield: true },
+  { name: "Caldes de Montbui", slug: "caldes-de-montbui", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Caldes d'Estrac", slug: "caldes-destrac", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Calella", slug: "calella", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Calldetenes", slug: "calldetenes", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -647,11 +667,11 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Calaf", slug: "calaf", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Calafell", slug: "calafell", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Calders", slug: "calders", province: "Barcelona", aliases: [], hasShield: true },
-  { name: "Caldes de Malavella", slug: "caldes-de-malavella", province: "Girona", aliases: [], hasShield: false },
-  { name: "Caldes de Montbui", slug: "caldes-de-montbui", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Caldes d'Estrac", slug: "caldes-destrac", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Calella", slug: "calella", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Calldetenes", slug: "calldetenes", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Caldes de Malavella", slug: "caldes-de-malavella", province: "Girona", aliases: [], hasShield: true },
+  { name: "Caldes de Montbui", slug: "caldes-de-montbui", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Caldes d'Estrac", slug: "caldes-destrac", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Calella", slug: "calella", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Calldetenes", slug: "calldetenes", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Callús", slug: "callus", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Calonge de Segarra", slug: "calonge-de-segarra", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Calonge i Sant Antoni", slug: "calonge-i-sant-antoni", province: "Girona", aliases: [], hasShield: false },
