@@ -117,6 +117,11 @@ import CaldesDeMontbuiShield from "catalunya-shields/assets/svg/caldes-de-montbu
 import CaldesDestracShield from "catalunya-shields/assets/svg/caldes-destrac.svg";
 import CalellaShield from "catalunya-shields/assets/svg/calella.svg";
 import CalldetenesShield from "catalunya-shields/assets/svg/calldetenes.svg";
+import CallusShield from "catalunya-shields/assets/svg/callus.svg";
+import CalongeDeSegarraShield from "catalunya-shields/assets/svg/calonge-de-segarra.svg";
+import CamarasaShield from "catalunya-shields/assets/svg/camarasa.svg";
+import CamarlesShield from "catalunya-shields/assets/svg/camarles.svg";
+import CambrilsShield from "catalunya-shields/assets/svg/cambrils.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -258,6 +263,11 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "caldes-destrac": CaldesDestracShield,
   "calella": CalellaShield,
   "calldetenes": CalldetenesShield,
+  "callus": CallusShield,
+  "calonge-de-segarra": CalongeDeSegarraShield,
+  "camarasa": CamarasaShield,
+  "camarles": CamarlesShield,
+  "cambrils": CambrilsShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -392,6 +402,11 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "caldes-destrac",
   "calella",
   "calldetenes",
+  "callus",
+  "calonge-de-segarra",
+  "camarasa",
+  "camarles",
+  "cambrils",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -522,6 +537,11 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Caldes d'Estrac", slug: "caldes-destrac", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Calella", slug: "calella", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Calldetenes", slug: "calldetenes", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Callús", slug: "callus", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Calonge de Segarra", slug: "calonge-de-segarra", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Camarasa", slug: "camarasa", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Camarles", slug: "camarles", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Cambrils", slug: "cambrils", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -672,12 +692,12 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Caldes d'Estrac", slug: "caldes-destrac", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Calella", slug: "calella", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Calldetenes", slug: "calldetenes", province: "Barcelona", aliases: [], hasShield: true },
-  { name: "Callús", slug: "callus", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Calonge de Segarra", slug: "calonge-de-segarra", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Callús", slug: "callus", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Calonge de Segarra", slug: "calonge-de-segarra", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Calonge i Sant Antoni", slug: "calonge-i-sant-antoni", province: "Girona", aliases: [], hasShield: false },
-  { name: "Camarasa", slug: "camarasa", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Camarles", slug: "camarles", province: "Tarragona", aliases: [], hasShield: false },
-  { name: "Cambrils", slug: "cambrils", province: "Tarragona", aliases: [], hasShield: false },
+  { name: "Camarasa", slug: "camarasa", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Camarles", slug: "camarles", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Cambrils", slug: "cambrils", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Camós", slug: "camos", province: "Girona", aliases: [], hasShield: false },
   { name: "Campdevànol", slug: "campdevanol", province: "Girona", aliases: [], hasShield: false },
   { name: "Campelles", slug: "campelles", province: "Girona", aliases: [], hasShield: false },
