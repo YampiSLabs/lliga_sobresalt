@@ -122,6 +122,11 @@ import CalongeDeSegarraShield from "catalunya-shields/assets/svg/calonge-de-sega
 import CamarasaShield from "catalunya-shields/assets/svg/camarasa.svg";
 import CamarlesShield from "catalunya-shields/assets/svg/camarles.svg";
 import CambrilsShield from "catalunya-shields/assets/svg/cambrils.svg";
+import CampdevanolShield from "catalunya-shields/assets/svg/campdevanol.svg";
+import CampellesShield from "catalunya-shields/assets/svg/campelles.svg";
+import CampinsShield from "catalunya-shields/assets/svg/campins.svg";
+import CampllongShield from "catalunya-shields/assets/svg/campllong.svg";
+import CampmanyShield from "catalunya-shields/assets/svg/campmany.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -268,6 +273,11 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "camarasa": CamarasaShield,
   "camarles": CamarlesShield,
   "cambrils": CambrilsShield,
+  "campdevanol": CampdevanolShield,
+  "campelles": CampellesShield,
+  "campins": CampinsShield,
+  "campllong": CampllongShield,
+  "campmany": CampmanyShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -407,6 +417,11 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "camarasa",
   "camarles",
   "cambrils",
+  "campdevanol",
+  "campelles",
+  "campins",
+  "campllong",
+  "campmany",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -542,6 +557,11 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Camarasa", slug: "camarasa", province: "Lleida", aliases: [], hasShield: true },
   { name: "Camarles", slug: "camarles", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Cambrils", slug: "cambrils", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Campdevànol", slug: "campdevanol", province: "Girona", aliases: [], hasShield: true },
+  { name: "Campelles", slug: "campelles", province: "Girona", aliases: [], hasShield: true },
+  { name: "Campins", slug: "campins", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Campllong", slug: "campllong", province: "Girona", aliases: [], hasShield: true },
+  { name: "Campmany", slug: "campmany", province: "Girona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -699,11 +719,11 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Camarles", slug: "camarles", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Cambrils", slug: "cambrils", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Camós", slug: "camos", province: "Girona", aliases: [], hasShield: false },
-  { name: "Campdevànol", slug: "campdevanol", province: "Girona", aliases: [], hasShield: false },
-  { name: "Campelles", slug: "campelles", province: "Girona", aliases: [], hasShield: false },
-  { name: "Campins", slug: "campins", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Campllong", slug: "campllong", province: "Girona", aliases: [], hasShield: false },
-  { name: "Campmany", slug: "campmany", province: "Girona", aliases: [], hasShield: false },
+  { name: "Campdevànol", slug: "campdevanol", province: "Girona", aliases: [], hasShield: true },
+  { name: "Campelles", slug: "campelles", province: "Girona", aliases: [], hasShield: true },
+  { name: "Campins", slug: "campins", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Campllong", slug: "campllong", province: "Girona", aliases: [], hasShield: true },
+  { name: "Campmany", slug: "campmany", province: "Girona", aliases: [], hasShield: true },
   { name: "Camprodon", slug: "camprodon", province: "Girona", aliases: [], hasShield: false },
   { name: "Canejan", slug: "canejan", province: "Lleida", aliases: [], hasShield: false },
   { name: "Canet d'Adri", slug: "canet-dadri", province: "Girona", aliases: [], hasShield: false },
