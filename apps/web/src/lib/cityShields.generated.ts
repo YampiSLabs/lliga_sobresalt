@@ -122,11 +122,16 @@ import CalongeDeSegarraShield from "catalunya-shields/assets/svg/calonge-de-sega
 import CamarasaShield from "catalunya-shields/assets/svg/camarasa.svg";
 import CamarlesShield from "catalunya-shields/assets/svg/camarles.svg";
 import CambrilsShield from "catalunya-shields/assets/svg/cambrils.svg";
+import CamosShield from "catalunya-shields/assets/svg/camos.svg";
 import CampdevanolShield from "catalunya-shields/assets/svg/campdevanol.svg";
 import CampellesShield from "catalunya-shields/assets/svg/campelles.svg";
 import CampinsShield from "catalunya-shields/assets/svg/campins.svg";
 import CampllongShield from "catalunya-shields/assets/svg/campllong.svg";
 import CampmanyShield from "catalunya-shields/assets/svg/campmany.svg";
+import CamprodonShield from "catalunya-shields/assets/svg/camprodon.svg";
+import CanejanShield from "catalunya-shields/assets/svg/canejan.svg";
+import CanetDadriShield from "catalunya-shields/assets/svg/canet-dadri.svg";
+import CanovellesShield from "catalunya-shields/assets/svg/canovelles.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -273,11 +278,16 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "camarasa": CamarasaShield,
   "camarles": CamarlesShield,
   "cambrils": CambrilsShield,
+  "camos": CamosShield,
   "campdevanol": CampdevanolShield,
   "campelles": CampellesShield,
   "campins": CampinsShield,
   "campllong": CampllongShield,
   "campmany": CampmanyShield,
+  "camprodon": CamprodonShield,
+  "canejan": CanejanShield,
+  "canet-dadri": CanetDadriShield,
+  "canovelles": CanovellesShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -417,11 +427,16 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "camarasa",
   "camarles",
   "cambrils",
+  "camos",
   "campdevanol",
   "campelles",
   "campins",
   "campllong",
   "campmany",
+  "camprodon",
+  "canejan",
+  "canet-dadri",
+  "canovelles",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -557,11 +572,16 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Camarasa", slug: "camarasa", province: "Lleida", aliases: [], hasShield: true },
   { name: "Camarles", slug: "camarles", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Cambrils", slug: "cambrils", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Camós", slug: "camos", province: "Girona", aliases: [], hasShield: true },
   { name: "Campdevànol", slug: "campdevanol", province: "Girona", aliases: [], hasShield: true },
   { name: "Campelles", slug: "campelles", province: "Girona", aliases: [], hasShield: true },
   { name: "Campins", slug: "campins", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Campllong", slug: "campllong", province: "Girona", aliases: [], hasShield: true },
   { name: "Campmany", slug: "campmany", province: "Girona", aliases: [], hasShield: true },
+  { name: "Camprodon", slug: "camprodon", province: "Girona", aliases: [], hasShield: true },
+  { name: "Canejan", slug: "canejan", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Canet d'Adri", slug: "canet-dadri", province: "Girona", aliases: [], hasShield: true },
+  { name: "Canovelles", slug: "canovelles", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -718,17 +738,17 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Camarasa", slug: "camarasa", province: "Lleida", aliases: [], hasShield: true },
   { name: "Camarles", slug: "camarles", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Cambrils", slug: "cambrils", province: "Tarragona", aliases: [], hasShield: true },
-  { name: "Camós", slug: "camos", province: "Girona", aliases: [], hasShield: false },
+  { name: "Camós", slug: "camos", province: "Girona", aliases: [], hasShield: true },
   { name: "Campdevànol", slug: "campdevanol", province: "Girona", aliases: [], hasShield: true },
   { name: "Campelles", slug: "campelles", province: "Girona", aliases: [], hasShield: true },
   { name: "Campins", slug: "campins", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Campllong", slug: "campllong", province: "Girona", aliases: [], hasShield: true },
   { name: "Campmany", slug: "campmany", province: "Girona", aliases: [], hasShield: true },
-  { name: "Camprodon", slug: "camprodon", province: "Girona", aliases: [], hasShield: false },
-  { name: "Canejan", slug: "canejan", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Canet d'Adri", slug: "canet-dadri", province: "Girona", aliases: [], hasShield: false },
+  { name: "Camprodon", slug: "camprodon", province: "Girona", aliases: [], hasShield: true },
+  { name: "Canejan", slug: "canejan", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Canet d'Adri", slug: "canet-dadri", province: "Girona", aliases: [], hasShield: true },
   { name: "Canet de Mar", slug: "canet-de-mar", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Canovelles", slug: "canovelles", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Canovelles", slug: "canovelles", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cànoves i Samalús", slug: "canoves-i-samalus", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Cantallops", slug: "cantallops", province: "Girona", aliases: [], hasShield: false },
   { name: "Canyelles", slug: "canyelles", province: "Barcelona", aliases: [], hasShield: false },
