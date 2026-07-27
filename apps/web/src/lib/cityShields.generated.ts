@@ -132,6 +132,11 @@ import CamprodonShield from "catalunya-shields/assets/svg/camprodon.svg";
 import CanejanShield from "catalunya-shields/assets/svg/canejan.svg";
 import CanetDadriShield from "catalunya-shields/assets/svg/canet-dadri.svg";
 import CanovellesShield from "catalunya-shields/assets/svg/canovelles.svg";
+import CantallopsShield from "catalunya-shields/assets/svg/cantallops.svg";
+import CanyellesShield from "catalunya-shields/assets/svg/canyelles.svg";
+import CapelladesShield from "catalunya-shields/assets/svg/capellades.svg";
+import CardedeuShield from "catalunya-shields/assets/svg/cardedeu.svg";
+import CardonaShield from "catalunya-shields/assets/svg/cardona.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -288,6 +293,11 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "canejan": CanejanShield,
   "canet-dadri": CanetDadriShield,
   "canovelles": CanovellesShield,
+  "cantallops": CantallopsShield,
+  "canyelles": CanyellesShield,
+  "capellades": CapelladesShield,
+  "cardedeu": CardedeuShield,
+  "cardona": CardonaShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -437,6 +447,11 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "canejan",
   "canet-dadri",
   "canovelles",
+  "cantallops",
+  "canyelles",
+  "capellades",
+  "cardedeu",
+  "cardona",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -582,6 +597,11 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Canejan", slug: "canejan", province: "Lleida", aliases: [], hasShield: true },
   { name: "Canet d'Adri", slug: "canet-dadri", province: "Girona", aliases: [], hasShield: true },
   { name: "Canovelles", slug: "canovelles", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Cantallops", slug: "cantallops", province: "Girona", aliases: [], hasShield: true },
+  { name: "Canyelles", slug: "canyelles", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Capellades", slug: "capellades", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Cardedeu", slug: "cardedeu", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Cardona", slug: "cardona", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -750,14 +770,14 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Canet de Mar", slug: "canet-de-mar", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Canovelles", slug: "canovelles", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cànoves i Samalús", slug: "canoves-i-samalus", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Cantallops", slug: "cantallops", province: "Girona", aliases: [], hasShield: false },
-  { name: "Canyelles", slug: "canyelles", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Cantallops", slug: "cantallops", province: "Girona", aliases: [], hasShield: true },
+  { name: "Canyelles", slug: "canyelles", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Capafonts", slug: "capafonts", province: "Tarragona", aliases: [], hasShield: false },
   { name: "Capçanes", slug: "capcanes", province: "Tarragona", aliases: [], hasShield: false },
-  { name: "Capellades", slug: "capellades", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Capellades", slug: "capellades", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Capolat", slug: "capolat", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Cardedeu", slug: "cardedeu", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Cardona", slug: "cardona", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Cardedeu", slug: "cardedeu", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Cardona", slug: "cardona", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Carme", slug: "carme", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Caseres", slug: "caseres", province: "Tarragona", aliases: [], hasShield: false },
   { name: "Cassà de la Selva", slug: "cassa-de-la-selva", province: "Girona", aliases: [], hasShield: false },
