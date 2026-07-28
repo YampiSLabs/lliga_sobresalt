@@ -137,6 +137,11 @@ import CanyellesShield from "catalunya-shields/assets/svg/canyelles.svg";
 import CapelladesShield from "catalunya-shields/assets/svg/capellades.svg";
 import CardedeuShield from "catalunya-shields/assets/svg/cardedeu.svg";
 import CardonaShield from "catalunya-shields/assets/svg/cardona.svg";
+import CarmeShield from "catalunya-shields/assets/svg/carme.svg";
+import CaseresShield from "catalunya-shields/assets/svg/caseres.svg";
+import CassaDeLaSelvaShield from "catalunya-shields/assets/svg/cassa-de-la-selva.svg";
+import CasserresShield from "catalunya-shields/assets/svg/casserres.svg";
+import CastellDaroPlatjaDaroISagaroShield from "catalunya-shields/assets/svg/castell-daro-platja-daro-i-sagaro.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -298,6 +303,11 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "capellades": CapelladesShield,
   "cardedeu": CardedeuShield,
   "cardona": CardonaShield,
+  "carme": CarmeShield,
+  "caseres": CaseresShield,
+  "cassa-de-la-selva": CassaDeLaSelvaShield,
+  "casserres": CasserresShield,
+  "castell-daro-platja-daro-i-sagaro": CastellDaroPlatjaDaroISagaroShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -452,6 +462,11 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "capellades",
   "cardedeu",
   "cardona",
+  "carme",
+  "caseres",
+  "cassa-de-la-selva",
+  "casserres",
+  "castell-daro-platja-daro-i-sagaro",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -602,6 +617,11 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Capellades", slug: "capellades", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cardedeu", slug: "cardedeu", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cardona", slug: "cardona", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Carme", slug: "carme", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Caseres", slug: "caseres", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Cassà de la Selva", slug: "cassa-de-la-selva", province: "Girona", aliases: [], hasShield: true },
+  { name: "Casserres", slug: "casserres", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Castell d'Aro, Platja d'Aro i s'Agaró", slug: "castell-daro-platja-daro-i-sagaro", province: "Girona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -778,11 +798,11 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Capolat", slug: "capolat", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Cardedeu", slug: "cardedeu", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cardona", slug: "cardona", province: "Barcelona", aliases: [], hasShield: true },
-  { name: "Carme", slug: "carme", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Caseres", slug: "caseres", province: "Tarragona", aliases: [], hasShield: false },
-  { name: "Cassà de la Selva", slug: "cassa-de-la-selva", province: "Girona", aliases: [], hasShield: false },
-  { name: "Casserres", slug: "casserres", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Castell d'Aro, Platja d'Aro i s'Agaró", slug: "castell-daro-platja-daro-i-sagaro", province: "Girona", aliases: [], hasShield: false },
+  { name: "Carme", slug: "carme", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Caseres", slug: "caseres", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Cassà de la Selva", slug: "cassa-de-la-selva", province: "Girona", aliases: [], hasShield: true },
+  { name: "Casserres", slug: "casserres", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Castell d'Aro, Platja d'Aro i s'Agaró", slug: "castell-daro-platja-daro-i-sagaro", province: "Girona", aliases: [], hasShield: true },
   { name: "Castell de l'Areny", slug: "castell-de-lareny", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Castell de Mur", slug: "castell-de-mur", province: "Lleida", aliases: [], hasShield: false },
   { name: "Castellar de la Ribera", slug: "castellar-de-la-ribera", province: "Lleida", aliases: [], hasShield: false },
