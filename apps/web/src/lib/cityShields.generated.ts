@@ -142,6 +142,11 @@ import CaseresShield from "catalunya-shields/assets/svg/caseres.svg";
 import CassaDeLaSelvaShield from "catalunya-shields/assets/svg/cassa-de-la-selva.svg";
 import CasserresShield from "catalunya-shields/assets/svg/casserres.svg";
 import CastellDaroPlatjaDaroISagaroShield from "catalunya-shields/assets/svg/castell-daro-platja-daro-i-sagaro.svg";
+import CastellDeLarenyShield from "catalunya-shields/assets/svg/castell-de-lareny.svg";
+import CastellDeMurShield from "catalunya-shields/assets/svg/castell-de-mur.svg";
+import CastellarDeLaRiberaShield from "catalunya-shields/assets/svg/castellar-de-la-ribera.svg";
+import CastellarDelRiuShield from "catalunya-shields/assets/svg/castellar-del-riu.svg";
+import CastellarDelVallesShield from "catalunya-shields/assets/svg/castellar-del-valles.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -308,6 +313,11 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "cassa-de-la-selva": CassaDeLaSelvaShield,
   "casserres": CasserresShield,
   "castell-daro-platja-daro-i-sagaro": CastellDaroPlatjaDaroISagaroShield,
+  "castell-de-lareny": CastellDeLarenyShield,
+  "castell-de-mur": CastellDeMurShield,
+  "castellar-de-la-ribera": CastellarDeLaRiberaShield,
+  "castellar-del-riu": CastellarDelRiuShield,
+  "castellar-del-valles": CastellarDelVallesShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -467,6 +477,11 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "cassa-de-la-selva",
   "casserres",
   "castell-daro-platja-daro-i-sagaro",
+  "castell-de-lareny",
+  "castell-de-mur",
+  "castellar-de-la-ribera",
+  "castellar-del-riu",
+  "castellar-del-valles",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -622,6 +637,11 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Cassà de la Selva", slug: "cassa-de-la-selva", province: "Girona", aliases: [], hasShield: true },
   { name: "Casserres", slug: "casserres", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Castell d'Aro, Platja d'Aro i s'Agaró", slug: "castell-daro-platja-daro-i-sagaro", province: "Girona", aliases: [], hasShield: true },
+  { name: "Castell de l'Areny", slug: "castell-de-lareny", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Castell de Mur", slug: "castell-de-mur", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Castellar de la Ribera", slug: "castellar-de-la-ribera", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Castellar del Riu", slug: "castellar-del-riu", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Castellar del Vallès", slug: "castellar-del-valles", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -803,12 +823,12 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Cassà de la Selva", slug: "cassa-de-la-selva", province: "Girona", aliases: [], hasShield: true },
   { name: "Casserres", slug: "casserres", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Castell d'Aro, Platja d'Aro i s'Agaró", slug: "castell-daro-platja-daro-i-sagaro", province: "Girona", aliases: [], hasShield: true },
-  { name: "Castell de l'Areny", slug: "castell-de-lareny", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Castell de Mur", slug: "castell-de-mur", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Castellar de la Ribera", slug: "castellar-de-la-ribera", province: "Lleida", aliases: [], hasShield: false },
+  { name: "Castell de l'Areny", slug: "castell-de-lareny", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Castell de Mur", slug: "castell-de-mur", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Castellar de la Ribera", slug: "castellar-de-la-ribera", province: "Lleida", aliases: [], hasShield: true },
   { name: "Castellar de n'Hug", slug: "castellar-de-nhug", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Castellar del Riu", slug: "castellar-del-riu", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Castellar del Vallès", slug: "castellar-del-valles", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Castellar del Riu", slug: "castellar-del-riu", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Castellar del Vallès", slug: "castellar-del-valles", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Castellbell i el Vilar", slug: "castellbell-i-el-vilar", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Castellbisbal", slug: "castellbisbal", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Castellcir", slug: "castellcir", province: "Barcelona", aliases: [], hasShield: false },
