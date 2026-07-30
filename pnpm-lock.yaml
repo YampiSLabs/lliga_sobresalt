@@ -51,7 +51,7 @@ importers:
         version: 1.9.4
       catalunya-shields:
         specifier: github:YampiSLabs/catalunya-shields#main
-        version: https://codeload.github.com/YampiSLabs/catalunya-shields/tar.gz/ea2d562010ed6993603072b13643940b1432c224
+        version: https://codeload.github.com/YampiSLabs/catalunya-shields/tar.gz/70f988da32ba35241cb67d26d704cc5c11e3b891
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -1459,8 +1459,8 @@ packages:
   canvas-confetti@1.9.4:
     resolution: {integrity: sha512-yxQbJkAVrFXWNbTUjPqjF7G+g6pDotOUHGbkZq2NELZUMDpiJ85rIEazVb8GTaAptNW2miJAXbs1BtioA251Pw==}
 
-  catalunya-shields@https://codeload.github.com/YampiSLabs/catalunya-shields/tar.gz/ea2d562010ed6993603072b13643940b1432c224:
-    resolution: {tarball: https://codeload.github.com/YampiSLabs/catalunya-shields/tar.gz/ea2d562010ed6993603072b13643940b1432c224}
+  catalunya-shields@https://codeload.github.com/YampiSLabs/catalunya-shields/tar.gz/70f988da32ba35241cb67d26d704cc5c11e3b891:
+    resolution: {tarball: https://codeload.github.com/YampiSLabs/catalunya-shields/tar.gz/70f988da32ba35241cb67d26d704cc5c11e3b891}
     version: 0.0.1
 
   ccount@2.0.1:
@@ -4608,7 +4608,7 @@ snapshots:
 
   canvas-confetti@1.9.4: {}
 
-  catalunya-shields@https://codeload.github.com/YampiSLabs/catalunya-shields/tar.gz/ea2d562010ed6993603072b13643940b1432c224: {}
+  catalunya-shields@https://codeload.github.com/YampiSLabs/catalunya-shields/tar.gz/70f988da32ba35241cb67d26d704cc5c11e3b891: {}
 
   ccount@2.0.1: {}
 
