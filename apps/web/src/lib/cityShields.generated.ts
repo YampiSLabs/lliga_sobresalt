@@ -157,6 +157,11 @@ import CastellfollitDeLaRocaShield from "catalunya-shields/assets/svg/castellfol
 import CastellfollitDeRiubregosShield from "catalunya-shields/assets/svg/castellfollit-de-riubregos.svg";
 import CastellfollitDelBoixShield from "catalunya-shields/assets/svg/castellfollit-del-boix.svg";
 import CastellgaliShield from "catalunya-shields/assets/svg/castellgali.svg";
+import CastellnouDeBagesShield from "catalunya-shields/assets/svg/castellnou-de-bages.svg";
+import CastellnouDeSeanaShield from "catalunya-shields/assets/svg/castellnou-de-seana.svg";
+import CastellseraShield from "catalunya-shields/assets/svg/castellsera.svg";
+import CastelltercolShield from "catalunya-shields/assets/svg/castelltercol.svg";
+import CastellviDeRosanesShield from "catalunya-shields/assets/svg/castellvi-de-rosanes.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -338,6 +343,11 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "castellfollit-de-riubregos": CastellfollitDeRiubregosShield,
   "castellfollit-del-boix": CastellfollitDelBoixShield,
   "castellgali": CastellgaliShield,
+  "castellnou-de-bages": CastellnouDeBagesShield,
+  "castellnou-de-seana": CastellnouDeSeanaShield,
+  "castellsera": CastellseraShield,
+  "castelltercol": CastelltercolShield,
+  "castellvi-de-rosanes": CastellviDeRosanesShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -512,6 +522,11 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "castellfollit-de-riubregos",
   "castellfollit-del-boix",
   "castellgali",
+  "castellnou-de-bages",
+  "castellnou-de-seana",
+  "castellsera",
+  "castelltercol",
+  "castellvi-de-rosanes",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -682,6 +697,11 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Castellfollit de Riubregós", slug: "castellfollit-de-riubregos", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Castellfollit del Boix", slug: "castellfollit-del-boix", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Castellgalí", slug: "castellgali", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Castellnou de Bages", slug: "castellnou-de-bages", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Castellnou de Seana", slug: "castellnou-de-seana", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Castellserà", slug: "castellsera", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Castellterçol", slug: "castelltercol", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Castellví de Rosanes", slug: "castellvi-de-rosanes", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -879,16 +899,16 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Castellfollit de Riubregós", slug: "castellfollit-de-riubregos", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Castellfollit del Boix", slug: "castellfollit-del-boix", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Castellgalí", slug: "castellgali", province: "Barcelona", aliases: [], hasShield: true },
-  { name: "Castellnou de Bages", slug: "castellnou-de-bages", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Castellnou de Seana", slug: "castellnou-de-seana", province: "Lleida", aliases: [], hasShield: false },
+  { name: "Castellnou de Bages", slug: "castellnou-de-bages", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Castellnou de Seana", slug: "castellnou-de-seana", province: "Lleida", aliases: [], hasShield: true },
   { name: "Castelló de Farfanya", slug: "castello-de-farfanya", province: "Lleida", aliases: [], hasShield: false },
   { name: "Castelló d'Empúries", slug: "castello-dempuries", province: "Girona", aliases: [], hasShield: false },
   { name: "Castellolí", slug: "castelloli", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Castellserà", slug: "castellsera", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Castellterçol", slug: "castelltercol", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Castellserà", slug: "castellsera", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Castellterçol", slug: "castelltercol", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Castellvell del Camp", slug: "castellvell-del-camp", province: "Tarragona", aliases: [], hasShield: false },
   { name: "Castellví de la Marca", slug: "castellvi-de-la-marca", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Castellví de Rosanes", slug: "castellvi-de-rosanes", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Castellví de Rosanes", slug: "castellvi-de-rosanes", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cava", slug: "cava", province: "Lleida", aliases: [], hasShield: false },
   { name: "Celrà", slug: "celra", province: "Girona", aliases: [], hasShield: false },
   { name: "Centelles", slug: "centelles", province: "Barcelona", aliases: [], hasShield: false },
