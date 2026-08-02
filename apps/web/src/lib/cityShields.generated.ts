@@ -159,9 +159,14 @@ import CastellfollitDelBoixShield from "catalunya-shields/assets/svg/castellfoll
 import CastellgaliShield from "catalunya-shields/assets/svg/castellgali.svg";
 import CastellnouDeBagesShield from "catalunya-shields/assets/svg/castellnou-de-bages.svg";
 import CastellnouDeSeanaShield from "catalunya-shields/assets/svg/castellnou-de-seana.svg";
+import CastelloDeFarfanyaShield from "catalunya-shields/assets/svg/castello-de-farfanya.svg";
+import CastelloDempuriesShield from "catalunya-shields/assets/svg/castello-dempuries.svg";
 import CastellseraShield from "catalunya-shields/assets/svg/castellsera.svg";
 import CastelltercolShield from "catalunya-shields/assets/svg/castelltercol.svg";
+import CastellviDeLaMarcaShield from "catalunya-shields/assets/svg/castellvi-de-la-marca.svg";
 import CastellviDeRosanesShield from "catalunya-shields/assets/svg/castellvi-de-rosanes.svg";
+import CavaShield from "catalunya-shields/assets/svg/cava.svg";
+import CentellesShield from "catalunya-shields/assets/svg/centelles.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -345,9 +350,14 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "castellgali": CastellgaliShield,
   "castellnou-de-bages": CastellnouDeBagesShield,
   "castellnou-de-seana": CastellnouDeSeanaShield,
+  "castello-de-farfanya": CastelloDeFarfanyaShield,
+  "castello-dempuries": CastelloDempuriesShield,
   "castellsera": CastellseraShield,
   "castelltercol": CastelltercolShield,
+  "castellvi-de-la-marca": CastellviDeLaMarcaShield,
   "castellvi-de-rosanes": CastellviDeRosanesShield,
+  "cava": CavaShield,
+  "centelles": CentellesShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -524,9 +534,14 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "castellgali",
   "castellnou-de-bages",
   "castellnou-de-seana",
+  "castello-de-farfanya",
+  "castello-dempuries",
   "castellsera",
   "castelltercol",
+  "castellvi-de-la-marca",
   "castellvi-de-rosanes",
+  "cava",
+  "centelles",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -699,9 +714,14 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Castellgalí", slug: "castellgali", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Castellnou de Bages", slug: "castellnou-de-bages", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Castellnou de Seana", slug: "castellnou-de-seana", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Castelló de Farfanya", slug: "castello-de-farfanya", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Castelló d'Empúries", slug: "castello-dempuries", province: "Girona", aliases: [], hasShield: true },
   { name: "Castellserà", slug: "castellsera", province: "Lleida", aliases: [], hasShield: true },
   { name: "Castellterçol", slug: "castelltercol", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Castellví de la Marca", slug: "castellvi-de-la-marca", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Castellví de Rosanes", slug: "castellvi-de-rosanes", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Cava", slug: "cava", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Centelles", slug: "centelles", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -901,17 +921,17 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Castellgalí", slug: "castellgali", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Castellnou de Bages", slug: "castellnou-de-bages", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Castellnou de Seana", slug: "castellnou-de-seana", province: "Lleida", aliases: [], hasShield: true },
-  { name: "Castelló de Farfanya", slug: "castello-de-farfanya", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Castelló d'Empúries", slug: "castello-dempuries", province: "Girona", aliases: [], hasShield: false },
+  { name: "Castelló de Farfanya", slug: "castello-de-farfanya", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Castelló d'Empúries", slug: "castello-dempuries", province: "Girona", aliases: [], hasShield: true },
   { name: "Castellolí", slug: "castelloli", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Castellserà", slug: "castellsera", province: "Lleida", aliases: [], hasShield: true },
   { name: "Castellterçol", slug: "castelltercol", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Castellvell del Camp", slug: "castellvell-del-camp", province: "Tarragona", aliases: [], hasShield: false },
-  { name: "Castellví de la Marca", slug: "castellvi-de-la-marca", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Castellví de la Marca", slug: "castellvi-de-la-marca", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Castellví de Rosanes", slug: "castellvi-de-rosanes", province: "Barcelona", aliases: [], hasShield: true },
-  { name: "Cava", slug: "cava", province: "Lleida", aliases: [], hasShield: false },
+  { name: "Cava", slug: "cava", province: "Lleida", aliases: [], hasShield: true },
   { name: "Celrà", slug: "celra", province: "Girona", aliases: [], hasShield: false },
-  { name: "Centelles", slug: "centelles", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Centelles", slug: "centelles", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cercs", slug: "cercs", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Cerdanyola del Vallès", slug: "cerdanyola-del-valles", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Cervelló", slug: "cervello", province: "Barcelona", aliases: [], hasShield: false },
