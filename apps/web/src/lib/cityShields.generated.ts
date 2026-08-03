@@ -167,6 +167,11 @@ import CastellviDeLaMarcaShield from "catalunya-shields/assets/svg/castellvi-de-
 import CastellviDeRosanesShield from "catalunya-shields/assets/svg/castellvi-de-rosanes.svg";
 import CavaShield from "catalunya-shields/assets/svg/cava.svg";
 import CentellesShield from "catalunya-shields/assets/svg/centelles.svg";
+import CercsShield from "catalunya-shields/assets/svg/cercs.svg";
+import CerdanyolaDelVallesShield from "catalunya-shields/assets/svg/cerdanyola-del-valles.svg";
+import CervelloShield from "catalunya-shields/assets/svg/cervello.svg";
+import CerveraShield from "catalunya-shields/assets/svg/cervera.svg";
+import CerviaDeTerShield from "catalunya-shields/assets/svg/cervia-de-ter.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -358,6 +363,11 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "castellvi-de-rosanes": CastellviDeRosanesShield,
   "cava": CavaShield,
   "centelles": CentellesShield,
+  "cercs": CercsShield,
+  "cerdanyola-del-valles": CerdanyolaDelVallesShield,
+  "cervello": CervelloShield,
+  "cervera": CerveraShield,
+  "cervia-de-ter": CerviaDeTerShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -542,6 +552,11 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "castellvi-de-rosanes",
   "cava",
   "centelles",
+  "cercs",
+  "cerdanyola-del-valles",
+  "cervello",
+  "cervera",
+  "cervia-de-ter",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -722,6 +737,11 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Castellví de Rosanes", slug: "castellvi-de-rosanes", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cava", slug: "cava", province: "Lleida", aliases: [], hasShield: true },
   { name: "Centelles", slug: "centelles", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Cercs", slug: "cercs", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Cerdanyola del Vallès", slug: "cerdanyola-del-valles", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Cervelló", slug: "cervello", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Cervera", slug: "cervera", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Cervià de Ter", slug: "cervia-de-ter", province: "Girona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -932,12 +952,12 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Cava", slug: "cava", province: "Lleida", aliases: [], hasShield: true },
   { name: "Celrà", slug: "celra", province: "Girona", aliases: [], hasShield: false },
   { name: "Centelles", slug: "centelles", province: "Barcelona", aliases: [], hasShield: true },
-  { name: "Cercs", slug: "cercs", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Cerdanyola del Vallès", slug: "cerdanyola-del-valles", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Cervelló", slug: "cervello", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Cervera", slug: "cervera", province: "Lleida", aliases: [], hasShield: false },
+  { name: "Cercs", slug: "cercs", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Cerdanyola del Vallès", slug: "cerdanyola-del-valles", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Cervelló", slug: "cervello", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Cervera", slug: "cervera", province: "Lleida", aliases: [], hasShield: true },
   { name: "Cervià de les Garrigues", slug: "cervia-de-les-garrigues", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Cervià de Ter", slug: "cervia-de-ter", province: "Girona", aliases: [], hasShield: false },
+  { name: "Cervià de Ter", slug: "cervia-de-ter", province: "Girona", aliases: [], hasShield: true },
   { name: "Cistella", slug: "cistella", province: "Girona", aliases: [], hasShield: false },
   { name: "Ciutadilla", slug: "ciutadilla", province: "Lleida", aliases: [], hasShield: false },
   { name: "Clariana de Cardener", slug: "clariana-de-cardener", province: "Lleida", aliases: [], hasShield: false },
