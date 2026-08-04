@@ -172,6 +172,11 @@ import CerdanyolaDelVallesShield from "catalunya-shields/assets/svg/cerdanyola-d
 import CervelloShield from "catalunya-shields/assets/svg/cervello.svg";
 import CerveraShield from "catalunya-shields/assets/svg/cervera.svg";
 import CerviaDeTerShield from "catalunya-shields/assets/svg/cervia-de-ter.svg";
+import CistellaShield from "catalunya-shields/assets/svg/cistella.svg";
+import CiutadillaShield from "catalunya-shields/assets/svg/ciutadilla.svg";
+import ClarianaDeCardenerShield from "catalunya-shields/assets/svg/clariana-de-cardener.svg";
+import ColeraShield from "catalunya-shields/assets/svg/colera.svg";
+import CollDeNargoShield from "catalunya-shields/assets/svg/coll-de-nargo.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -368,6 +373,11 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "cervello": CervelloShield,
   "cervera": CerveraShield,
   "cervia-de-ter": CerviaDeTerShield,
+  "cistella": CistellaShield,
+  "ciutadilla": CiutadillaShield,
+  "clariana-de-cardener": ClarianaDeCardenerShield,
+  "colera": ColeraShield,
+  "coll-de-nargo": CollDeNargoShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -557,6 +567,11 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "cervello",
   "cervera",
   "cervia-de-ter",
+  "cistella",
+  "ciutadilla",
+  "clariana-de-cardener",
+  "colera",
+  "coll-de-nargo",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -742,6 +757,11 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Cervelló", slug: "cervello", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cervera", slug: "cervera", province: "Lleida", aliases: [], hasShield: true },
   { name: "Cervià de Ter", slug: "cervia-de-ter", province: "Girona", aliases: [], hasShield: true },
+  { name: "Cistella", slug: "cistella", province: "Girona", aliases: [], hasShield: true },
+  { name: "Ciutadilla", slug: "ciutadilla", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Clariana de Cardener", slug: "clariana-de-cardener", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Colera", slug: "colera", province: "Girona", aliases: [], hasShield: true },
+  { name: "Coll de Nargó", slug: "coll-de-nargo", province: "Lleida", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -958,11 +978,11 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Cervera", slug: "cervera", province: "Lleida", aliases: [], hasShield: true },
   { name: "Cervià de les Garrigues", slug: "cervia-de-les-garrigues", province: "Lleida", aliases: [], hasShield: false },
   { name: "Cervià de Ter", slug: "cervia-de-ter", province: "Girona", aliases: [], hasShield: true },
-  { name: "Cistella", slug: "cistella", province: "Girona", aliases: [], hasShield: false },
-  { name: "Ciutadilla", slug: "ciutadilla", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Clariana de Cardener", slug: "clariana-de-cardener", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Colera", slug: "colera", province: "Girona", aliases: [], hasShield: false },
-  { name: "Coll de Nargó", slug: "coll-de-nargo", province: "Lleida", aliases: [], hasShield: false },
+  { name: "Cistella", slug: "cistella", province: "Girona", aliases: [], hasShield: true },
+  { name: "Ciutadilla", slug: "ciutadilla", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Clariana de Cardener", slug: "clariana-de-cardener", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Colera", slug: "colera", province: "Girona", aliases: [], hasShield: true },
+  { name: "Coll de Nargó", slug: "coll-de-nargo", province: "Lleida", aliases: [], hasShield: true },
   { name: "Collbató", slug: "collbato", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Colldejou", slug: "colldejou", province: "Tarragona", aliases: [], hasShield: false },
   { name: "Collsuspina", slug: "collsuspina", province: "Barcelona", aliases: [], hasShield: false },
