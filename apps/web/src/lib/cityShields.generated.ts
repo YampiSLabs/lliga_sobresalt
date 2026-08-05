@@ -177,6 +177,11 @@ import CiutadillaShield from "catalunya-shields/assets/svg/ciutadilla.svg";
 import ClarianaDeCardenerShield from "catalunya-shields/assets/svg/clariana-de-cardener.svg";
 import ColeraShield from "catalunya-shields/assets/svg/colera.svg";
 import CollDeNargoShield from "catalunya-shields/assets/svg/coll-de-nargo.svg";
+import CollbatoShield from "catalunya-shields/assets/svg/collbato.svg";
+import ColldejouShield from "catalunya-shields/assets/svg/colldejou.svg";
+import CollsuspinaShield from "catalunya-shields/assets/svg/collsuspina.svg";
+import ColomersShield from "catalunya-shields/assets/svg/colomers.svg";
+import ConcaDeDaltShield from "catalunya-shields/assets/svg/conca-de-dalt.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -378,6 +383,11 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "clariana-de-cardener": ClarianaDeCardenerShield,
   "colera": ColeraShield,
   "coll-de-nargo": CollDeNargoShield,
+  "collbato": CollbatoShield,
+  "colldejou": ColldejouShield,
+  "collsuspina": CollsuspinaShield,
+  "colomers": ColomersShield,
+  "conca-de-dalt": ConcaDeDaltShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -572,6 +582,11 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "clariana-de-cardener",
   "colera",
   "coll-de-nargo",
+  "collbato",
+  "colldejou",
+  "collsuspina",
+  "colomers",
+  "conca-de-dalt",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -762,6 +777,11 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Clariana de Cardener", slug: "clariana-de-cardener", province: "Lleida", aliases: [], hasShield: true },
   { name: "Colera", slug: "colera", province: "Girona", aliases: [], hasShield: true },
   { name: "Coll de Nargó", slug: "coll-de-nargo", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Collbató", slug: "collbato", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Colldejou", slug: "colldejou", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Collsuspina", slug: "collsuspina", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Colomers", slug: "colomers", province: "Girona", aliases: [], hasShield: true },
+  { name: "Conca de Dalt", slug: "conca-de-dalt", province: "Lleida", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -983,11 +1003,11 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Clariana de Cardener", slug: "clariana-de-cardener", province: "Lleida", aliases: [], hasShield: true },
   { name: "Colera", slug: "colera", province: "Girona", aliases: [], hasShield: true },
   { name: "Coll de Nargó", slug: "coll-de-nargo", province: "Lleida", aliases: [], hasShield: true },
-  { name: "Collbató", slug: "collbato", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Colldejou", slug: "colldejou", province: "Tarragona", aliases: [], hasShield: false },
-  { name: "Collsuspina", slug: "collsuspina", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Colomers", slug: "colomers", province: "Girona", aliases: [], hasShield: false },
-  { name: "Conca de Dalt", slug: "conca-de-dalt", province: "Lleida", aliases: [], hasShield: false },
+  { name: "Collbató", slug: "collbato", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Colldejou", slug: "colldejou", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Collsuspina", slug: "collsuspina", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Colomers", slug: "colomers", province: "Girona", aliases: [], hasShield: true },
+  { name: "Conca de Dalt", slug: "conca-de-dalt", province: "Lleida", aliases: [], hasShield: true },
   { name: "Conesa", slug: "conesa", province: "Tarragona", aliases: [], hasShield: false },
   { name: "Constantí", slug: "constanti", province: "Tarragona", aliases: [], hasShield: false },
   { name: "Copons", slug: "copons", province: "Barcelona", aliases: [], hasShield: false },
