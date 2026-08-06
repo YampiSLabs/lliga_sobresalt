@@ -182,6 +182,11 @@ import ColldejouShield from "catalunya-shields/assets/svg/colldejou.svg";
 import CollsuspinaShield from "catalunya-shields/assets/svg/collsuspina.svg";
 import ColomersShield from "catalunya-shields/assets/svg/colomers.svg";
 import ConcaDeDaltShield from "catalunya-shields/assets/svg/conca-de-dalt.svg";
+import ConesaShield from "catalunya-shields/assets/svg/conesa.svg";
+import ConstantiShield from "catalunya-shields/assets/svg/constanti.svg";
+import CoponsShield from "catalunya-shields/assets/svg/copons.svg";
+import CorberaDeLlobregatShield from "catalunya-shields/assets/svg/corbera-de-llobregat.svg";
+import CorberaDebreShield from "catalunya-shields/assets/svg/corbera-debre.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
@@ -388,6 +393,11 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "collsuspina": CollsuspinaShield,
   "colomers": ColomersShield,
   "conca-de-dalt": ConcaDeDaltShield,
+  "conesa": ConesaShield,
+  "constanti": ConstantiShield,
+  "copons": CoponsShield,
+  "corbera-de-llobregat": CorberaDeLlobregatShield,
+  "corbera-debre": CorberaDebreShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -587,6 +597,11 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "collsuspina",
   "colomers",
   "conca-de-dalt",
+  "conesa",
+  "constanti",
+  "copons",
+  "corbera-de-llobregat",
+  "corbera-debre",
   "cornella-de-llobregat",
   "lhospitalet",
   "mataro",
@@ -782,6 +797,11 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Collsuspina", slug: "collsuspina", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Colomers", slug: "colomers", province: "Girona", aliases: [], hasShield: true },
   { name: "Conca de Dalt", slug: "conca-de-dalt", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Conesa", slug: "conesa", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Constantí", slug: "constanti", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Copons", slug: "copons", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Corbera de Llobregat", slug: "corbera-de-llobregat", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Corbera d'Ebre", slug: "corbera-debre", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
@@ -1008,11 +1028,11 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Collsuspina", slug: "collsuspina", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Colomers", slug: "colomers", province: "Girona", aliases: [], hasShield: true },
   { name: "Conca de Dalt", slug: "conca-de-dalt", province: "Lleida", aliases: [], hasShield: true },
-  { name: "Conesa", slug: "conesa", province: "Tarragona", aliases: [], hasShield: false },
-  { name: "Constantí", slug: "constanti", province: "Tarragona", aliases: [], hasShield: false },
-  { name: "Copons", slug: "copons", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Corbera de Llobregat", slug: "corbera-de-llobregat", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Corbera d'Ebre", slug: "corbera-debre", province: "Tarragona", aliases: [], hasShield: false },
+  { name: "Conesa", slug: "conesa", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Constantí", slug: "constanti", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Copons", slug: "copons", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Corbera de Llobregat", slug: "corbera-de-llobregat", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Corbera d'Ebre", slug: "corbera-debre", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Corbins", slug: "corbins", province: "Lleida", aliases: [], hasShield: false },
   { name: "Corçà", slug: "corca", province: "Girona", aliases: [], hasShield: false },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
