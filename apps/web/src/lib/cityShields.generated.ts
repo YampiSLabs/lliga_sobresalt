@@ -187,7 +187,12 @@ import ConstantiShield from "catalunya-shields/assets/svg/constanti.svg";
 import CoponsShield from "catalunya-shields/assets/svg/copons.svg";
 import CorberaDeLlobregatShield from "catalunya-shields/assets/svg/corbera-de-llobregat.svg";
 import CorberaDebreShield from "catalunya-shields/assets/svg/corbera-debre.svg";
+import CorbinsShield from "catalunya-shields/assets/svg/corbins.svg";
+import CorcaShield from "catalunya-shields/assets/svg/corca.svg";
 import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-llobregat.svg";
+import CornellaDelTerriShield from "catalunya-shields/assets/svg/cornella-del-terri.svg";
+import CornudellaDeMontsantShield from "catalunya-shields/assets/svg/cornudella-de-montsant.svg";
+import CreixellShield from "catalunya-shields/assets/svg/creixell.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
 import ReusShield from "catalunya-shields/assets/svg/reus.svg";
@@ -398,8 +403,13 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "copons": CoponsShield,
   "corbera-de-llobregat": CorberaDeLlobregatShield,
   "corbera-debre": CorberaDebreShield,
+  "corbins": CorbinsShield,
+  "corca": CorcaShield,
   "cornella": CornellaDeLlobregatShield,
   "cornella-de-llobregat": CornellaDeLlobregatShield,
+  "cornella-del-terri": CornellaDelTerriShield,
+  "cornudella-de-montsant": CornudellaDeMontsantShield,
+  "creixell": CreixellShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
   "lhospitalet": LhospitaletDeLlobregatShield,
   "lhospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -602,7 +612,12 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "copons",
   "corbera-de-llobregat",
   "corbera-debre",
+  "corbins",
+  "corca",
   "cornella-de-llobregat",
+  "cornella-del-terri",
+  "cornudella-de-montsant",
+  "creixell",
   "lhospitalet",
   "mataro",
   "reus",
@@ -802,7 +817,12 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Copons", slug: "copons", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Corbera de Llobregat", slug: "corbera-de-llobregat", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Corbera d'Ebre", slug: "corbera-debre", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Corbins", slug: "corbins", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Corçà", slug: "corca", province: "Girona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
+  { name: "Cornellà del Terri", slug: "cornella-del-terri", province: "Girona", aliases: [], hasShield: true },
+  { name: "Cornudella de Montsant", slug: "cornudella-de-montsant", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Creixell", slug: "creixell", province: "Tarragona", aliases: [], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Reus", slug: "reus", province: "Tarragona", aliases: [], hasShield: true },
@@ -1033,12 +1053,12 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Copons", slug: "copons", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Corbera de Llobregat", slug: "corbera-de-llobregat", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Corbera d'Ebre", slug: "corbera-debre", province: "Tarragona", aliases: [], hasShield: true },
-  { name: "Corbins", slug: "corbins", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Corçà", slug: "corca", province: "Girona", aliases: [], hasShield: false },
+  { name: "Corbins", slug: "corbins", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Corçà", slug: "corca", province: "Girona", aliases: [], hasShield: true },
   { name: "Cornellà de Llobregat", slug: "cornella-de-llobregat", province: "Barcelona", aliases: ["cornella"], hasShield: true },
-  { name: "Cornellà del Terri", slug: "cornella-del-terri", province: "Girona", aliases: [], hasShield: false },
-  { name: "Cornudella de Montsant", slug: "cornudella-de-montsant", province: "Tarragona", aliases: [], hasShield: false },
-  { name: "Creixell", slug: "creixell", province: "Tarragona", aliases: [], hasShield: false },
+  { name: "Cornellà del Terri", slug: "cornella-del-terri", province: "Girona", aliases: [], hasShield: true },
+  { name: "Cornudella de Montsant", slug: "cornudella-de-montsant", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Creixell", slug: "creixell", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Crespià", slug: "crespia", province: "Girona", aliases: [], hasShield: false },
   { name: "Cruïlles, Monells i Sant Sadurní de l'Heura", slug: "cruilles-monells-i-sant-sadurni-de-lheura", province: "Girona", aliases: [], hasShield: false },
   { name: "Cubelles", slug: "cubelles", province: "Barcelona", aliases: [], hasShield: false },
