@@ -132,6 +132,7 @@ import CamprodonShield from "catalunya-shields/assets/svg/camprodon.svg";
 import CanejanShield from "catalunya-shields/assets/svg/canejan.svg";
 import CanetDadriShield from "catalunya-shields/assets/svg/canet-dadri.svg";
 import CanovellesShield from "catalunya-shields/assets/svg/canovelles.svg";
+import CanovesISamalusShield from "catalunya-shields/assets/svg/canoves-i-samalus.svg";
 import CantallopsShield from "catalunya-shields/assets/svg/cantallops.svg";
 import CanyellesShield from "catalunya-shields/assets/svg/canyelles.svg";
 import CapelladesShield from "catalunya-shields/assets/svg/capellades.svg";
@@ -193,6 +194,10 @@ import CornellaDeLlobregatShield from "catalunya-shields/assets/svg/cornella-de-
 import CornellaDelTerriShield from "catalunya-shields/assets/svg/cornella-del-terri.svg";
 import CornudellaDeMontsantShield from "catalunya-shields/assets/svg/cornudella-de-montsant.svg";
 import CreixellShield from "catalunya-shields/assets/svg/creixell.svg";
+import CubellesShield from "catalunya-shields/assets/svg/cubelles.svg";
+import CunitShield from "catalunya-shields/assets/svg/cunit.svg";
+import DarniusShield from "catalunya-shields/assets/svg/darnius.svg";
+import DeltebreShield from "catalunya-shields/assets/svg/deltebre.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
 import ReusShield from "catalunya-shields/assets/svg/reus.svg";
@@ -348,6 +353,7 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "canejan": CanejanShield,
   "canet-dadri": CanetDadriShield,
   "canovelles": CanovellesShield,
+  "canoves-i-samalus": CanovesISamalusShield,
   "cantallops": CantallopsShield,
   "canyelles": CanyellesShield,
   "capellades": CapelladesShield,
@@ -410,6 +416,10 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "cornella-del-terri": CornellaDelTerriShield,
   "cornudella-de-montsant": CornudellaDeMontsantShield,
   "creixell": CreixellShield,
+  "cubelles": CubellesShield,
+  "cunit": CunitShield,
+  "darnius": DarniusShield,
+  "deltebre": DeltebreShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
   "lhospitalet": LhospitaletDeLlobregatShield,
   "lhospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -557,6 +567,7 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "canejan",
   "canet-dadri",
   "canovelles",
+  "canoves-i-samalus",
   "cantallops",
   "canyelles",
   "capellades",
@@ -618,6 +629,10 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "cornella-del-terri",
   "cornudella-de-montsant",
   "creixell",
+  "cubelles",
+  "cunit",
+  "darnius",
+  "deltebre",
   "lhospitalet",
   "mataro",
   "reus",
@@ -762,6 +777,7 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Canejan", slug: "canejan", province: "Lleida", aliases: [], hasShield: true },
   { name: "Canet d'Adri", slug: "canet-dadri", province: "Girona", aliases: [], hasShield: true },
   { name: "Canovelles", slug: "canovelles", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Cànoves i Samalús", slug: "canoves-i-samalus", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cantallops", slug: "cantallops", province: "Girona", aliases: [], hasShield: true },
   { name: "Canyelles", slug: "canyelles", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Capellades", slug: "capellades", province: "Barcelona", aliases: [], hasShield: true },
@@ -823,6 +839,10 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Cornellà del Terri", slug: "cornella-del-terri", province: "Girona", aliases: [], hasShield: true },
   { name: "Cornudella de Montsant", slug: "cornudella-de-montsant", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Creixell", slug: "creixell", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Cubelles", slug: "cubelles", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Cunit", slug: "cunit", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Darnius", slug: "darnius", province: "Girona", aliases: [], hasShield: true },
+  { name: "Deltebre", slug: "deltebre", province: "Tarragona", aliases: [], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Reus", slug: "reus", province: "Tarragona", aliases: [], hasShield: true },
@@ -989,7 +1009,7 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Canet d'Adri", slug: "canet-dadri", province: "Girona", aliases: [], hasShield: true },
   { name: "Canet de Mar", slug: "canet-de-mar", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Canovelles", slug: "canovelles", province: "Barcelona", aliases: [], hasShield: true },
-  { name: "Cànoves i Samalús", slug: "canoves-i-samalus", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Cànoves i Samalús", slug: "canoves-i-samalus", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cantallops", slug: "cantallops", province: "Girona", aliases: [], hasShield: true },
   { name: "Canyelles", slug: "canyelles", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Capafonts", slug: "capafonts", province: "Tarragona", aliases: [], hasShield: false },
@@ -1061,12 +1081,12 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Creixell", slug: "creixell", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Crespià", slug: "crespia", province: "Girona", aliases: [], hasShield: false },
   { name: "Cruïlles, Monells i Sant Sadurní de l'Heura", slug: "cruilles-monells-i-sant-sadurni-de-lheura", province: "Girona", aliases: [], hasShield: false },
-  { name: "Cubelles", slug: "cubelles", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Cubelles", slug: "cubelles", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Cubells", slug: "cubells", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Cunit", slug: "cunit", province: "Tarragona", aliases: [], hasShield: false },
-  { name: "Darnius", slug: "darnius", province: "Girona", aliases: [], hasShield: false },
+  { name: "Cunit", slug: "cunit", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Darnius", slug: "darnius", province: "Girona", aliases: [], hasShield: true },
   { name: "Das", slug: "das", province: "Girona", aliases: [], hasShield: false },
-  { name: "Deltebre", slug: "deltebre", province: "Tarragona", aliases: [], hasShield: false },
+  { name: "Deltebre", slug: "deltebre", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Dosrius", slug: "dosrius", province: "Barcelona", aliases: [], hasShield: false },
   { name: "Duesaigües", slug: "duesaigues", province: "Tarragona", aliases: [], hasShield: false },
   { name: "el Bruc", slug: "el-bruc", province: "Barcelona", aliases: [], hasShield: false },
