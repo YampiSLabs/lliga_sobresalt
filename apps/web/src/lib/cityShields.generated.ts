@@ -198,6 +198,11 @@ import CubellesShield from "catalunya-shields/assets/svg/cubelles.svg";
 import CunitShield from "catalunya-shields/assets/svg/cunit.svg";
 import DarniusShield from "catalunya-shields/assets/svg/darnius.svg";
 import DeltebreShield from "catalunya-shields/assets/svg/deltebre.svg";
+import DosriusShield from "catalunya-shields/assets/svg/dosrius.svg";
+import EsBordesShield from "catalunya-shields/assets/svg/es-bordes.svg";
+import EsparregueraShield from "catalunya-shields/assets/svg/esparreguera.svg";
+import EspinelvesShield from "catalunya-shields/assets/svg/espinelves.svg";
+import EspluguesDeLlobregatShield from "catalunya-shields/assets/svg/esplugues-de-llobregat.svg";
 import LhospitaletDeLlobregatShield from "catalunya-shields/assets/svg/lhospitalet-de-llobregat.svg";
 import MataroShield from "catalunya-shields/assets/svg/mataro.svg";
 import ReusShield from "catalunya-shields/assets/svg/reus.svg";
@@ -420,6 +425,11 @@ export const GENERATED_CITY_SHIELDS: Record<string, ShieldAsset> = {
   "cunit": CunitShield,
   "darnius": DarniusShield,
   "deltebre": DeltebreShield,
+  "dosrius": DosriusShield,
+  "es-bordes": EsBordesShield,
+  "esparreguera": EsparregueraShield,
+  "espinelves": EspinelvesShield,
+  "esplugues-de-llobregat": EspluguesDeLlobregatShield,
   "l-hospitalet-de-llobregat": LhospitaletDeLlobregatShield,
   "lhospitalet": LhospitaletDeLlobregatShield,
   "lhospitalet-de-llobregat": LhospitaletDeLlobregatShield,
@@ -633,6 +643,11 @@ export const GENERATED_CITY_SHIELD_SLUGS = [
   "cunit",
   "darnius",
   "deltebre",
+  "dosrius",
+  "es-bordes",
+  "esparreguera",
+  "espinelves",
+  "esplugues-de-llobregat",
   "lhospitalet",
   "mataro",
   "reus",
@@ -843,6 +858,11 @@ export const GENERATED_CITY_SHIELD_CITIES: GeneratedCityShield[] = [
   { name: "Cunit", slug: "cunit", province: "Tarragona", aliases: [], hasShield: true },
   { name: "Darnius", slug: "darnius", province: "Girona", aliases: [], hasShield: true },
   { name: "Deltebre", slug: "deltebre", province: "Tarragona", aliases: [], hasShield: true },
+  { name: "Dosrius", slug: "dosrius", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Es Bòrdes", slug: "es-bordes", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Esparreguera", slug: "esparreguera", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Espinelves", slug: "espinelves", province: "Girona", aliases: [], hasShield: true },
+  { name: "Esplugues de Llobregat", slug: "esplugues-de-llobregat", province: "Barcelona", aliases: [], hasShield: true },
   { name: "L'Hospitalet de Llobregat", slug: "lhospitalet", province: "Barcelona", aliases: ["l-hospitalet-de-llobregat","lhospitalet-de-llobregat"], hasShield: true },
   { name: "Mataró", slug: "mataro", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Reus", slug: "reus", province: "Tarragona", aliases: [], hasShield: true },
@@ -1087,7 +1107,7 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "Darnius", slug: "darnius", province: "Girona", aliases: [], hasShield: true },
   { name: "Das", slug: "das", province: "Girona", aliases: [], hasShield: false },
   { name: "Deltebre", slug: "deltebre", province: "Tarragona", aliases: [], hasShield: true },
-  { name: "Dosrius", slug: "dosrius", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Dosrius", slug: "dosrius", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Duesaigües", slug: "duesaigues", province: "Tarragona", aliases: [], hasShield: false },
   { name: "el Bruc", slug: "el-bruc", province: "Barcelona", aliases: [], hasShield: false },
   { name: "el Brull", slug: "el-brull", province: "Barcelona", aliases: [], hasShield: false },
@@ -1129,10 +1149,10 @@ export const GENERATED_CITIES: GeneratedCityShield[] = [
   { name: "els Plans de Sió", slug: "els-plans-de-sio", province: "Lleida", aliases: [], hasShield: false },
   { name: "els Prats de Rei", slug: "els-prats-de-rei", province: "Barcelona", aliases: [], hasShield: false },
   { name: "els Torms", slug: "els-torms", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Es Bòrdes", slug: "es-bordes", province: "Lleida", aliases: [], hasShield: false },
-  { name: "Esparreguera", slug: "esparreguera", province: "Barcelona", aliases: [], hasShield: false },
-  { name: "Espinelves", slug: "espinelves", province: "Girona", aliases: [], hasShield: false },
-  { name: "Esplugues de Llobregat", slug: "esplugues-de-llobregat", province: "Barcelona", aliases: [], hasShield: false },
+  { name: "Es Bòrdes", slug: "es-bordes", province: "Lleida", aliases: [], hasShield: true },
+  { name: "Esparreguera", slug: "esparreguera", province: "Barcelona", aliases: [], hasShield: true },
+  { name: "Espinelves", slug: "espinelves", province: "Girona", aliases: [], hasShield: true },
+  { name: "Esplugues de Llobregat", slug: "esplugues-de-llobregat", province: "Barcelona", aliases: [], hasShield: true },
   { name: "Espolla", slug: "espolla", province: "Girona", aliases: [], hasShield: false },
   { name: "Esponellà", slug: "esponella", province: "Girona", aliases: [], hasShield: false },
   { name: "Espot", slug: "espot", province: "Lleida", aliases: [], hasShield: false },
